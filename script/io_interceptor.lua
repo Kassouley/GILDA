@@ -1,4 +1,4 @@
-package.path = package.path .. ';./json/?.lua'
+package.path = package.path .. ';./script/json/?.lua'
 local io_interceptor = {}
 
 local json = require("json")

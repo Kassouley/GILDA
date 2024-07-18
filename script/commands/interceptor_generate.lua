@@ -18,11 +18,7 @@ local function generate_file(filepath, content)
 end
 
 local function get_include_str(includes_table)
-    local _inc_str = ""
-    for _, inc in ipairs(includes_table) do
-        _inc_str = _inc_str.."#include \""..inc.."\"\n"
-    end
-    return _inc_str.."\n"
+    return "\n#include \""..table.concat(includes_table, "\"\n#include \"") .. "\"\n"
 end
 
 local function get_macro_string(interceptor_name)
@@ -53,7 +49,7 @@ local function get_macro_string(interceptor_name)
         _IF_SRC = interceptor_name.."_intercepted_functions.cpp",
         _IF_HEAD = interceptor_name.."_intercepted_functions.h",
         _IF_HEADDEF = interceptor_name_upper.."_INTERCEPTED_FUNCTIONS_H",
-        _IF_GET_FUNAME_TYPE = "static const char*",
+        _IF_GET_FUNAME_TYPE = "const char*",
         _IF_GET_FUNAME_DECL = "get_"..interceptor_name.."_funame_by_id",
         _IF_FUN_ID_PREFIX = interceptor_name_upper.."_API_ID_",
 
@@ -72,6 +68,7 @@ local function get_macro_string(interceptor_name)
         _SET_CB_DECL = "set_"..interceptor_name.."_interceptor_callback",
         _CB_FUNC_DECL = interceptor_name.."_callback_function",
         _CB_GET_ARGS_PREFIX = "GET_CB_ARGS_DATA_",
+        _CB_DATA_NAME = "__"..interceptor_name.."_data__",
 
         _HANDLE_MGR_HEAD = "handler_manager.h"
     }

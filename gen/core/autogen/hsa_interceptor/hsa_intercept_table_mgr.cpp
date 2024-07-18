@@ -1,12 +1,13 @@
 #include "hsa_intercept_table_mgr.h"
 #include "handler_manager.h"
+
 #include "hsa.h"
 #include "hsa_ext_amd.h"
 
 hsa_intercept_table_t hsa_itcp_table;
 
 void load_hsa_itcp_table() {
-	void *handle = load_handle("/opt/rocm/lib/libhsa-runtime64.so");
+    void *handle = load_handle("/opt/rocm/lib/libhsa-runtime64.so");
 	HANDLE(hsa_itcp_table, hsa_amd_coherency_get_type, handle);
 	HANDLE(hsa_itcp_table, hsa_amd_coherency_set_type, handle);
 	HANDLE(hsa_itcp_table, hsa_amd_profiling_set_profiler_enabled, handle);

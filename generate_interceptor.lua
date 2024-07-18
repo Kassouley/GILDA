@@ -1,3 +1,6 @@
+package.path = package.path .. ';./script/?.lua'
+package.path = package.path .. ';./script/commands/?.lua'
+package.path = package.path .. ';./script/contents/?.lua'
 local io_interceptor = require("io_interceptor")
 local interceptor_generate = require("interceptor_generate")
 local interceptor_build = require("interceptor_build")

@@ -234,7 +234,7 @@ enum hsa_api_id_t {
 };
 
 // Return HSA API function name for a given ID
-static const char* get_hsa_funame_by_id(hsa_api_id_t id) {
+const char* get_hsa_funame_by_id(hsa_api_id_t id) {
 	switch(id) {
 		case HSA_API_ID_hsa_amd_coherency_get_type : return "hsa_amd_coherency_get_type";
 		case HSA_API_ID_hsa_amd_coherency_set_type : return "hsa_amd_coherency_set_type";
