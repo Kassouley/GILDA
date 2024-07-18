@@ -1,8 +1,22 @@
 local io_interceptor = require("io_interceptor")
 
+local files = {
+    file1 = require("content_intercept_table_mgr_source"),
+    file2 = require("content_intercept_table_mgr_header"),
+    file3 = require("content_intercepted_functions_source"),
+    file4 = require("content_intercepted_functions_header"),
+    file5 = require("content_callback_source"),
+    file6 = require("content_callback_header")
+}
+
 local interceptor_generate = {}
 
 -- COMMON --
+
+local function generate_file(filepath, content)
+    io_interceptor.write_n_close(filepath, content)
+end
+
 local function get_include_str(includes_table)
     local _inc_str = ""
     for _, inc in ipairs(includes_table) do
@@ -57,6 +71,7 @@ local function get_macro_string(interceptor_name)
         _STORED_CB_DECL = "stored_"..interceptor_name.."_callback",
         _SET_CB_DECL = "set_"..interceptor_name.."_interceptor_callback",
         _CB_FUNC_DECL = interceptor_name.."_callback_function",
+        _CB_GET_ARGS_PREFIX = "GET_CB_ARGS_DATA_",
 
         _HANDLE_MGR_HEAD = "handler_manager.h"
     }
@@ -64,254 +79,101 @@ end
 
 -- COMMON --
 
--- AUTOGEN CONTENT INTERCEPT_TABLE_MANAGER SOURCE --
-local function get_itcp_tbl_mgr_src_content_1(MACRO_STRING, includes_table)
-    return  "#include \""..MACRO_STRING._ITM_HEAD.."\"\n"..
-            "#include \""..MACRO_STRING._HANDLE_MGR_HEAD.."\"\n"..
-            get_include_str(interceptor_data.includes)..
-            MACRO_STRING._INTERCEPT_TABLE_T.." "..MACRO_STRING._INTERCEPT_TABLE_DECL..";\n\n"..
-            "void "..MACRO_STRING._ITM_LOAD_TABLE_DECL.."() {\n"..
-            "\tvoid *handle = load_handle(\""..interceptor_data.lib.."\");\n"
-end
-local function get_itcp_tbl_mgr_src_content_2(MACRO_STRING, f)
-    return "\tHANDLE("..MACRO_STRING._INTERCEPT_TABLE_DECL..", "..f.name..", handle);\n"
-end
-local function get_itcp_tbl_mgr_src_content_3()
-    return "};\n\n"
-end
--- AUTOGEN CONTENT INTERCEPT_TABLE_MANAGER SOURCE --
+local function generate_contents(MACRO_STRING, interceptor_data, function_to_intercept)
+    local includes_str = get_include_str(interceptor_data.includes)
+    local handler = interceptor_data.lib
 
-
--- AUTOGEN CONTENT INTERCEPT_TABLE_MANAGER HEADER --
-local function get_itcp_tbl_mgr_hdr_content_1(MACRO_STRING, interceptor_data)
-    return  "#ifndef "..MACRO_STRING._ITM_HEADDEF.."\n"..
-            "#define "..MACRO_STRING._ITM_HEADDEF.."\n\n"..
-            get_include_str(interceptor_data.includes)..
-            "void "..MACRO_STRING._ITM_LOAD_TABLE_DECL.."();\n\n"..
-            "struct "..MACRO_STRING._INTERCEPT_TABLE_T.." {\n"
-end
-local function get_itcp_tbl_mgr_hdr_content_2(MACRO_STRING, f)
-    return "\ttypeof(&"..f.name..") "..MACRO_STRING._INTERCEPT_FUNC_PREFIX..f.name..";\n"
-end
-local function get_itcp_tbl_mgr_hdr_content_3()
-    return  "};\n"..
-            "#endif"
-end
--- AUTOGEN CONTENT INTERCEPT_TABLE_MANAGER HEADER --
-
-local function generate(MACRO_STRING, interceptor_data, function_to_intercept)
-    local _ctnt_file_1 = get_itcp_tbl_mgr_src_content_1(MACRO_STRING, interceptor_data)
+    local contents = {
+        file_1 = {}, -- Intercept_table_manager source
+        file_2 = {}, -- Intercept_table_manager header
+        file_3_auto = {}, -- Intercepted_functions source autogen
+        file_3_man = {}, -- Intercepted_functions source mangen
+        file_4 = {}, -- Intercepted_functions header
+        file_5 = {}, -- Callback source
+        file_6 = {} -- Callback header
+    }
     
-    local _ctnt_file_2 = get_itcp_tbl_mgr_hdr_content_1(MACRO_STRING, interceptor_data)
+    local ctnt_file_4_2 = {} -- Intercepted_functions header
+    local ctnt_file_4_3 = {} -- Intercepted_functions header
+    local ctnt_file_4_4 = {} -- Intercepted_functions header
+
+    table.insert(contents.file_1, files.file1.content_1(MACRO_STRING, includes_str, handler))
+    table.insert(contents.file_2, files.file2.content_1(MACRO_STRING, includes_str))
+    table.insert(contents.file_3_auto, files.file3.content_1(MACRO_STRING, includes_str))
+    table.insert(contents.file_3_man, files.file3.content_1(MACRO_STRING, includes_str))
+    table.insert(contents.file_4, files.file4.content_1(MACRO_STRING, includes_str))
+    table.insert(contents.file_5, files.file5.content_1(MACRO_STRING))
+    table.insert(contents.file_6, files.file6.content_1(MACRO_STRING, includes_str))
     
-    local _ctnt_file_3_auto = get_itcp_fnct_src_content_1(MACRO_STRING, interceptor_data)
-    local _ctnt_file_3_man = nil
-    local _content_autogen = ""
-    local _content_mangen = ""
-
-    local _ctnt_file_4_1 = get_itcp_fnct_hdr_content_1(MACRO_STRING, interceptor_data)
-    local _ctnt_file_4_2 = get_itcp_fnct_hdr_content_2a(MACRO_STRING)
-    local _ctnt_file_4_3 = get_itcp_fnct_hdr_content_3a(MACRO_STRING)
-    local _ctnt_file_4_4 = get_itcp_fnct_hdr_content_4a(MACRO_STRING)
-
+    
+    table.insert(ctnt_file_4_2, files.file4.content_2a(MACRO_STRING))
+    table.insert(ctnt_file_4_3, files.file4.content_3a(MACRO_STRING))
+    table.insert(ctnt_file_4_4, files.file4.content_4a(MACRO_STRING))
 
     for i, f in ipairs(function_to_intercept) do
-        _ctnt_file_4_2 = _ctnt_file_4_2..get_itcp_fnct_hdr_content_2b(MACRO_STRING, f, i)
-        _ctnt_file_4_3 = _ctnt_file_4_3..get_itcp_fnct_hdr_content_3b(MACRO_STRING, f)
-                                        
         local names_param = {}
         local types_param = {}
+        
+        table.insert(ctnt_file_4_4, files.file4.content_4b())
+        table.insert(contents.file_6, files.file6.content_2(MACRO_STRING, f))
+        
         for _, arg in ipairs(f.args) do
             local type_param, name_param = io_interceptor.parse_variable_declaration(arg)
             table.insert(types_param, type_param)
             table.insert(names_param, name_param)
-            _ctnt_file_4_4 = _ctnt_file_4_4.get_itcp_fnct_hdr_content_4b(arg)
+            table.insert(contents.file_6, files.file6.content_3(MACRO_STRING, f.name, name_param, type_param))
+            table.insert(ctnt_file_4_4, files.file4.content_4c(arg))
         end
         local names_param_str = table.concat(names_param, ", ")
-        _ctnt_file_4_4 = _ctnt_file_4_4..get_itcp_fnct_hdr_content_4c(f)
         
-        
-        _ctnt_file_1 = _ctnt_file_1..get_itcp_tbl_mgr_src_content_2(MACRO_STRING, f)
-        _ctnt_file_2 = _ctnt_file_2..get_itcp_tbl_mgr_hdr_content_2(MACRO_STRING, f)
-    
-        local _content_aux = get_itcp_fnct_src_content_2(f, MACRO_STRING)
+        table.insert(contents.file_1, files.file1.content_2(MACRO_STRING, f))
+        table.insert(contents.file_2, files.file2.content_2(MACRO_STRING, f))
         if f.gen == "AUTOGEN" then
-            _content_autogen = _content_autogen.._content_aux
+            table.insert(contents.file_3_auto, files.file3.content_2(f, MACRO_STRING, names_param_str))
         else
-            _content_mangen = _content_mangen.._content_aux
+            table.insert(contents.file_3_man,  files.file3.content_2(f, MACRO_STRING, names_param_str))
         end
+        table.insert(ctnt_file_4_2, files.file4.content_2b(MACRO_STRING, f, i))
+        table.insert(ctnt_file_4_3, files.file4.content_3b(MACRO_STRING, f))
+        table.insert(ctnt_file_4_4, files.file4.content_4d(f))
+        table.insert(contents.file_6, files.file6.content_4())
     end
-    _ctnt_file_1 = _ctnt_file_1..get_itcp_tbl_mgr_src_content_3()
-    _ctnt_file_2 = _ctnt_file_2..get_itcp_tbl_mgr_hdr_content_3()
 
-    _ctnt_file_4_2 = _ctnt_file_4_2..get_itcp_fnct_hdr_content_2c()
-    _ctnt_file_4_3 = _ctnt_file_4_3..get_itcp_fnct_hdr_content_3c()
-    _ctnt_file_4_4 = _ctnt_file_4_4..get_itcp_fnct_hdr_content_4d(MACRO_STRING)
+    table.insert(contents.file_1, files.file1.content_3())
+    table.insert(contents.file_2, files.file2.content_3())
 
-    local _ctnt_file_4 = _ctnt_file_4_1..
-                         _ctnt_file_4_2..
-                         _ctnt_file_4_3..
-                         _ctnt_file_4_4..
-                         get_itcp_fnct_hdr_content_5()
-
-    _ctnt_file_3_auto = _ctnt_file_3_auto.._content_autogen 
-    if _content_mangen ~= "" then
-        _ctnt_file_3_man = _ctnt_file_3_auto.._content_mangen
-    end
-end
-
--- AUTOGEN INTERCEPT_TABLE_MGR --
-local function generate_intercept_table_mgr(MACRO_STRING, interceptor_data, function_to_intercept)
-    local _content_source = get_intercept_table_mgr_source_content(MACRO_STRING, interceptor_data, function_to_intercept)
-    local _content_header = get_intercept_table_mgr_header_content(MACRO_STRING, interceptor_data, function_to_intercept)
-    local source_path = AUTOGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR.."/"..MACRO_STRING._ITM_SRC
-    local header_path = AUTOGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR.."/"..MACRO_STRING._ITM_HEAD
-    io_interceptor.write_n_close(source_path, _content_source)
-    io_interceptor.write_n_close(header_path, _content_header)
-end
-
--- AUTOGEN CONTENT INTERCEPTED_FUNCTIONS SOURCE --
-local function get_itcp_fnct_src_content_1(MACRO_STRING, interceptor_data)
-    return  "#include \""..MACRO_STRING._IF_HEAD.."\"\n"..
-            "#include \""..MACRO_STRING._ITM_HEAD.."\"\n"..
-            "#include \""..MACRO_STRING._CB_HEAD.."\"\n"..
-            get_include_str(interceptor_data.includes)..
-            "extern "..MACRO_STRING._INTERCEPT_TABLE_T.." "..MACRO_STRING._INTERCEPT_TABLE_DECL..";\n\n"
-end
-local function get_itcp_fnct_src_content_2(f, MACRO_STRING, names_param_str)
-    local function_header = f.return_type.." "..f.name.."("..table.concat(f.args, ", ")..") {\n"
-    local function_body = "\t"..MACRO_STRING._CB_FUNC_DECL.."(1, \""..f.name.."\");\n"
-                          
-    if f.return_type ~= "void" then
-        function_body = function_body ..
-                        "\t"..f.return_type.." ret = "..MACRO_STRING._INTERCEPT_TABLE_DECL.."."..MACRO_STRING._INTERCEPT_FUNC_PREFIX..f.name.."("..names_param_str..");\n"..
-                        "\t"..MACRO_STRING._CB_FUNC_DECL.."(0, \""..f.name.."\");\n"..
-                        "\treturn ret;\n"
-    else
-        function_body = function_body ..
-                        "\t"..MACRO_STRING._INTERCEPT_TABLE_DECL.."."..MACRO_STRING._INTERCEPT_FUNC_PREFIX..f.name.."("..names_param_str..");\n"..
-                        "\t"..MACRO_STRING._CB_FUNC_DECL.."(0, \""..f.name.."\");\n"..
-                        "\treturn;\n"
-    end
+    table.insert(ctnt_file_4_2, files.file4.content_2c())
+    table.insert(ctnt_file_4_3, files.file4.content_3c())
+    table.insert(ctnt_file_4_4, files.file4.content_4e(MACRO_STRING))
     
-    function_body = function_body.."}\n\n"
-    return function_header..function_body
-end
--- AUTOGEN CONTENT INTERCEPTED_FUNCTIONS SOURCE --
-
-
--- AUTOGEN CONTENT INTERCEPTED_FUNCTIONS HEADER --
-local function get_itcp_fnct_hdr_content_1(MACRO_STRING, interceptor_data)
-    return  "#ifndef "..MACRO_STRING._IF_HEADDEF.."\n"..
-            "#define "..MACRO_STRING._IF_HEADDEF.."\n\n"..
-            get_include_str(interceptor_data.includes)
-end
-local function get_itcp_fnct_hdr_content_2a(MACRO_STRING)
-    return  "// "..MACRO_STRING._INTERCEPTOR_NAME_UPPER.." API ID enum\n"..
-            "enum "..MACRO_STRING._API_ID_T.." {\n"
-end
-local function get_itcp_fnct_hdr_content_2b(MACRO_STRING, f, i)
-    return  "\t"..MACRO_STRING._IF_FUN_ID_PREFIX..f.name.." = "..i..",\n"
-end
-local function get_itcp_fnct_hdr_content_2b()
-    return  "};\n\n"
-end
-local function get_itcp_fnct_hdr_content_3a(MACRO_STRING)
-    return  "// Return "..MACRO_STRING._INTERCEPTOR_NAME_UPPER.." API function name for a given ID\n"..
-            MACRO_STRING._IF_GET_FUNAME_TYPE.." "..MACRO_STRING._IF_GET_FUNAME_DECL.."("..MACRO_STRING._API_ID_T.." id) {\n"..
-            "\tswitch(id) {\n"
-end
-local function get_itcp_fnct_hdr_content_3b(MACRO_STRING, f)
-    return "\t\tcase "..MACRO_STRING._IF_FUN_ID_PREFIX..f.name.." : return \""..f.name.."\";\n"
-end
-local function get_itcp_fnct_hdr_content_3c()
-    return  "\t}\n"..
-            "\treturn NULL;\n"..
-            "}\n\n"
-end
-local function get_itcp_fnct_hdr_content_4a(MACRO_STRING)
-    return  "// "..MACRO_STRING._INTERCEPTOR_NAME_UPPER.." API data\n"..
-            "typedef struct "..MACRO_STRING._API_DATA_S.." {\n"..
-            "\tuint64_t corrId;\n"..
-            "\tbool is_enter;\n"..
-            "\tunion {\n"..
-            "\t\tstruct {\n"
-end
-local function get_itcp_fnct_hdr_content_4b(arg)
-    return "\t\t\t"..arg..";\n"
-end
-local function get_itcp_fnct_hdr_content_4c(f)
-    return "\t\t} "..f.name..";\n"
-end
-local function get_itcp_fnct_hdr_content_4d(MACRO_STRING)
-    return  "\t} args;\n"..
-            "} "..MACRO_STRING._API_DATA_T..";\n\n"
-end
-local function get_itcp_fnct_hdr_content_5()
-    return  "#endif"
-end
-
--- AUTOGEN INTERCEPTED_FUNCTIONS --
-local function generate_intercepted_functions(MACRO_STRING, interceptor_data, function_to_intercept)
-    local _content_autogen, _content_mangen = get_intercepted_functions_source_content(MACRO_STRING, interceptor_data, function_to_intercept)
-    local _content_header = get_intercepted_functions_header_content(MACRO_STRING, interceptor_data, function_to_intercept)
-    local autogen_source_path = AUTOGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR.."/"..MACRO_STRING._IF_SRC
-    local autogen_header_path = AUTOGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR.."/"..MACRO_STRING._IF_HEAD
-    local mangen_source_path  = MANGENDIR.. "/"..MACRO_STRING._INTERCEPTOR_DIR.."/"..MACRO_STRING._IF_SRC
+    table.insert(contents.file_4, table.concat(ctnt_file_4_2))
+    table.insert(contents.file_4, table.concat(ctnt_file_4_3))
+    table.insert(contents.file_4, table.concat(ctnt_file_4_4))
+    table.insert(contents.file_4, files.file4.content_5())
     
-    if _content_mangen ~= nil then
-        io_interceptor.mkdir(MANGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR)
-        io_interceptor.write_n_close(mangen_source_path, _content_mangen)
+    table.insert(contents.file_6, files.file6.content_5())
+
+    local ret = {
+        file1_content = table.concat(contents.file_1),
+        file2_content = table.concat(contents.file_2),
+        file3_content_auto = table.concat(contents.file_3_auto),
+        file3_content_man = "",
+        file4_content = table.concat(contents.file_4),
+        file5_content = table.concat(contents.file_5),
+        file6_content = table.concat(contents.file_6)
+    }
+
+    if #contents.file_3_man ~= 1 then
+        ret.file3_content_man = table.concat(contents.file_3_man)
     end
-    io_interceptor.write_n_close(autogen_source_path, _content_autogen)
-    io_interceptor.write_n_close(autogen_header_path, _content_header)
-    return 
-end
 
-local function get_callback_header_content(MACRO_STRING)
-    local _content = "#ifndef "..MACRO_STRING._CB_HEADDEF.."\n"..
-                     "#define "..MACRO_STRING._CB_HEADDEF.."\n\n"..
-                     "void "..MACRO_STRING._CB_FUNC_DECL.."("..MACRO_STRING._CB_ARGS..");\n"..
-                     "void "..MACRO_STRING._SET_CB_DECL.."(void (*"..MACRO_STRING._CB_DECL..")("..MACRO_STRING._CB_ARGS.."));\n\n"..
-                     "#endif"
-
-    return _content
-end
-
-local function get_callback_source_content(MACRO_STRING)
-    return  "#include <stdio.h>\n"..
-            "#include <stdlib.h>\n"..
-            "#include \""..MACRO_STRING._IF_HEAD.."\"\n"..
-            "#include \""..MACRO_STRING._CB_HEAD.."\"\n\n"..
-            "void (*"..MACRO_STRING._STORED_CB_DECL..")("..MACRO_STRING._CB_ARGS..");\n\n"..
-            "void "..MACRO_STRING._SET_CB_DECL.."(void (*"..MACRO_STRING._CB_DECL..")("..MACRO_STRING._CB_ARGS..")) {\n"..
-                "\t"..MACRO_STRING._STORED_CB_DECL.." = "..MACRO_STRING._CB_DECL..";\n"..
-            "}\n\n"..
-            "void "..MACRO_STRING._CB_FUNC_DECL.."("..MACRO_STRING._CB_ARGS..") {\n"..
-            "\tif ("..MACRO_STRING._STORED_CB_DECL..") {\n"..
-                "\t\t"..MACRO_STRING._STORED_CB_DECL.."("..MACRO_STRING._CB_ARG1_NAME..", "..MACRO_STRING._CB_ARG2_NAME..", "..MACRO_STRING._CB_ARG3_NAME..");\n"..
-            "\t} else {\n"..
-                "\t\tfprintf(stderr, \"No "..MACRO_STRING._INTERCEPTOR_NAME.." callback function has been set.\\n\");\n"..
-            "\t}\n"..
-            "}"
-end
-
-
-local function generate_callback(MACRO_STRING)
-    local _content_source = get_callback_source_content(MACRO_STRING)
-    local _content_header = get_callback_header_content(MACRO_STRING)
-    local source_path = AUTOGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR.."/"..MACRO_STRING._CB_SRC
-    local header_path = AUTOGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR.."/"..MACRO_STRING._CB_HEAD
-    io_interceptor.write_n_close(source_path, _content_source)
-    io_interceptor.write_n_close(header_path, _content_header)
+    return ret
 end
 
 -- COMMAND --
 function interceptor_generate.command(config_data, interceptor_list)
     io_interceptor.mkdir(GENDIR)
     io_interceptor.mkdir(COREDIR)
-    io_interceptor.mkdir(AUTOGENDIR)
-    io_interceptor.mkdir(MANGENDIR)
 
     for _, interceptor_name in ipairs(interceptor_list) do
         local interceptor_data = config_data[interceptor_name]
@@ -323,12 +185,21 @@ function interceptor_generate.command(config_data, interceptor_list)
             local MACRO_STRING = get_macro_string(interceptor_name)
             local function_to_intercept = io_interceptor.parseCSV(interceptor_data.input_csv)
             
-            io_interceptor.mkdir(AUTOGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR)
-            generate_intercepted_functions(MACRO_STRING, interceptor_data, function_to_intercept)
-            generate_intercept_table_mgr(MACRO_STRING, interceptor_data, function_to_intercept)
-            generate_callback(MACRO_STRING)
+            local contents = generate_contents(MACRO_STRING, interceptor_data, function_to_intercept)
+            local autogen_dirname = AUTOGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR
+            io_interceptor.mkdir(autogen_dirname)
+            generate_file(autogen_dirname.."/"..MACRO_STRING._ITM_SRC, contents.file1_content)
+            generate_file(autogen_dirname.."/"..MACRO_STRING._ITM_HEAD, contents.file2_content)
+            generate_file(autogen_dirname.."/"..MACRO_STRING._IF_SRC, contents.file3_content_auto)
+            generate_file(autogen_dirname.."/"..MACRO_STRING._IF_HEAD, contents.file4_content)
+            generate_file(autogen_dirname.."/"..MACRO_STRING._CB_SRC, contents.file5_content)
+            generate_file(autogen_dirname.."/"..MACRO_STRING._CB_HEAD, contents.file6_content)
+            if contents.file3_content_man ~= "" then
+                local mangen_dirname = MANGENDIR.."/"..MACRO_STRING._INTERCEPTOR_DIR
+                io_interceptor.mkdir(mangen_dirname)
+                generate_file(mangen_dirname.."/"..MACRO_STRING._IF_SRC, contents.file3_content_man)
+            end
         end                  
-        -- os.execute("make -B -C ./output LFLAGS=\""..config_data.compilation_flag.."\"")
     end
 end
 

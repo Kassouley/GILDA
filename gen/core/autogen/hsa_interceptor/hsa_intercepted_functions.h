@@ -473,54 +473,54 @@ typedef struct hsa_api_data_s {
 		struct {
 			hsa_agent_t agent;
 			hsa_amd_coherency_type_t* type;
-		} args_hsa_amd_coherency_get_type;
+		} hsa_amd_coherency_get_type;
 		struct {
 			hsa_agent_t agent;
 			hsa_amd_coherency_type_t type;
-		} args_hsa_amd_coherency_set_type;
+		} hsa_amd_coherency_set_type;
 		struct {
 			hsa_queue_t* queue;
 			int enable;
-		} args_hsa_amd_profiling_set_profiler_enabled;
+		} hsa_amd_profiling_set_profiler_enabled;
 		struct {
 			bool enable;
-		} args_hsa_amd_profiling_async_copy_enable;
+		} hsa_amd_profiling_async_copy_enable;
 		struct {
 			hsa_agent_t agent;
 			hsa_signal_t signal;
 			hsa_amd_profiling_dispatch_time_t* time;
-		} args_hsa_amd_profiling_get_dispatch_time;
+		} hsa_amd_profiling_get_dispatch_time;
 		struct {
 			hsa_signal_t signal;
 			hsa_amd_profiling_async_copy_time_t* time;
-		} args_hsa_amd_profiling_get_async_copy_time;
+		} hsa_amd_profiling_get_async_copy_time;
 		struct {
 			hsa_agent_t agent;
 			uint64_t agent_tick;
 			uint64_t* system_tick;
-		} args_hsa_amd_profiling_convert_tick_to_system_domain;
+		} hsa_amd_profiling_convert_tick_to_system_domain;
 		struct {
 			hsa_signal_value_t initial_value;
 			uint32_t num_consumers;
 			const hsa_agent_t* consumers;
 			uint64_t attributes;
 			hsa_signal_t* signal;
-		} args_hsa_amd_signal_create;
+		} hsa_amd_signal_create;
 		struct {
 			hsa_signal_t signal;
 			volatile hsa_signal_value_t** value_ptr;
-		} args_hsa_amd_signal_value_pointer;
+		} hsa_amd_signal_value_pointer;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_condition_t cond;
 			hsa_signal_value_t value;
 			hsa_amd_signal_handler handler;
 			void* arg;
-		} args_hsa_amd_signal_async_handler;
+		} hsa_amd_signal_async_handler;
 		struct {
 			void (*callback)(void* arg);
 			void* arg;
-		} args_hsa_amd_async_function;
+		} hsa_amd_async_function;
 		struct {
 			uint32_t signal_count;
 			hsa_signal_t* signals;
@@ -529,41 +529,41 @@ typedef struct hsa_api_data_s {
 			uint64_t timeout_hint;
 			hsa_wait_state_t wait_hint;
 			hsa_signal_value_t* satisfying_value;
-		} args_hsa_amd_signal_wait_any;
+		} hsa_amd_signal_wait_any;
 		struct {
 			hsa_agent_t agent;
 			hsa_agent_info_t attribute;
 			void* value;
-		} args_hsa_amd_image_get_info_max_dim;
+		} hsa_amd_image_get_info_max_dim;
 		struct {
 			const hsa_queue_t* queue;
 			uint32_t num_cu_mask_count;
 			const uint32_t* cu_mask;
-		} args_hsa_amd_queue_cu_set_mask;
+		} hsa_amd_queue_cu_set_mask;
 		struct {
 			const hsa_queue_t* queue;
 			uint32_t num_cu_mask_count;
 			uint32_t* cu_mask;
-		} args_hsa_amd_queue_cu_get_mask;
+		} hsa_amd_queue_cu_get_mask;
 		struct {
 			hsa_amd_memory_pool_t memory_pool;
 			hsa_amd_memory_pool_info_t attribute;
 			void* value;
-		} args_hsa_amd_memory_pool_get_info;
+		} hsa_amd_memory_pool_get_info;
 		struct {
 			hsa_agent_t agent;
 			hsa_status_t (*callback)(hsa_amd_memory_pool_t memory_pool, void* data);
 			void* data;
-		} args_hsa_amd_agent_iterate_memory_pools;
+		} hsa_amd_agent_iterate_memory_pools;
 		struct {
 			hsa_amd_memory_pool_t memory_pool;
 			size_t size;
 			uint32_t flags;
 			void** ptr;
-		} args_hsa_amd_memory_pool_allocate;
+		} hsa_amd_memory_pool_allocate;
 		struct {
 			void* ptr;
-		} args_hsa_amd_memory_pool_free;
+		} hsa_amd_memory_pool_free;
 		struct {
 			void* dst;
 			hsa_agent_t dst_agent;
@@ -573,7 +573,7 @@ typedef struct hsa_api_data_s {
 			uint32_t num_dep_signals;
 			const hsa_signal_t* dep_signals;
 			hsa_signal_t completion_signal;
-		} args_hsa_amd_memory_async_copy;
+		} hsa_amd_memory_async_copy;
 		struct {
 			void* dst;
 			hsa_agent_t dst_agent;
@@ -585,12 +585,12 @@ typedef struct hsa_api_data_s {
 			hsa_signal_t completion_signal;
 			hsa_amd_sdma_engine_id_t engine_id;
 			bool force_copy_on_sdma;
-		} args_hsa_amd_memory_async_copy_on_engine;
+		} hsa_amd_memory_async_copy_on_engine;
 		struct {
 			hsa_agent_t dst_agent;
 			hsa_agent_t src_agent;
 			uint32_t *engine_ids_mask;
-		} args_hsa_amd_memory_copy_engine_status;
+		} hsa_amd_memory_copy_engine_status;
 		struct {
 			const hsa_pitched_ptr_t* dst;
 			const hsa_dim3_t* dst_offset;
@@ -602,36 +602,36 @@ typedef struct hsa_api_data_s {
 			uint32_t num_dep_signals;
 			const hsa_signal_t* dep_signals;
 			hsa_signal_t completion_signal;
-		} args_hsa_amd_memory_async_copy_rect;
+		} hsa_amd_memory_async_copy_rect;
 		struct {
 			hsa_agent_t agent;
 			hsa_amd_memory_pool_t memory_pool;
 			hsa_amd_agent_memory_pool_info_t attribute;
 			void* value;
-		} args_hsa_amd_agent_memory_pool_get_info;
+		} hsa_amd_agent_memory_pool_get_info;
 		struct {
 			uint32_t num_agents;
 			const hsa_agent_t* agents;
 			const uint32_t* flags;
 			const void* ptr;
-		} args_hsa_amd_agents_allow_access;
+		} hsa_amd_agents_allow_access;
 		struct {
 			hsa_amd_memory_pool_t src_memory_pool;
 			hsa_amd_memory_pool_t dst_memory_pool;
 			bool* result;
-		} args_hsa_amd_memory_pool_can_migrate;
+		} hsa_amd_memory_pool_can_migrate;
 		struct {
 			const void* ptr;
 			hsa_amd_memory_pool_t memory_pool;
 			uint32_t flags;
-		} args_hsa_amd_memory_migrate;
+		} hsa_amd_memory_migrate;
 		struct {
 			void* host_ptr;
 			size_t size;
 			hsa_agent_t* agents;
 			int num_agent;
 			void** agent_ptr;
-		} args_hsa_amd_memory_lock;
+		} hsa_amd_memory_lock;
 		struct {
 			void* host_ptr;
 			size_t size;
@@ -640,15 +640,15 @@ typedef struct hsa_api_data_s {
 			hsa_amd_memory_pool_t pool;
 			uint32_t flags;
 			void** agent_ptr;
-		} args_hsa_amd_memory_lock_to_pool;
+		} hsa_amd_memory_lock_to_pool;
 		struct {
 			void* host_ptr;
-		} args_hsa_amd_memory_unlock;
+		} hsa_amd_memory_unlock;
 		struct {
 			void* ptr;
 			uint32_t value;
 			size_t count;
-		} args_hsa_amd_memory_fill;
+		} hsa_amd_memory_fill;
 		struct {
 			uint32_t num_agents;
 			hsa_agent_t* agents;
@@ -658,10 +658,10 @@ typedef struct hsa_api_data_s {
 			void** ptr;
 			size_t* metadata_size;
 			const void** metadata;
-		} args_hsa_amd_interop_map_buffer;
+		} hsa_amd_interop_map_buffer;
 		struct {
 			void* ptr;
-		} args_hsa_amd_interop_unmap_buffer;
+		} hsa_amd_interop_unmap_buffer;
 		struct {
 			hsa_agent_t agent;
 			const hsa_ext_image_descriptor_t *image_descriptor;
@@ -669,70 +669,70 @@ typedef struct hsa_api_data_s {
 			const void *image_data;
 			hsa_access_permission_t access_permission;
 			hsa_ext_image_t *image;
-		} args_hsa_amd_image_create;
+		} hsa_amd_image_create;
 		struct {
 			const void* ptr;
 			hsa_amd_pointer_info_t* info;
 			void* (*alloc)(size_t);
 			uint32_t* num_agents_accessible;
 			hsa_agent_t** accessible;
-		} args_hsa_amd_pointer_info;
+		} hsa_amd_pointer_info;
 		struct {
 			const void* ptr;
 			void* userdata;
-		} args_hsa_amd_pointer_info_set_userdata;
+		} hsa_amd_pointer_info_set_userdata;
 		struct {
 			void* ptr;
 			size_t len;
 			hsa_amd_ipc_memory_t* handle;
-		} args_hsa_amd_ipc_memory_create;
+		} hsa_amd_ipc_memory_create;
 		struct {
 			const hsa_amd_ipc_memory_t* handle;
 			size_t len;
 			uint32_t num_agents;
 			const hsa_agent_t* mapping_agents;
 			void** mapped_ptr;
-		} args_hsa_amd_ipc_memory_attach;
+		} hsa_amd_ipc_memory_attach;
 		struct {
 			void* mapped_ptr;
-		} args_hsa_amd_ipc_memory_detach;
+		} hsa_amd_ipc_memory_detach;
 		struct {
 			hsa_signal_t signal;
 			hsa_amd_ipc_signal_t* handle;
-		} args_hsa_amd_ipc_signal_create;
+		} hsa_amd_ipc_signal_create;
 		struct {
 			const hsa_amd_ipc_signal_t* handle;
 			hsa_signal_t* signal;
-		} args_hsa_amd_ipc_signal_attach;
+		} hsa_amd_ipc_signal_attach;
 		struct {
 			hsa_amd_system_event_callback_t callback;
 			void* data;
-		} args_hsa_amd_register_system_event_handler;
+		} hsa_amd_register_system_event_handler;
 		struct {
 			hsa_queue_t* queue;
 			hsa_amd_queue_priority_t priority;
-		} args_hsa_amd_queue_set_priority;
+		} hsa_amd_queue_set_priority;
 		struct {
 			void* ptr;
 			hsa_amd_deallocation_callback_t callback;
 			void* user_data;
-		} args_hsa_amd_register_deallocation_callback;
+		} hsa_amd_register_deallocation_callback;
 		struct {
 			void* ptr;
 			hsa_amd_deallocation_callback_t callback;
-		} args_hsa_amd_deregister_deallocation_callback;
+		} hsa_amd_deregister_deallocation_callback;
 		struct {
 			void* ptr;
 			size_t size;
 			hsa_amd_svm_attribute_pair_t* attribute_list;
 			size_t attribute_count;
-		} args_hsa_amd_svm_attributes_set;
+		} hsa_amd_svm_attributes_set;
 		struct {
 			void* ptr;
 			size_t size;
 			hsa_amd_svm_attribute_pair_t* attribute_list;
 			size_t attribute_count;
-		} args_hsa_amd_svm_attributes_get;
+		} hsa_amd_svm_attributes_get;
 		struct {
 			void* ptr;
 			size_t size;
@@ -740,13 +740,13 @@ typedef struct hsa_api_data_s {
 			uint32_t num_dep_signals;
 			const hsa_signal_t* dep_signals;
 			hsa_signal_t completion_signal;
-		} args_hsa_amd_svm_prefetch_async;
+		} hsa_amd_svm_prefetch_async;
 		struct {
 			hsa_agent_t preferred_agent;
-		} args_hsa_amd_spm_acquire;
+		} hsa_amd_spm_acquire;
 		struct {
 			hsa_agent_t preferred_agent;
-		} args_hsa_amd_spm_release;
+		} hsa_amd_spm_release;
 		struct {
 			hsa_agent_t preferred_agent;
 			size_t size_in_bytes;
@@ -754,438 +754,430 @@ typedef struct hsa_api_data_s {
 			uint32_t* size_copied;
 			void* dest;
 			bool* is_data_loss;
-		} args_hsa_amd_spm_set_dest_buffer;
+		} hsa_amd_spm_set_dest_buffer;
 		struct {
 			const void* ptr;
 			size_t size;
 			int* dmabuf;
 			uint64_t* offset;
-		} args_hsa_amd_portable_export_dmabuf;
+		} hsa_amd_portable_export_dmabuf;
 		struct {
 			int dmabuf;
-		} args_hsa_amd_portable_close_dmabuf;
+		} hsa_amd_portable_close_dmabuf;
 		struct {
 			void** va;
 			size_t size;
 			uint64_t address;
 			uint64_t flags;
-		} args_hsa_amd_vmem_address_reserve;
+		} hsa_amd_vmem_address_reserve;
 		struct {
 			void* va;
 			size_t size;
-		} args_hsa_amd_vmem_address_free;
+		} hsa_amd_vmem_address_free;
 		struct {
 			hsa_amd_memory_pool_t pool;
 			size_t size;
 			hsa_amd_memory_type_t type;
 			uint64_t flags;
 			hsa_amd_vmem_alloc_handle_t* memory_handle;
-		} args_hsa_amd_vmem_handle_create;
+		} hsa_amd_vmem_handle_create;
 		struct {
 			hsa_amd_vmem_alloc_handle_t memory_handle;
-		} args_hsa_amd_vmem_handle_release;
+		} hsa_amd_vmem_handle_release;
 		struct {
 			void* va;
 			size_t size;
 			size_t in_offset;
 			hsa_amd_vmem_alloc_handle_t memory_handle;
 			uint64_t flags;
-		} args_hsa_amd_vmem_map;
+		} hsa_amd_vmem_map;
 		struct {
 			void* va;
 			size_t size;
-		} args_hsa_amd_vmem_unmap;
+		} hsa_amd_vmem_unmap;
 		struct {
 			void* va;
 			size_t size;
 			const hsa_amd_memory_access_desc_t* desc;
 			size_t desc_cnt;
-		} args_hsa_amd_vmem_set_access;
+		} hsa_amd_vmem_set_access;
 		struct {
 			void* va;
 			hsa_access_permission_t* perms;
 			hsa_agent_t agent_handle;
-		} args_hsa_amd_vmem_get_access;
+		} hsa_amd_vmem_get_access;
 		struct {
 			int* dmabuf_fd;
 			hsa_amd_vmem_alloc_handle_t handle;
 			uint64_t flags;
-		} args_hsa_amd_vmem_export_shareable_handle;
+		} hsa_amd_vmem_export_shareable_handle;
 		struct {
 			int dmabuf_fd;
 			hsa_amd_vmem_alloc_handle_t* handle;
-		} args_hsa_amd_vmem_import_shareable_handle;
+		} hsa_amd_vmem_import_shareable_handle;
 		struct {
 			hsa_amd_vmem_alloc_handle_t* memory_handle;
 			void* addr;
-		} args_hsa_amd_vmem_retain_alloc_handle;
+		} hsa_amd_vmem_retain_alloc_handle;
 		struct {
 			hsa_amd_vmem_alloc_handle_t memory_handle;
 			hsa_amd_memory_pool_t* pool;
 			hsa_amd_memory_type_t* type;
-		} args_hsa_amd_vmem_get_alloc_properties_from_handle;
+		} hsa_amd_vmem_get_alloc_properties_from_handle;
 		struct {
 			hsa_agent_t agent;
 			size_t threshold;
-		} args_hsa_amd_agent_set_async_scratch_limit;
+		} hsa_amd_agent_set_async_scratch_limit;
 		struct {
 			hsa_status_t status;
 			const char ** status_string;
-		} args_hsa_status_string;
+		} hsa_status_string;
 		struct {
-		} args_hsa_init;
+		} hsa_init;
 		struct {
-		} args_hsa_shut_down;
+		} hsa_shut_down;
 		struct {
 			hsa_system_info_t attribute;
 			void* value;
-		} args_hsa_system_get_info;
+		} hsa_system_get_info;
 		struct {
 			uint16_t extension;
 			const char **name;
-		} args_hsa_extension_get_name;
+		} hsa_extension_get_name;
 		struct {
 			uint16_t extension;
 			uint16_t version_major;
 			uint16_t version_minor;
 			bool* result;
-		} args_hsa_system_extension_supported;
+		} hsa_system_extension_supported;
 		struct {
 			uint16_t extension;
 			uint16_t version_major;
 			uint16_t *version_minor;
 			bool* result;
-		} args_hsa_system_major_extension_supported;
+		} hsa_system_major_extension_supported;
 		struct {
 			uint16_t extension;
 			uint16_t version_major;
 			uint16_t version_minor;
 			void *table;
-		} args_hsa_system_get_extension_table;
+		} hsa_system_get_extension_table;
 		struct {
 			uint16_t extension;
 			uint16_t version_major;
 			size_t table_length;
 			void *table;
-		} args_hsa_system_get_major_extension_table;
+		} hsa_system_get_major_extension_table;
 		struct {
 			hsa_agent_t agent;
 			hsa_agent_info_t attribute;
 			void* value;
-		} args_hsa_agent_get_info;
+		} hsa_agent_get_info;
 		struct {
 			hsa_status_t (*callback)(hsa_agent_t agent, void* data);
 			void* data;
-		} args_hsa_iterate_agents;
+		} hsa_iterate_agents;
 		struct {
 			hsa_agent_t agent;
 			hsa_profile_t profile;
 			uint16_t *mask;
-		} args_hsa_agent_get_exception_policies;
+		} hsa_agent_get_exception_policies;
 		struct {
 			hsa_cache_t cache;
 			hsa_cache_info_t attribute;
 			void* value;
-		} args_hsa_cache_get_info;
+		} hsa_cache_get_info;
 		struct {
 			hsa_agent_t agent;
 			hsa_status_t (*callback)(hsa_cache_t cache, void* data);
 			void* data;
-		} args_hsa_agent_iterate_caches;
+		} hsa_agent_iterate_caches;
 		struct {
 			uint16_t extension;
 			hsa_agent_t agent;
 			uint16_t version_major;
 			uint16_t version_minor;
 			bool* result;
-		} args_hsa_agent_extension_supported;
+		} hsa_agent_extension_supported;
 		struct {
 			uint16_t extension;
 			hsa_agent_t agent;
 			uint16_t version_major;
 			uint16_t *version_minor;
 			bool* result;
-		} args_hsa_agent_major_extension_supported;
+		} hsa_agent_major_extension_supported;
 		struct {
 			hsa_signal_value_t initial_value;
 			uint32_t num_consumers;
 			const hsa_agent_t *consumers;
 			hsa_signal_t *signal;
-		} args_hsa_signal_create;
+		} hsa_signal_create;
 		struct {
 			hsa_signal_t signal;
-		} args_hsa_signal_destroy;
+		} hsa_signal_destroy;
 		struct {
 			hsa_signal_t signal;
-		} args_hsa_signal_load_scacquire;
+		} hsa_signal_load_scacquire;
 		struct {
 			hsa_signal_t signal;
-		} args_hsa_signal_load_relaxed;
+		} hsa_signal_load_relaxed;
 		struct {
 			hsa_signal_t signal;
-		} args_hsa_signal_load_acquire;
-		struct {
-			hsa_signal_t signal;
-			hsa_signal_value_t value;
-		} args_hsa_signal_store_relaxed;
+		} hsa_signal_load_acquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_store_screlease;
+		} hsa_signal_store_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_store_release;
+		} hsa_signal_store_screlease;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_silent_store_relaxed;
+		} hsa_signal_store_release;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_silent_store_screlease;
+		} hsa_signal_silent_store_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_exchange_scacq_screl;
+		} hsa_signal_silent_store_screlease;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_exchange_acq_rel;
+		} hsa_signal_exchange_scacq_screl;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_exchange_scacquire;
+		} hsa_signal_exchange_acq_rel;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_exchange_acquire;
+		} hsa_signal_exchange_scacquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_exchange_relaxed;
+		} hsa_signal_exchange_acquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_exchange_screlease;
+		} hsa_signal_exchange_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_exchange_release;
+		} hsa_signal_exchange_screlease;
+		struct {
+			hsa_signal_t signal;
+			hsa_signal_value_t value;
+		} hsa_signal_exchange_release;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t expected;
 			hsa_signal_value_t value;
-		} args_hsa_signal_cas_scacq_screl;
+		} hsa_signal_cas_scacq_screl;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t expected;
 			hsa_signal_value_t value;
-		} args_hsa_signal_cas_acq_rel;
+		} hsa_signal_cas_acq_rel;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t expected;
 			hsa_signal_value_t value;
-		} args_hsa_signal_cas_scacquire;
+		} hsa_signal_cas_scacquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t expected;
 			hsa_signal_value_t value;
-		} args_hsa_signal_cas_acquire;
+		} hsa_signal_cas_acquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t expected;
 			hsa_signal_value_t value;
-		} args_hsa_signal_cas_relaxed;
+		} hsa_signal_cas_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t expected;
 			hsa_signal_value_t value;
-		} args_hsa_signal_cas_screlease;
+		} hsa_signal_cas_screlease;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t expected;
 			hsa_signal_value_t value;
-		} args_hsa_signal_cas_release;
+		} hsa_signal_cas_release;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_add_scacq_screl;
+		} hsa_signal_add_scacq_screl;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_add_acq_rel;
+		} hsa_signal_add_acq_rel;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_add_scacquire;
+		} hsa_signal_add_scacquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_add_acquire;
+		} hsa_signal_add_acquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_add_relaxed;
+		} hsa_signal_add_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_add_screlease;
+		} hsa_signal_add_screlease;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_add_release;
+		} hsa_signal_add_release;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_subtract_scacq_screl;
+		} hsa_signal_subtract_scacq_screl;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_subtract_acq_rel;
+		} hsa_signal_subtract_acq_rel;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_subtract_scacquire;
+		} hsa_signal_subtract_scacquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_subtract_acquire;
+		} hsa_signal_subtract_acquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_subtract_relaxed;
+		} hsa_signal_subtract_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_subtract_screlease;
+		} hsa_signal_subtract_screlease;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_subtract_release;
+		} hsa_signal_subtract_release;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_and_scacq_screl;
+		} hsa_signal_and_scacq_screl;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_and_acq_rel;
+		} hsa_signal_and_acq_rel;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_and_scacquire;
+		} hsa_signal_and_scacquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_and_acquire;
+		} hsa_signal_and_acquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_and_relaxed;
+		} hsa_signal_and_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_and_screlease;
+		} hsa_signal_and_screlease;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_and_release;
+		} hsa_signal_and_release;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_or_scacq_screl;
+		} hsa_signal_or_scacq_screl;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_or_acq_rel;
+		} hsa_signal_or_acq_rel;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_or_scacquire;
+		} hsa_signal_or_scacquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_or_acquire;
+		} hsa_signal_or_acquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_or_relaxed;
+		} hsa_signal_or_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_or_screlease;
+		} hsa_signal_or_screlease;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_or_release;
+		} hsa_signal_or_release;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_xor_scacq_screl;
+		} hsa_signal_xor_scacq_screl;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_xor_acq_rel;
+		} hsa_signal_xor_acq_rel;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_xor_scacquire;
+		} hsa_signal_xor_scacquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_xor_acquire;
+		} hsa_signal_xor_acquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_xor_relaxed;
+		} hsa_signal_xor_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_xor_screlease;
+		} hsa_signal_xor_screlease;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_value_t value;
-		} args_hsa_signal_xor_release;
+		} hsa_signal_xor_release;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_condition_t condition;
 			hsa_signal_value_t compare_value;
 			uint64_t timeout_hint;
 			hsa_wait_state_t wait_state_hint;
-		} args_hsa_signal_wait_scacquire;
+		} hsa_signal_wait_scacquire;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_condition_t condition;
 			hsa_signal_value_t compare_value;
 			uint64_t timeout_hint;
 			hsa_wait_state_t wait_state_hint;
-		} args_hsa_signal_wait_relaxed;
+		} hsa_signal_wait_relaxed;
 		struct {
 			hsa_signal_t signal;
 			hsa_signal_condition_t condition;
 			hsa_signal_value_t compare_value;
 			uint64_t timeout_hint;
 			hsa_wait_state_t wait_state_hint;
-		} args_hsa_signal_wait_acquire;
+		} hsa_signal_wait_acquire;
 		struct {
 			uint32_t num_signals;
 			const hsa_signal_t *signals;
 			uint32_t num_consumers;
 			const hsa_agent_t *consumers;
 			hsa_signal_group_t *signal_group;
-		} args_hsa_signal_group_create;
+		} hsa_signal_group_create;
 		struct {
 			hsa_signal_group_t signal_group;
-		} args_hsa_signal_group_destroy;
-		struct {
-			hsa_signal_group_t signal_group;
-			const hsa_signal_condition_t *conditions;
-			const hsa_signal_value_t *compare_values;
-			hsa_wait_state_t wait_state_hint;
-			hsa_signal_t *signal;
-			hsa_signal_value_t *value;
-		} args_hsa_signal_group_wait_any_scacquire;
+		} hsa_signal_group_destroy;
 		struct {
 			hsa_signal_group_t signal_group;
 			const hsa_signal_condition_t *conditions;
@@ -1193,7 +1185,15 @@ typedef struct hsa_api_data_s {
 			hsa_wait_state_t wait_state_hint;
 			hsa_signal_t *signal;
 			hsa_signal_value_t *value;
-		} args_hsa_signal_group_wait_any_relaxed;
+		} hsa_signal_group_wait_any_scacquire;
+		struct {
+			hsa_signal_group_t signal_group;
+			const hsa_signal_condition_t *conditions;
+			const hsa_signal_value_t *compare_values;
+			hsa_wait_state_t wait_state_hint;
+			hsa_signal_t *signal;
+			hsa_signal_value_t *value;
+		} hsa_signal_group_wait_any_relaxed;
 		struct {
 			hsa_agent_t agent;
 			uint32_t size;
@@ -1203,7 +1203,7 @@ typedef struct hsa_api_data_s {
 			uint32_t private_segment_size;
 			uint32_t group_segment_size;
 			hsa_queue_t **queue;
-		} args_hsa_queue_create;
+		} hsa_queue_create;
 		struct {
 			hsa_region_t region;
 			uint32_t size;
@@ -1211,275 +1211,275 @@ typedef struct hsa_api_data_s {
 			uint32_t features;
 			hsa_signal_t doorbell_signal;
 			hsa_queue_t **queue;
-		} args_hsa_soft_queue_create;
+		} hsa_soft_queue_create;
 		struct {
 			hsa_queue_t *queue;
-		} args_hsa_queue_destroy;
+		} hsa_queue_destroy;
 		struct {
 			hsa_queue_t *queue;
-		} args_hsa_queue_inactivate;
+		} hsa_queue_inactivate;
 		struct {
 			const hsa_queue_t *queue;
-		} args_hsa_queue_load_read_index_acquire;
+		} hsa_queue_load_read_index_acquire;
 		struct {
 			const hsa_queue_t *queue;
-		} args_hsa_queue_load_read_index_scacquire;
+		} hsa_queue_load_read_index_scacquire;
 		struct {
 			const hsa_queue_t *queue;
-		} args_hsa_queue_load_read_index_relaxed;
+		} hsa_queue_load_read_index_relaxed;
 		struct {
 			const hsa_queue_t *queue;
-		} args_hsa_queue_load_write_index_acquire;
+		} hsa_queue_load_write_index_acquire;
 		struct {
 			const hsa_queue_t *queue;
-		} args_hsa_queue_load_write_index_scacquire;
+		} hsa_queue_load_write_index_scacquire;
 		struct {
 			const hsa_queue_t *queue;
-		} args_hsa_queue_load_write_index_relaxed;
-		struct {
-			const hsa_queue_t *queue;
-			uint64_t value;
-		} args_hsa_queue_store_write_index_relaxed;
+		} hsa_queue_load_write_index_relaxed;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_store_write_index_release;
+		} hsa_queue_store_write_index_relaxed;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_store_write_index_screlease;
+		} hsa_queue_store_write_index_release;
+		struct {
+			const hsa_queue_t *queue;
+			uint64_t value;
+		} hsa_queue_store_write_index_screlease;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t expected;
 			uint64_t value;
-		} args_hsa_queue_cas_write_index_acq_rel;
+		} hsa_queue_cas_write_index_acq_rel;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t expected;
 			uint64_t value;
-		} args_hsa_queue_cas_write_index_scacq_screl;
+		} hsa_queue_cas_write_index_scacq_screl;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t expected;
 			uint64_t value;
-		} args_hsa_queue_cas_write_index_acquire;
+		} hsa_queue_cas_write_index_acquire;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t expected;
 			uint64_t value;
-		} args_hsa_queue_cas_write_index_scacquire;
+		} hsa_queue_cas_write_index_scacquire;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t expected;
 			uint64_t value;
-		} args_hsa_queue_cas_write_index_relaxed;
+		} hsa_queue_cas_write_index_relaxed;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t expected;
 			uint64_t value;
-		} args_hsa_queue_cas_write_index_release;
+		} hsa_queue_cas_write_index_release;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t expected;
 			uint64_t value;
-		} args_hsa_queue_cas_write_index_screlease;
+		} hsa_queue_cas_write_index_screlease;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_add_write_index_acq_rel;
+		} hsa_queue_add_write_index_acq_rel;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_add_write_index_scacq_screl;
+		} hsa_queue_add_write_index_scacq_screl;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_add_write_index_acquire;
+		} hsa_queue_add_write_index_acquire;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_add_write_index_scacquire;
+		} hsa_queue_add_write_index_scacquire;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_add_write_index_relaxed;
+		} hsa_queue_add_write_index_relaxed;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_add_write_index_release;
+		} hsa_queue_add_write_index_release;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_add_write_index_screlease;
+		} hsa_queue_add_write_index_screlease;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_store_read_index_relaxed;
+		} hsa_queue_store_read_index_relaxed;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_store_read_index_release;
+		} hsa_queue_store_read_index_release;
 		struct {
 			const hsa_queue_t *queue;
 			uint64_t value;
-		} args_hsa_queue_store_read_index_screlease;
+		} hsa_queue_store_read_index_screlease;
 		struct {
 			hsa_region_t region;
 			hsa_region_info_t attribute;
 			void* value;
-		} args_hsa_region_get_info;
+		} hsa_region_get_info;
 		struct {
 			hsa_agent_t agent;
 			hsa_status_t (*callback)(hsa_region_t region, void* data);
 			void* data;
-		} args_hsa_agent_iterate_regions;
+		} hsa_agent_iterate_regions;
 		struct {
 			hsa_region_t region;
 			size_t size;
 			void** ptr;
-		} args_hsa_memory_allocate;
+		} hsa_memory_allocate;
 		struct {
 			void* ptr;
-		} args_hsa_memory_free;
+		} hsa_memory_free;
 		struct {
 			void *dst;
 			const void *src;
 			size_t size;
-		} args_hsa_memory_copy;
+		} hsa_memory_copy;
 		struct {
 			void *ptr;
 			hsa_agent_t agent;
 			hsa_access_permission_t access;
-		} args_hsa_memory_assign_agent;
+		} hsa_memory_assign_agent;
 		struct {
 			void *ptr;
 			size_t size;
-		} args_hsa_memory_register;
+		} hsa_memory_register;
 		struct {
 			void *ptr;
 			size_t size;
-		} args_hsa_memory_deregister;
+		} hsa_memory_deregister;
 		struct {
 			const char *name;
 			hsa_isa_t *isa;
-		} args_hsa_isa_from_name;
+		} hsa_isa_from_name;
 		struct {
 			hsa_agent_t agent;
 			hsa_status_t (*callback)(hsa_isa_t isa, void *data);
 			void *data;
-		} args_hsa_agent_iterate_isas;
+		} hsa_agent_iterate_isas;
 		struct {
 			hsa_isa_t isa;
 			hsa_isa_info_t attribute;
 			uint32_t index;
 			void *value;
-		} args_hsa_isa_get_info;
+		} hsa_isa_get_info;
 		struct {
 			hsa_isa_t isa;
 			hsa_isa_info_t attribute;
 			void *value;
-		} args_hsa_isa_get_info_alt;
+		} hsa_isa_get_info_alt;
 		struct {
 			hsa_isa_t isa;
 			hsa_profile_t profile;
 			uint16_t *mask;
-		} args_hsa_isa_get_exception_policies;
+		} hsa_isa_get_exception_policies;
 		struct {
 			hsa_isa_t isa;
 			hsa_fp_type_t fp_type;
 			hsa_flush_mode_t flush_mode;
 			hsa_round_method_t *round_method;
-		} args_hsa_isa_get_round_method;
+		} hsa_isa_get_round_method;
 		struct {
 			hsa_wavefront_t wavefront;
 			hsa_wavefront_info_t attribute;
 			void *value;
-		} args_hsa_wavefront_get_info;
+		} hsa_wavefront_get_info;
 		struct {
 			hsa_isa_t isa;
 			hsa_status_t (*callback)(hsa_wavefront_t wavefront, void *data);
 			void *data;
-		} args_hsa_isa_iterate_wavefronts;
+		} hsa_isa_iterate_wavefronts;
 		struct {
 			hsa_isa_t code_object_isa;
 			hsa_isa_t agent_isa;
 			bool *result;
-		} args_hsa_isa_compatible;
+		} hsa_isa_compatible;
 		struct {
 			hsa_file_t file;
 			hsa_code_object_reader_t *code_object_reader;
-		} args_hsa_code_object_reader_create_from_file;
+		} hsa_code_object_reader_create_from_file;
 		struct {
 			const void *code_object;
 			size_t size;
 			hsa_code_object_reader_t *code_object_reader;
-		} args_hsa_code_object_reader_create_from_memory;
+		} hsa_code_object_reader_create_from_memory;
 		struct {
 			hsa_code_object_reader_t code_object_reader;
-		} args_hsa_code_object_reader_destroy;
+		} hsa_code_object_reader_destroy;
 		struct {
 			hsa_profile_t profile;
 			hsa_executable_state_t executable_state;
 			const char *options;
 			hsa_executable_t *executable;
-		} args_hsa_executable_create;
+		} hsa_executable_create;
 		struct {
 			hsa_profile_t profile;
 			hsa_default_float_rounding_mode_t default_float_rounding_mode;
 			const char *options;
 			hsa_executable_t *executable;
-		} args_hsa_executable_create_alt;
+		} hsa_executable_create_alt;
 		struct {
 			hsa_executable_t executable;
-		} args_hsa_executable_destroy;
+		} hsa_executable_destroy;
 		struct {
 			hsa_executable_t executable;
 			hsa_code_object_reader_t code_object_reader;
 			const char *options;
 			hsa_loaded_code_object_t *loaded_code_object;
-		} args_hsa_executable_load_program_code_object;
+		} hsa_executable_load_program_code_object;
 		struct {
 			hsa_executable_t executable;
 			hsa_agent_t agent;
 			hsa_code_object_reader_t code_object_reader;
 			const char *options;
 			hsa_loaded_code_object_t *loaded_code_object;
-		} args_hsa_executable_load_agent_code_object;
+		} hsa_executable_load_agent_code_object;
 		struct {
 			hsa_executable_t executable;
 			const char *options;
-		} args_hsa_executable_freeze;
+		} hsa_executable_freeze;
 		struct {
 			hsa_executable_t executable;
 			hsa_executable_info_t attribute;
 			void *value;
-		} args_hsa_executable_get_info;
+		} hsa_executable_get_info;
 		struct {
 			hsa_executable_t executable;
 			const char *variable_name;
 			void *address;
-		} args_hsa_executable_global_variable_define;
-		struct {
-			hsa_executable_t executable;
-			hsa_agent_t agent;
-			const char *variable_name;
-			void *address;
-		} args_hsa_executable_agent_global_variable_define;
+		} hsa_executable_global_variable_define;
 		struct {
 			hsa_executable_t executable;
 			hsa_agent_t agent;
 			const char *variable_name;
 			void *address;
-		} args_hsa_executable_readonly_variable_define;
+		} hsa_executable_agent_global_variable_define;
+		struct {
+			hsa_executable_t executable;
+			hsa_agent_t agent;
+			const char *variable_name;
+			void *address;
+		} hsa_executable_readonly_variable_define;
 		struct {
 			hsa_executable_t executable;
 			uint32_t *result;
-		} args_hsa_executable_validate;
+		} hsa_executable_validate;
 		struct {
 			hsa_executable_t executable;
 			const char *options;
 			uint32_t *result;
-		} args_hsa_executable_validate_alt;
+		} hsa_executable_validate_alt;
 		struct {
 			hsa_executable_t executable;
 			const char *module_name;
@@ -1487,34 +1487,34 @@ typedef struct hsa_api_data_s {
 			hsa_agent_t agent;
 			int32_t call_convention;
 			hsa_executable_symbol_t *symbol;
-		} args_hsa_executable_get_symbol;
+		} hsa_executable_get_symbol;
 		struct {
 			hsa_executable_t executable;
 			const char *symbol_name;
 			const hsa_agent_t *agent;
 			hsa_executable_symbol_t *symbol;
-		} args_hsa_executable_get_symbol_by_name;
+		} hsa_executable_get_symbol_by_name;
 		struct {
 			hsa_executable_symbol_t executable_symbol;
 			hsa_executable_symbol_info_t attribute;
 			void *value;
-		} args_hsa_executable_symbol_get_info;
+		} hsa_executable_symbol_get_info;
 		struct {
 			hsa_executable_t executable;
 			hsa_status_t (*callback)(hsa_executable_t exec,hsa_executable_symbol_t symbol,void *data);
 			void *data;
-		} args_hsa_executable_iterate_symbols;
+		} hsa_executable_iterate_symbols;
 		struct {
 			hsa_executable_t executable;
 			hsa_agent_t agent;
 			hsa_status_t (*callback)(hsa_executable_t exec,hsa_agent_t agent,hsa_executable_symbol_t symbol,void *data);
 			void *data;
-		} args_hsa_executable_iterate_agent_symbols;
+		} hsa_executable_iterate_agent_symbols;
 		struct {
 			hsa_executable_t executable;
 			hsa_status_t (*callback)(hsa_executable_t exec,hsa_executable_symbol_t symbol,void *data);
 			void *data;
-		} args_hsa_executable_iterate_program_symbols;
+		} hsa_executable_iterate_program_symbols;
 		struct {
 			hsa_code_object_t code_object;
 			hsa_status_t (*alloc_callback)(size_t size,hsa_callback_data_t data,void **address);
@@ -1522,48 +1522,48 @@ typedef struct hsa_api_data_s {
 			const char *options;
 			void **serialized_code_object;
 			size_t *serialized_code_object_size;
-		} args_hsa_code_object_serialize;
+		} hsa_code_object_serialize;
 		struct {
 			void *serialized_code_object;
 			size_t serialized_code_object_size;
 			const char *options;
 			hsa_code_object_t *code_object;
-		} args_hsa_code_object_deserialize;
+		} hsa_code_object_deserialize;
 		struct {
 			hsa_code_object_t code_object;
-		} args_hsa_code_object_destroy;
+		} hsa_code_object_destroy;
 		struct {
 			hsa_code_object_t code_object;
 			hsa_code_object_info_t attribute;
 			void *value;
-		} args_hsa_code_object_get_info;
+		} hsa_code_object_get_info;
 		struct {
 			hsa_executable_t executable;
 			hsa_agent_t agent;
 			hsa_code_object_t code_object;
 			const char *options;
-		} args_hsa_executable_load_code_object;
+		} hsa_executable_load_code_object;
 		struct {
 			hsa_code_object_t code_object;
 			const char *symbol_name;
 			hsa_code_symbol_t *symbol;
-		} args_hsa_code_object_get_symbol;
+		} hsa_code_object_get_symbol;
 		struct {
 			hsa_code_object_t code_object;
 			const char *module_name;
 			const char *symbol_name;
 			hsa_code_symbol_t *symbol;
-		} args_hsa_code_object_get_symbol_from_name;
+		} hsa_code_object_get_symbol_from_name;
 		struct {
 			hsa_code_symbol_t code_symbol;
 			hsa_code_symbol_info_t attribute;
 			void *value;
-		} args_hsa_code_symbol_get_info;
+		} hsa_code_symbol_get_info;
 		struct {
 			hsa_code_object_t code_object;
 			hsa_status_t (*callback)(hsa_code_object_t code_object,hsa_code_symbol_t symbol,void *data);
 			void *data;
-		} args_hsa_code_object_iterate_symbols;
+		} hsa_code_object_iterate_symbols;
 	} args;
 } hsa_api_data_t;
 
