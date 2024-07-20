@@ -1,5 +1,7 @@
 local function trim(s)
-    return s:match("^%s*(.-)%s*$")
+    s = s:match("^%s*(.-)%s*$")
+    s = s:gsub("%s+", " ")
+    return s
 end
 
 function splitOutsideParentheses(str)
@@ -87,6 +89,9 @@ local function processHeaderFile(content)
     functions = {}
     for prototype in content:gmatch("[^;]+") do
         local returnType, funcName, args = parseFunctionPrototype(trim(prototype))
+        if args == "void" then
+            args = ""
+        end
         if returnType and funcName then
             table.insert(functions, {
                 returnType = returnType,

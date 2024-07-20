@@ -1,0 +1,24 @@
+[2024-07-19 13:01:27] Failed to load "hipExtGetLastError". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipExternalMemoryGetMappedMipmappedArray". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipTexRefGetBorderColor". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipTexRefGetArray". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipGraphAddExternalSemaphoresWaitNode". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipGraphAddExternalSemaphoresSignalNode". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipGraphExternalSemaphoresSignalNodeSetParams". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipGraphExternalSemaphoresWaitNodeSetParams". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipGraphExternalSemaphoresSignalNodeGetParams". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipGraphExternalSemaphoresWaitNodeGetParams". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipGraphExecExternalSemaphoresSignalNodeSetParams". Skipping.
+
+[2024-07-19 13:01:27] Failed to load "hipGraphExecExternalSemaphoresWaitNodeSetParams". Skipping.
+

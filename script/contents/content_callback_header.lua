@@ -1,7 +1,9 @@
 local cb_hdr = {}
 
-function cb_hdr.content_1(MACRO_STRING, includes_str)
-    return string.format([[
+-- Generates the content for the callback header file
+function cb_hdr.content(includes_str, subcontent)
+    local def_header = S:_DOMAIN_UPPER().."_CALLBACK_H"
+    local content = string.format([[
 #ifndef %s
 #define %s
 
@@ -13,30 +15,43 @@ function cb_hdr.content_1(MACRO_STRING, includes_str)
 void %s(%s);
 void %s(void (*%s)(%s));
 
+%s
+
+#endif
 ]],
-        MACRO_STRING._CB_HEADDEF,
-        MACRO_STRING._CB_HEADDEF,
-        MACRO_STRING._IF_HEAD,
+        def_header,
+        def_header,
+        S:_IF_HEAD(),
         includes_str,
-        MACRO_STRING._CB_FUNC_DECL, MACRO_STRING._CB_ARGS,
-        MACRO_STRING._SET_CB_DECL, MACRO_STRING._CB_DECL, MACRO_STRING._CB_ARGS
+        S:_CALLBACK_FUNCTION(), S:_CB_ARGS(),
+        S:_SET_CALLBACK(), S:_CALLBACK(), S:_CB_ARGS(),
+        subcontent.get_args_block
+    )
+    return content
+end
+
+-- Generates the macro definition for getting callback arguments data
+function cb_hdr.cb_get_args_block(func_name, cb_get_args_block)
+    return string.format([[
+#define GET_CB_ARGS_DATA_%s(%s) { \
+%s
+};
+]],
+        func_name,
+        S:_API_DATA_VAR(),
+        cb_get_args_block
     )
 end
 
-function cb_hdr.content_2(MACRO_STRING, f)
-    return string.format("#define %s%s(%s) { \\\n", MACRO_STRING._CB_GET_ARGS_PREFIX, f.name, MACRO_STRING._CB_DATA_NAME)
-end
-
-function cb_hdr.content_3(MACRO_STRING, name, arg, arg_type)
-    return string.format("\t%s.args.%s.%s = (%s)%s; \\\n", MACRO_STRING._CB_DATA_NAME, name, arg, arg_type, arg)
-end
-
-function cb_hdr.content_4()
-    return "};\n\n"
-end
-
-function cb_hdr.content_5()
-    return "#endif"
+-- Generates a line for setting a callback argument
+function cb_hdr.cb_get_args_line(name, arg, arg_type)
+    return string.format("\t%s.args.%s.%s = (%s)%s; \\", 
+        S:_API_DATA_VAR(), 
+        name, 
+        arg, 
+        arg_type, 
+        arg
+    )
 end
 
 return cb_hdr

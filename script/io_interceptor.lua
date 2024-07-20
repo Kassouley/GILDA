@@ -20,17 +20,18 @@ end
 
 function io_interceptor.parse_variable_declaration(declaration)
     local pattern1 = "^%s*([%w%s_]+)%s*([%*%s]+)%s*([%w_]+)%s*$"
-    local base_type, pointer_symbol, variable_name = declaration:match(pattern1)
-    if base_type and variable_name and pointer_symbol then
-        local type_str = base_type .. pointer_symbol
+    local return_type, pointer_symbol, variable_name = declaration:match(pattern1)
+    if return_type and variable_name and pointer_symbol then
+        local type_str = return_type .. pointer_symbol
         return type_str, variable_name
     end
 
     local pattern2 = "^%s*([%w%s_]+)%s*([%*%s]+)%s*(%(.+%))%s*$"
-    local base_type, pointer_symbol, variable_name = declaration:match(pattern2)
-    if base_type and variable_name and pointer_symbol then
-        local type_str = base_type .. pointer_symbol
-        return type_str, variable_name:match("^%(%*?([%w_]+)%)%(.+%)")
+    local return_type, pointer_symbol, variable_name = declaration:match(pattern2)
+    if return_type and variable_name and pointer_symbol then
+        local cb_name, cb_args = variable_name:match("^%(%*?([%w_]+)%)%((.+)%)")
+        local cb_type = return_type .. pointer_symbol .. "(*) (" .. cb_args .. ")" 
+        return cb_type, cb_name
     else
         return nil, nil
     end

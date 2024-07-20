@@ -6,7 +6,7 @@ LIB_DIR = ./lib
 # Compiler and flags
 CC = hipcc
 CXX = hipcc
-CFLAGS = -fPIC -Wall $(INC_FLAGS)
+CFLAGS = -fPIC -Wall $(INC_FLAGS) -Wno-deprecated-declarations -D __HIP_PLATFORM_AMD__
 LDFLAGS = -shared
 INC_DIRS   := $(shell find $(CORE_DIR) -type d)
 INC_FLAGS  := $(INC) $(addprefix -I,$(INC_DIRS)) -I./core
@@ -46,14 +46,9 @@ $(LIBINTERCEPTOR): $(TOOLS_OBJ) $(OBJECTS)
 	@mkdir -p $(LIB_DIR)
 	$(CC) $(LDFLAGS) -o $(LIB_DIR)/$@ $^
 
-# $(LIBINTERCEPTOR): $(TOOLS_SRC) $(C_SOURCES) $(CPP_SOURCES)
-# 	@mkdir -p $(LIB_DIR)
-# 	hipcc $(LDFLAGS) $(CFLAGS) -o $(LIB_DIR)/$@ $^
-
-
-# Rule to create libtools.so
-$(LIBTOOLS): $(LIBINTERCEPTOR) $(TOOLS_OBJ)
-	$(CC) $(LDFLAGS) -o $(LIB_DIR)/$@ $(TOOLS_OBJ) -L$(LIB_DIR) -linterceptor
+# # Rule to create libtools.so
+# $(LIBTOOLS): $(LIBINTERCEPTOR) $(TOOLS_OBJ)
+# 	$(CC) $(LDFLAGS) -o $(LIB_DIR)/$@ $(TOOLS_OBJ) -L$(LIB_DIR) -linterceptor
 
 # Clean up build artifacts
 clean:

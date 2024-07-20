@@ -1,63 +1,73 @@
 local itcp_fnct_hdr = {}
 
-function itcp_fnct_hdr.content_1(MACRO_STRING, includes_str)
+function itcp_fnct_hdr.content(includes_str, subcontent)
+    local def_header = string.format(
+        "%s_%s_FUNCTIONS_H", S:_DOMAIN_UPPER(), S._TOOLS_NAME_UPPER_ADJ
+    )
     return string.format([[
 #ifndef %s
 #define %s
 %s
+
+// %s API ID enum
+typedef enum {
+%s
+} %s;
+
+// Return %s API function name for a given ID
+static inline const char* get_%s_funame_by_id(%s id) {
+    switch(id) {
+%s
+    }
+    return NULL;
+}
+
+// %s API data
+typedef struct %s {
+    tuint64_t corrId;
+    bool is_enter;
+    union {
+%s
+    } args;
+} %s;
+
+#endif
 ]],
-        MACRO_STRING._IF_HEADDEF,
-        MACRO_STRING._IF_HEADDEF,
-        includes_str
+        def_header,
+        def_header,
+        includes_str,
+        S:_DOMAIN_UPPER(),
+        subcontent.api_id_enum_block,
+        _API_ID_T,
+        S:_DOMAIN_UPPER(), 
+        S:_DOMAIN(), S:_API_ID_T(),
+        subcontent.get_funame_block,
+        S:_DOMAIN_UPPER(), 
+        S:_API_DATA_S(),
+        subcontent.api_data_t_block,
+        S:_API_DATA_T()
     )
 end
 
-function itcp_fnct_hdr.content_2a(MACRO_STRING)
-    return string.format("// %s API ID enum\nenum %s {\n", MACRO_STRING._INTERCEPTOR_NAME_UPPER, MACRO_STRING._API_ID_T)
+
+function itcp_fnct_hdr.api_id_enum_block(func_name, i)
+    return string.format("\t%s%s = %d,\n", S:_API_ID_PREFIX(), func_name, i)
 end
 
-function itcp_fnct_hdr.content_2b(MACRO_STRING, f, i)
-    return string.format("\t%s%s = %d,\n", MACRO_STRING._IF_FUN_ID_PREFIX, f.name, i)
+function itcp_fnct_hdr.get_funame_block(func_name)
+    return string.format("\t\tcase %s%s : return \"%s\";\n", S:_API_ID_PREFIX(), func_name, func_name)
 end
 
-function itcp_fnct_hdr.content_2c()
-    return "};\n\n"
+function itcp_fnct_hdr.api_data_t_block(func_name, args_block)
+    return string.format([[
+        struct {
+%s
+        } %s;
+]], args_block, func_name)
 end
 
-function itcp_fnct_hdr.content_3a(MACRO_STRING)
-    return string.format("// Return %s API function name for a given ID\n%s %s(%s id) {\n\tswitch(id) {\n", MACRO_STRING._INTERCEPTOR_NAME_UPPER, MACRO_STRING._IF_GET_FUNAME_TYPE, MACRO_STRING._IF_GET_FUNAME_DECL, MACRO_STRING._API_ID_T)
-end
-
-function itcp_fnct_hdr.content_3b(MACRO_STRING, f)
-    return string.format("\t\tcase %s%s : return \"%s\";\n", MACRO_STRING._IF_FUN_ID_PREFIX, f.name, f.name)
-end
-
-function itcp_fnct_hdr.content_3c()
-    return "\t}\n\treturn NULL;\n}\n\n"
-end
-
-function itcp_fnct_hdr.content_4a(MACRO_STRING)
-    return string.format("// %s API data\ntypedef struct %s {\n\tuint64_t corrId;\n\tbool is_enter;\n\tunion {\n", MACRO_STRING._INTERCEPTOR_NAME_UPPER, MACRO_STRING._API_DATA_S)
-end
-
-function itcp_fnct_hdr.content_4b()
-    return "\t\tstruct {\n"
-end
-
-function itcp_fnct_hdr.content_4c(arg)
-    return "\t\t\t" .. arg .. ";\n"
-end
-
-function itcp_fnct_hdr.content_4d(f)
-    return "\t\t} " .. f.name .. ";\n"
-end
-
-function itcp_fnct_hdr.content_4e(MACRO_STRING)
-    return "\t} args;\n} " .. MACRO_STRING._API_DATA_T .. ";\n\n"
-end
-
-function itcp_fnct_hdr.content_5()
-    return "#endif"
+function itcp_fnct_hdr.api_data_t_line(arg)
+    return "\t\t\t" .. arg .. ";"
 end
 
 return itcp_fnct_hdr
