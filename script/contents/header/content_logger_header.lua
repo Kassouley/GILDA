@@ -1,3 +1,7 @@
+local logger_hdr = {}
+
+function logger_hdr.content()
+    return [[
 #ifndef LOGGER_H
 #define LOGGER_H
 
@@ -72,3 +76,7 @@ extern Logger logger;
 char* current_time();
 
 #endif // LOGGER_H
+]]
+end
+
+return logger_hdr

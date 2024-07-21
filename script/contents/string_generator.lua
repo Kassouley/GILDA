@@ -4,25 +4,29 @@ StringGenerator.__index = StringGenerator
 function StringGenerator.new(config_data)
     local self = setmetatable({}, StringGenerator)
 
-    self._WORKDIR = os.getenv("PWD")
-    self._GENDIR = self._WORKDIR.."/gen"
-    self._COREDIR = self._GENDIR.."/core"
-    self._LIBDIR = self._GENDIR.."/lib"
-    self._BUILDDIR = self._GENDIR.."/build"
-    self._AUTOGENDIR = self._COREDIR.."/autogen"
-    self._MANGENDIR = self._COREDIR.."/mangen"
-    
     self._TOOLS_NAME = config_data.tools_name
     self._TOOLS_NAME_VERB = config_data.tools_name_verb
     self._TOOLS_NAME_ADJ = config_data.tools_name_adj
     self._TOOLS_NAME_ABR = config_data.tools_name_abr
-
+    
     self._TOOLS_NAME_UPPER = string.upper(self._TOOLS_NAME)
     self._TOOLS_NAME_UPPER_VERB = string.upper(self._TOOLS_NAME_VERB)
     self._TOOLS_NAME_UPPER_ADJ = string.upper(self._TOOLS_NAME_ADJ)
     self._TOOLS_NAME_UPPER_ABR = string.upper(self._TOOLS_NAME_ABR)
 
     self._CURRENT_DOMAIN = ""
+
+    self._WORKDIR = os.getenv("PWD")
+    self._GENDIR = self._WORKDIR.."/gen/"..self._TOOLS_NAME
+    self._COREDIR = self._GENDIR.."/core"
+    self._LIBDIR = self._GENDIR.."/lib"
+    self._BUILDDIR = self._GENDIR.."/build"
+    self._AUTOGENDIR = self._COREDIR.."/autogen"
+    self._MANGENDIR = self._COREDIR.."/mangen"
+
+    self._HANDLER_MGR = "handler_manager"
+    self._LOGGER = "logger"
+
     return self
 end
 function StringGenerator:_DOMAIN()
@@ -46,6 +50,32 @@ function StringGenerator:_INTERCEPTOR_SRC_PATH()
 end
 function StringGenerator:_INTERCEPTOR_HEAD_PATH()
     return self._AUTOGENDIR.."/"..self:_INTERCEPTOR_HEAD()
+end
+
+function StringGenerator:_LOGGER_SRC()
+    return self._LOGGER..".c"
+end
+function StringGenerator:_LOGGER_HEAD()
+    return self._LOGGER..".h"
+end
+function StringGenerator:_LOGGER_SRC_PATH()
+    return self._AUTOGENDIR.."/"..self:_LOGGER_SRC()
+end
+function StringGenerator:_LOGGER_HEAD_PATH()
+    return self._AUTOGENDIR.."/"..self:_LOGGER_HEAD()
+end
+
+function StringGenerator:_HANDLER_MGR_SRC()
+    return self._HANDLER_MGR..".c"
+end
+function StringGenerator:_HANDLER_MGR_HEAD()
+    return self._HANDLER_MGR..".h"
+end
+function StringGenerator:_HANDLER_MGR_SRC_PATH()
+    return self._AUTOGENDIR.."/"..self:_HANDLER_MGR_SRC()
+end
+function StringGenerator:_HANDLER_MGR_HEAD_PATH()
+    return self._AUTOGENDIR.."/"..self:_HANDLER_MGR_HEAD()
 end
 
 function StringGenerator:_DOMAIN_DIR()

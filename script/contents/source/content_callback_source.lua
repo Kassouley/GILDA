@@ -27,7 +27,7 @@ void %s(bool is_enter, %s func_id, %s data) {
         S:_CB_HEAD(),
         stored_cb_decl, S:_CB_ARGS(),
         S:_SET_CALLBACK(), S:_CALLBACK(), S:_CB_ARGS(),
-        stored_cb_decl, _CALLBACK,
+        stored_cb_decl, S:_CALLBACK(),
         S:_CALLBACK_FUNCTION(), S:_API_ID_T(), S:_API_DATA_T(),
         stored_cb_decl,
         stored_cb_decl,

@@ -24,7 +24,7 @@ static inline const char* get_%s_funame_by_id(%s id) {
 
 // %s API data
 typedef struct %s {
-    tuint64_t corrId;
+    uint64_t corrId;
     bool is_enter;
     union {
 %s
@@ -38,7 +38,7 @@ typedef struct %s {
         includes_str,
         S:_DOMAIN_UPPER(),
         subcontent.api_id_enum_block,
-        _API_ID_T,
+        S:_API_ID_T(),
         S:_DOMAIN_UPPER(), 
         S:_DOMAIN(), S:_API_ID_T(),
         subcontent.get_funame_block,

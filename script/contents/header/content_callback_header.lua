@@ -39,7 +39,7 @@ function cb_hdr.cb_get_args_block(func_name, cb_get_args_block)
 ]],
         func_name,
         S:_API_DATA_VAR(),
-        cb_get_args_block
+        cb_get_args_block == "" and "\\" or cb_get_args_block
     )
 end
 

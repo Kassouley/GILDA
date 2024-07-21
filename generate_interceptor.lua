@@ -1,11 +1,13 @@
 package.path = package.path .. ';./script/?.lua'
 package.path = package.path .. ';./script/commands/?.lua'
+package.path = package.path .. ';./script/contents/source/?.lua'
+package.path = package.path .. ';./script/contents/header/?.lua'
 package.path = package.path .. ';./script/contents/?.lua'
 
 local io_interceptor = require("io_interceptor")
 local interceptor_generate = require("interceptor_generate")
-local interceptor_build = require("interceptor_build")
 local interceptor_clean = require("interceptor_clean")
+local StringGenerator = require("string_generator")
 
 -- Function to parse command-line arguments
 local function parse_args(args)
@@ -22,7 +24,7 @@ local function parse_args(args)
             if i == 1 then
                 options.command = arg
             elseif i == 2 then
-                options.config_file = arg
+                options.target = arg
             else
                 table.insert(options.interceptors, arg)
             end
@@ -36,37 +38,41 @@ end
 function main()
     local args = parse_args(arg)
 
-    if not args.command or not args.config_file then
-        print("Usage: lua "..arg[0].." [gen | build | clean] <config file> [options]")
+    if not args.command or not args.target then
+        print("Usage: lua "..arg[0].." [gen <config file> | clean <directory>] [options]")
         return
     end
 
     local command = args.command
-    local config_file = args.config_file
+    local target = args.target
     local interceptors = args.interceptors or {}
-    local config_data = io_interceptor.load_json(config_file)
+    
+    
+    if command == "gen" then
+        -- For 'gen' command, the target is expected to be a config file
+        local config_file = target
+        local config_data = io_interceptor.load_json(config_file)
+        S = StringGenerator.new(config_data)
 
-    if #interceptors == 0 and command ~= "clean" then
-        for key, value in pairs(config_data) do
-            if type(value) == 'table' then
-                table.insert(interceptors, key)
+        if #interceptors == 0 then
+            for key, value in pairs(config_data) do
+                if type(value) == 'table' then
+                    table.insert(interceptors, key)
+                end
             end
         end
-    end
-
-    if command == "gen" then
         interceptor_generate.command(config_data, interceptors)
-    elseif command == "build" then
-        interceptor_build.command(config_data, interceptors, args)
+
     elseif command == "clean" then
-        interceptor_clean.command(interceptors, args)
+        -- For 'clean' command, the target is expected to be a directory
+        local directory = target
+        interceptor_clean.command(directory, interceptors, args)
+
     else    
         print("Error: command "..command.." not available.")
         return
     end
 end
-
--- Directory definitions
 
 -- Run the main function
 main()

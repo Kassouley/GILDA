@@ -1,3 +1,7 @@
+local handler_mgr_hdr = {}
+
+function handler_mgr_hdr.content()
+    return [[
 #ifndef HANDLER_MANAGER_H
 #define HANDLER_MANAGER_H
 #include <stdio.h>
@@ -18,3 +22,7 @@ do { \
 } while (false)
 
 #endif
+]]
+end
+
+return handler_mgr_hdr

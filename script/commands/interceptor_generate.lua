@@ -1,5 +1,4 @@
 local io_interceptor = require("io_interceptor")
-local StringGenerator = require("string_generator")
 
 local files = {
     f1 = require("content_intercept_table_mgr_source"),
@@ -9,24 +8,30 @@ local files = {
     f5 = require("content_callback_source"),
     f6 = require("content_callback_header"),
     f7 = require("content_interceptor_source"),
-    f8 = require("content_interceptor_header")
+    f8 = require("content_interceptor_header"),
+    f9 = require("content_handler_manager_source"),
+    f10 = require("content_handler_manager_header"),
+    f11 = require("content_logger_source"),
+    f12 = require("content_logger_header")
 }
 
 local interceptor_generate = {}
 
 -- COMMON --
 
-local function scandir(dir)
-    local p = io.popen('ls "' .. dir .. '"')
-    local files = {}
-    for file in p:lines() do
-        table.insert(files, file)
+function scandir(dir)
+    local subdirectories = {}
+    local command = "find \"" .. dir .. "\" -maxdepth 1 -type d"
+    for line in io.popen(command):lines() do
+        if line ~= dir then
+            table.insert(subdirectories, string.match(line, "[^/]+$"))
+        end
     end
-    p:close()
-    return files
+    return subdirectories
 end
 
 local function generate_file(filepath, content)
+    print("Content generated in '"..filepath.."'")
     io_interceptor.write_n_close(filepath, content)
 end
 
@@ -104,9 +109,6 @@ end
 
 -- COMMAND --
 function interceptor_generate.command(config_data, domain_list)
-    S = StringGenerator.new(config_data)
-
-    io_interceptor.mkdir(S._GENDIR)
     io_interceptor.mkdir(S._COREDIR)
 
     for _, domain in ipairs(domain_list) do
@@ -146,6 +148,10 @@ function interceptor_generate.command(config_data, domain_list)
     end
     generate_file(S:_INTERCEPTOR_SRC_PATH(), files.f7.content(table.concat(case_block, "\n")))
     generate_file(S:_INTERCEPTOR_HEAD_PATH(), files.f8.content(table.concat(enum_block, ",\n"), table.concat(include_block, "\n")))
+    generate_file(S:_HANDLER_MGR_SRC_PATH(), files.f9.content())
+    generate_file(S:_HANDLER_MGR_HEAD_PATH(), files.f10.content())
+    generate_file(S:_LOGGER_SRC_PATH(), files.f11.content())
+    generate_file(S:_LOGGER_HEAD_PATH(), files.f12.content())
 
 end
 

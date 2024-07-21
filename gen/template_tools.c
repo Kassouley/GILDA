@@ -20,8 +20,8 @@ void sample2(bool is_enter, hip_api_id_t func_id, hip_api_data_t data)
 
 __attribute__((constructor)) void init(void) {
     start_interceptor();
-    set_hsa_interceptor_callback(sample);
-    set_hip_interceptor_callback(sample2);
+    set_hsa_intercept_callback(sample);
+    set_hip_intercept_callback(sample2);
     enable_interceptor_domain(INTERCEPTOR_DOMAIN_HSA);
     enable_interceptor_domain(INTERCEPTOR_DOMAIN_HIP);
 }

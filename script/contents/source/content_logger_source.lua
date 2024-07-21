@@ -1,3 +1,7 @@
+local logger_src = {}
+
+function logger_src.content()
+    return [[
 #include "logger.h"
 
 Logger logger = { NULL, {0}, 0 };  // Definition of the logger instance
@@ -13,3 +17,8 @@ char* current_time() {
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
     return buffer;
 }
+]]
+end
+
+return logger_src
+

@@ -1,3 +1,7 @@
+local handler_mgr_src = {}
+
+function handler_mgr_src.content()
+    return [[
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
@@ -16,3 +20,8 @@ void fallback(void) {
     fprintf(stderr, "Critical error: Unable to load a function. See logs for more details.\n");
     exit(EXIT_FAILURE);
 }
+]]
+end
+
+return handler_mgr_src
+
