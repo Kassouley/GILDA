@@ -17,13 +17,14 @@ function StringGenerator.new(config_data)
 
     self._WORKDIR = os.getenv("PWD")
     self._GENDIR = self._WORKDIR.."/gen/"..self._TOOLS_NAME
-    self._COREDIR = self._GENDIR.."/core"
-    self._LIBDIR = self._GENDIR.."/lib"
-    self._BUILDDIR = self._GENDIR.."/build"
-    self._AUTOGENDIR = self._COREDIR.."/autogen"
-    self._MANGENDIR = self._COREDIR.."/mangen"
-    self._UTILSDIR = self._COREDIR.."/utils"
-    self._TOOLSDIR = self._COREDIR.."/tools"
+    self._COREDIR = "core"
+    self._LIBDIR = "lib"
+    self._BUILDDIR = "build"
+    self._AUTOGENDIR = "autogen"
+    self._MANGENDIR = "mangen"
+    self._UTILSDIR = "utils"
+    self._TOOLSDIR = "tools"
+    self._MAKEFILE_PATH = self._GENDIR.."/Makefile"
 
     self._HANDLER_MGR = "handler_manager"
     self._ENV = "env"
@@ -32,6 +33,31 @@ function StringGenerator.new(config_data)
 
     return self
 end
+
+-- DIR STRING
+function StringGenerator:_COREDIR_PATH()
+    return self._GENDIR.."/"..self._COREDIR
+end
+function StringGenerator:_TOOLSDIR_PATH()
+    return self:_COREDIR_PATH().."/"..self._TOOLSDIR
+end
+function StringGenerator:_BUILDDIR_PATH()
+    return self:_COREDIR_PATH().."/"..self._BUILDDIR
+end
+function StringGenerator:_AUTOGENDIR_PATH()
+    return self:_COREDIR_PATH().."/"..self._AUTOGENDIR
+end
+function StringGenerator:_MANGENDIR_PATH()
+    return self:_COREDIR_PATH().."/"..self._MANGENDIR
+end
+function StringGenerator:_UTILSDIR_PATH()
+    return self:_COREDIR_PATH().."/"..self._UTILSDIR
+end
+function StringGenerator:_TOOLSDIR_PATH()
+    return self:_COREDIR_PATH().."/"..self._TOOLSDIR
+end
+
+-- DOMAIN STRING
 function StringGenerator:_DOMAIN()
     return self._CURRENT_DOMAIN
 end
@@ -43,6 +69,14 @@ function StringGenerator:_DOMAIN_ID()
 end
 
 -- TOOLS FILE STRING
+function StringGenerator:_TOOL_SRC()
+    return self._TOOL..".c"
+end
+function StringGenerator:_TOOL_SRC_PATH()
+    return self:_TOOLSDIR_PATH().."/"..self:_TOOL_SRC()
+end
+
+-- INTERCEPTOR FILE STRING
 function StringGenerator:_INTERCEPTOR_SRC()
     return self._TOOLS_NAME..".c"
 end
@@ -50,10 +84,10 @@ function StringGenerator:_INTERCEPTOR_HEAD()
     return self._TOOLS_NAME..".h"
 end
 function StringGenerator:_INTERCEPTOR_SRC_PATH()
-    return self._TOOLSDIR.."/"..self:_INTERCEPTOR_SRC()
+    return self:_COREDIR_PATH().."/"..self:_INTERCEPTOR_SRC()
 end
 function StringGenerator:_INTERCEPTOR_HEAD_PATH()
-    return self._TOOLSDIR.."/"..self:_INTERCEPTOR_HEAD()
+    return self:_COREDIR_PATH().."/"..self:_INTERCEPTOR_HEAD()
 end
 
 -- ENV FILE STRING
@@ -64,10 +98,10 @@ function StringGenerator:_ENV_HEAD()
     return self._ENV..".h"
 end
 function StringGenerator:_ENV_SRC_PATH()
-    return self._UTILSDIR.."/"..self:_ENV_SRC()
+    return self:_UTILSDIR_PATH().."/"..self:_ENV_SRC()
 end
 function StringGenerator:_ENV_HEAD_PATH()
-    return self._UTILSDIR.."/"..self:_ENV_HEAD()
+    return self:_UTILSDIR_PATH().."/"..self:_ENV_HEAD()
 end
 
 -- LOGGER FILE STRING
@@ -78,10 +112,10 @@ function StringGenerator:_LOGGER_HEAD()
     return self._LOGGER..".h"
 end
 function StringGenerator:_LOGGER_SRC_PATH()
-    return self._UTILSDIR.."/"..self:_LOGGER_SRC()
+    return self:_UTILSDIR_PATH().."/"..self:_LOGGER_SRC()
 end
 function StringGenerator:_LOGGER_HEAD_PATH()
-    return self._UTILSDIR.."/"..self:_LOGGER_HEAD()
+    return self:_UTILSDIR_PATH().."/"..self:_LOGGER_HEAD()
 end
 
 -- HANDLER MGR FILE STRING
@@ -92,10 +126,10 @@ function StringGenerator:_HANDLER_MGR_HEAD()
     return self._HANDLER_MGR..".h"
 end
 function StringGenerator:_HANDLER_MGR_SRC_PATH()
-    return self._UTILSDIR.."/"..self:_HANDLER_MGR_SRC()
+    return self:_UTILSDIR_PATH().."/"..self:_HANDLER_MGR_SRC()
 end
 function StringGenerator:_HANDLER_MGR_HEAD_PATH()
-    return self._UTILSDIR.."/"..self:_HANDLER_MGR_HEAD()
+    return self:_UTILSDIR_PATH().."/"..self:_HANDLER_MGR_HEAD()
 end
 
 -- DOMAIN API FILE STRING
@@ -103,10 +137,10 @@ function StringGenerator:_DOMAIN_DIR()
     return self._CURRENT_DOMAIN.."_"..self._TOOLS_NAME
 end
 function StringGenerator:_AUTOGEN_DOMAIN_DIR()
-    return self._AUTOGENDIR.."/"..self:_DOMAIN_DIR()
+    return self:_AUTOGENDIR_PATH().."/"..self:_DOMAIN_DIR()
 end
 function StringGenerator:_MANGEN_DOMAIN_DIR()
-    return self._MANGENDIR.."/"..self:_DOMAIN_DIR()
+    return self:_MANGENDIR_PATH().."/"..self:_DOMAIN_DIR()
 end
 
 -- STRUCT AND VAR STRING

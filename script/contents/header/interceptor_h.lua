@@ -32,7 +32,8 @@ end
 
 function interceptor_hdr.include_line()
     return "#include \""..S:_CB_HEAD().."\"\n"..
-           "#include \""..S:_ITM_HEAD().."\""
+           "#include \""..S:_ITM_HEAD().."\"\n"..
+           "#include \""..S:_IF_HEAD().."\"\n"
 end
 
 function interceptor_hdr.enum_line()

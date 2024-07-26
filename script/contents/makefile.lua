@@ -1,6 +1,6 @@
 local makefile = {}
 
-function makefile.content(subcontent)
+function makefile.content(include_flag, compile_flag)
     return string.format([[
 # Directories
 CORE_DIR = %s
@@ -24,19 +24,19 @@ C_SOURCES = $(shell find $(CORE_DIR) -name '*.c')
 CPP_SOURCES = $(shell find $(CORE_DIR) -name '*.cpp')
 
 # Generate corresponding object files paths in the build directory
-OBJECTS = $(C_SOURCES:$(CORE_DIR)/%.c=$(BUILD_DIR)/%.o)
-OBJECTS += $(CPP_SOURCES:$(CORE_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+OBJECTS = $(C_SOURCES:$(CORE_DIR)/%%.c=$(BUILD_DIR)/%%.o)
+OBJECTS += $(CPP_SOURCES:$(CORE_DIR)/%%.cpp=$(BUILD_DIR)/%%.o)
 
 # Default target
 all: $(LIB%s)
 
 # Rule to compile .c files to .o
-$(BUILD_DIR)/%.o: $(CORE_DIR)/%.c
+$(BUILD_DIR)/%%.o: $(CORE_DIR)/%%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Rule to compile .cpp files to .o
-$(BUILD_DIR)/%.o: $(CORE_DIR)/%.cpp
+$(BUILD_DIR)/%%.o: $(CORE_DIR)/%%.cpp
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -50,13 +50,14 @@ clean:
 	rm -rf $(BUILD_DIR) $(LIB_DIR)/$(LIB%s)
 
 .PHONY: all clean
-]]	
+]],
 		S._COREDIR,
 		S._BUILDDIR,
 		S._LIBDIR,
+		S._TOOLS_NAME_UPPER,
 		S._TOOLS_NAME,
-		subcontent.compil_flag,
-		subcontent.include_flag,
+		compile_flag,
+		include_flag,
 		S._TOOLS_NAME_UPPER,
 		S._TOOLS_NAME,
 		S._TOOLS_NAME_UPPER,

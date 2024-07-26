@@ -58,7 +58,7 @@ int get_function_filter(char **functions,
     *functions = split_string(env_var, &functions_count);
     return EXIT_SUCCESS;
 }
-]], S:_ENV_HEAD())
+]], S:_ENV_HEAD(), "%s", "%s")
 end
 
 return env_src

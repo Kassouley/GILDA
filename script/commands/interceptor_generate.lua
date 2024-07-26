@@ -13,7 +13,11 @@ local files = {
     f5_h = require("handler_manager_h"),
     f6_s = require("logger_c"),
     f6_h = require("logger_h"),
-    f7_s = require("functions_c")
+    f7_s = require("functions_c"),
+    f8_s = require("env_c"),
+    f8_h = require("env_h"),
+    f9_s = require("tools_c"),
+    mkf = require("makefile")
     -- f7_h = require("functions_h")
 }
 
@@ -50,6 +54,7 @@ local function add_contents(contents, content, sep)
     else
         contents = contents..sep..content
     end
+    return contents
 end
 -- COMMON --
 
@@ -85,26 +90,25 @@ local function generate_contents(interceptor_data, function_to_intercept)
         end
         local names_param_str = table.concat(names_param, ", ")
 
-        add_contents(subcontents.f1_s.load_table_block, files.f1_s.handle_line(f.name), "\n")
-        add_contents(subcontents.f1_s.enable_domain_block, files.f1_s.enable_domain_line(f.name), "\n")
-        add_contents(subcontents.f1_s.disable_domain_block, files.f1_s.disable_domain_line(f.name), "\n")
-        
-        add_contents(subcontents.f1_h.typedef_block, files.f1_h.typedef_line(f))
-        add_contents(subcontents.f1_h.intercept_table_block, files.f1_h.itcp_tbl_line(f.name))
+        subcontents.f1_s.load_table_block = add_contents(subcontents.f1_s.load_table_block, files.f1_s.handle_line(f.name), "\n")
+        subcontents.f1_s.enable_domain_block = add_contents(subcontents.f1_s.enable_domain_block, files.f1_s.enable_domain_line(f.name), "\n")
+        subcontents.f1_s.disable_domain_block = add_contents(subcontents.f1_s.disable_domain_block, files.f1_s.disable_domain_line(f.name), "\n")
+        subcontents.f1_h.typedef_block = add_contents(subcontents.f1_h.typedef_block, files.f1_h.typedef_line(f))
+        subcontents.f1_h.intercept_table_block = add_contents(subcontents.f1_h.intercept_table_block, files.f1_h.itcp_tbl_line(f.name))
         
         add_contents(subcontents.f7_s.func_blk, files.f7_s.func_blk(f, names_param_str))
         if f.gen == "AUTOGEN" then
-            add_contents(subcontents.f2_s_auto.func_blk, files.f2_s.func_blk(f, names_param_str))
+            subcontents.f2_s_auto.func_blk = add_contents(subcontents.f2_s_auto.func_blk, files.f2_s.func_blk(f, names_param_str))
         else
-            add_contents(subcontents.f2_s_man.func_blk, files.f2_s.func_blk(f, names_param_str))
+            subcontents.f2_s_man.func_blk = add_contents(subcontents.f2_s_man.func_blk, files.f2_s.func_blk(f, names_param_str))
         end
 
-        add_contents(subcontents.f2_h.api_data_t_block, files.f2_h.api_data_t_block(f.return_type, f.name, table.concat(api_data_t_lines,"\n")))
-        add_contents(subcontents.f2_h.api_id_enum_block, files.f2_h.api_id_enum_block(f.name, i), "\n")
-        add_contents(subcontents.f2_h.get_funame_block, files.f2_h.get_funame_block(f.name), "\n")
-        add_contents(subcontents.f2_h.get_funid_block, files.f2_h.get_funid_block(f.name), "\n")
+        subcontents.f2_h.api_data_t_block = add_contents(subcontents.f2_h.api_data_t_block, files.f2_h.api_data_t_block(f.return_type, f.name, table.concat(api_data_t_lines,"\n")))
+        subcontents.f2_h.api_id_enum_block = add_contents(subcontents.f2_h.api_id_enum_block, files.f2_h.api_id_enum_block(f.name, i), "\n")
+        subcontents.f2_h.get_funame_block = add_contents(subcontents.f2_h.get_funame_block, files.f2_h.get_funame_block(f.name), "\n")
+        subcontents.f2_h.get_funid_block = add_contents(subcontents.f2_h.get_funid_block, files.f2_h.get_funid_block(f.name), "\n")
 
-        add_contents(subcontents.f3_h.get_args_block, files.f3_h.cb_get_args_block(f.return_type, f.name, table.concat(cb_get_args_lines,"\n")))
+        subcontents.f3_h.get_args_block = add_contents(subcontents.f3_h.get_args_block, files.f3_h.cb_get_args_block(f.return_type, f.name, table.concat(cb_get_args_lines,"\n")))
     end
 
     return {
@@ -121,8 +125,9 @@ end
 
 -- COMMAND --
 function interceptor_generate.command(config_data, domain_list)
-    io_interceptor.mkdir(S._COREDIR)
-    io_interceptor.mkdir(S._UTILSDIR)
+    io_interceptor.mkdir(S:_COREDIR_PATH())
+    io_interceptor.mkdir(S:_UTILSDIR_PATH())
+    io_interceptor.mkdir(S:_TOOLSDIR_PATH())
     local include_flag = ""
     local compile_flag = ""
 
@@ -148,28 +153,31 @@ function interceptor_generate.command(config_data, domain_list)
                 io_interceptor.mkdir(S:_MANGEN_DOMAIN_DIR(domain))
                 generate_file(S:_IF_MAN_SRC_PATH(domain), contents.file3_content_man)
             end
-            add_contents(include_flag, table.concat(interceptor_data.includes, " -I"), " ")
-            add_contents(compile_flag, interceptor_data.compile_flag, " ")
+            include_flag = add_contents(include_flag, interceptor_data.include_path, " -I")
+            compile_flag = add_contents(compile_flag, interceptor_data.compile_flag, " ")
         end                  
     end
 
-    local domain_list = scandir(S._AUTOGENDIR)
+    local domain_list = scandir(S:_AUTOGENDIR_PATH())
     local subcontents = {
         f4_s = {}, -- Interceptor source
         f4_h = {}, -- Interceptor header
         f5_s = {}, -- Handler_manager source
         f5_h = {}, -- Handler_manager header
         f6_s = {}, -- Logger source
-        f6_h = {}  -- Logger header
+        f6_h = {}, -- Logger header
+        f9_s = {}  -- Tools source
     }
     for _, domain in ipairs(domain_list) do
         domain = domain:sub(1, -#("_"..S._TOOLS_NAME)-1)
         S._CURRENT_DOMAIN = domain
-        add_contents(subcontents.f4_s.load_block, files.f4_s.load_line(), "\n")
-        add_contents(subcontents.f4_s.enable_case_block, files.f4_s.enable_case_line(), "\n")
-        add_contents(subcontents.f4_s.disable_case_block, files.f4_s.disable_case_line(), "\n")
-        add_contents(subcontents.f4_h.include_block, files.f4_h.include_line(), "\n")
-        add_contents(subcontents.f4_h.enum_block, files.f4_h.enum_line(), ",\n")
+        subcontents.f4_s.load_block = add_contents(subcontents.f4_s.load_block, files.f4_s.load_line(), "\n")
+        subcontents.f4_s.enable_case_block = add_contents(subcontents.f4_s.enable_case_block, files.f4_s.enable_case_line(), "\n")
+        subcontents.f4_s.disable_case_block = add_contents(subcontents.f4_s.disable_case_block, files.f4_s.disable_case_line(), "\n")
+        subcontents.f4_h.include_block = add_contents(subcontents.f4_h.include_block, files.f4_h.include_line(), "\n")
+        subcontents.f4_h.enum_block = add_contents(subcontents.f4_h.enum_block, files.f4_h.enum_line(), ",\n")
+        subcontents.f9_s.subcontent = add_contents(subcontents.f9_s.subcontent, files.f9_s.subcontent(), "\n")
+        subcontents.f9_s.callback_block = add_contents(subcontents.f9_s.callback_block, files.f9_s.callback_block(), "\n")
     end
     generate_file(S:_INTERCEPTOR_SRC_PATH(), files.f4_s.content(subcontents.f4_s))
     generate_file(S:_INTERCEPTOR_HEAD_PATH(), files.f4_h.content(subcontents.f4_h))
@@ -177,6 +185,10 @@ function interceptor_generate.command(config_data, domain_list)
     generate_file(S:_HANDLER_MGR_HEAD_PATH(), files.f5_h.content())
     generate_file(S:_LOGGER_SRC_PATH(), files.f6_s.content())
     generate_file(S:_LOGGER_HEAD_PATH(), files.f6_h.content())
+    generate_file(S:_ENV_SRC_PATH(), files.f8_s.content())
+    generate_file(S:_ENV_HEAD_PATH(), files.f8_h.content())
+    generate_file(S:_TOOL_SRC_PATH(), files.f9_s.content(subcontents.f9_s))
+    generate_file(S._MAKEFILE_PATH, files.mkf.content(include_flag, compile_flag))
 
 end
 
