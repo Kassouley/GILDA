@@ -1,6 +1,6 @@
 local interceptor_hdr = {}
 
-function interceptor_hdr.content(enum_block, include_block)
+function interceptor_hdr.content(subcontents)
     return string.format([[
 #ifndef %s_H
 #define %s_H
@@ -11,20 +11,20 @@ typedef enum {
 %s
 } %s_domain_t;
 
-void enable_%s_domain(%s_domain_t domain);
-void start_%s();
-void end_%s();
+void %s_enable_domain(%s_domain_t domain);
+void %s_disable_domain(%s_domain_t domain);
+void %s_init();
+void %s_fini();
 
 #endif
-
 ]],
         S._TOOLS_NAME_UPPER,
         S._TOOLS_NAME_UPPER,
-        include_block,
-        enum_block,
+        subcontents.include_block,
+        subcontents.enum_block,
         S._TOOLS_NAME,
-        S._TOOLS_NAME,
-        S._TOOLS_NAME,
+        S._TOOLS_NAME, S._TOOLS_NAME,
+        S._TOOLS_NAME, S._TOOLS_NAME,
         S._TOOLS_NAME,
         S._TOOLS_NAME
     )

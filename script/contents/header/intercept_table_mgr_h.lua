@@ -34,7 +34,11 @@ function itcp_tbl_mgr_hdr.typedef_line(f)
 end
 
 function itcp_tbl_mgr_hdr.itcp_tbl_line(func_name)
-    return string.format("\t__%s_t fn_%s;\n", func_name, func_name)
+    return string.format([[
+    __%s_t fn_%s;
+    __%s_t ptr_%s;
+]], func_name, func_name, 
+    func_name, func_name)
 end
 
 return itcp_tbl_mgr_hdr

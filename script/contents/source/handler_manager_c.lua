@@ -1,12 +1,12 @@
 local handler_mgr_src = {}
 
 function handler_mgr_src.content()
-    return [[
+    return string.format([[
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
-#include "handler_manager.h"
-#include "logger.h"
+#include "%s"
+#include "%s"
 
 void* load_handle(const char* handle_lib_path) {
     void *handle = dlopen(handle_lib_path, RTLD_LOCAL | RTLD_LAZY);
@@ -20,7 +20,7 @@ void fallback(void) {
     fprintf(stderr, "Critical error: Unable to load a function. See logs for more details.\n");
     exit(EXIT_FAILURE);
 }
-]]
+]], S:_LOGGER_HEAD(), S:_HANDLER_MGR_HEAD(), "%s")
 end
 
 return handler_mgr_src

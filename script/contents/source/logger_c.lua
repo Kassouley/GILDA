@@ -1,8 +1,8 @@
 local logger_src = {}
 
 function logger_src.content()
-    return [[
-#include "logger.h"
+    return string.format([[
+#include "%s"
 
 Logger logger = { NULL, {0}, 0 };  // Definition of the logger instance
 
@@ -14,10 +14,10 @@ char* current_time() {
 
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+    strftime(buffer, sizeof(buffer), "%s", timeinfo);
     return buffer;
 }
-]]
+]], S:_LOGGER_HEAD(), "%Y-%m-%d %H:%M:%S")
 end
 
 return logger_src
