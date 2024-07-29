@@ -1,7 +1,7 @@
 local cb_hdr = {}
 
 -- Generates the content for the callback header file
-function cb_hdr.content(includes_str, subcontent)
+function cb_hdr.content(subcontent, includes_str)
     local def_header = S:_DOMAIN_UPPER().."_CALLBACK_H"
     local content = string.format([[
 #ifndef %s
@@ -25,7 +25,7 @@ void %s(void (*%s)(%s));
         includes_str,
         S:_CALLBACK_FUNCTION(), S:_CB_ARGS(),
         S:_SET_CALLBACK(), S:_CALLBACK(), S:_CB_ARGS(),
-        subcontent.get_args_block
+        subcontent.cb_get_args_block
     )
     return content
 end
@@ -45,7 +45,7 @@ function cb_hdr.cb_get_args_block(return_type, func_name, cb_get_args_block)
     else
         return string.format([[
 #define GET_CB_ARGS_DATA_%s(%s) { \
-    %s.args.%s.ret_value = (%s)%s;
+    %s.args.%s.ret_value = (%s)%s; \
 %s
 };
 ]],

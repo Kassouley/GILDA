@@ -1,6 +1,6 @@
 local interceptor_hdr = {}
 
-function interceptor_hdr.content(subcontents)
+function interceptor_hdr.content(subcontent)
     return string.format([[
 #ifndef %s_H
 #define %s_H
@@ -20,8 +20,8 @@ void %s_fini();
 ]],
         S._TOOLS_NAME_UPPER,
         S._TOOLS_NAME_UPPER,
-        subcontents.include_block,
-        subcontents.enum_block,
+        subcontent.include_block,
+        subcontent.enum_block,
         S._TOOLS_NAME,
         S._TOOLS_NAME, S._TOOLS_NAME,
         S._TOOLS_NAME, S._TOOLS_NAME,
@@ -30,13 +30,13 @@ void %s_fini();
     )
 end
 
-function interceptor_hdr.include_line()
+function interceptor_hdr.include_block()
     return "#include \""..S:_CB_HEAD().."\"\n"..
            "#include \""..S:_ITM_HEAD().."\"\n"..
            "#include \""..S:_IF_HEAD().."\"\n"
 end
 
-function interceptor_hdr.enum_line()
+function interceptor_hdr.enum_block()
     return "\t"..S:_DOMAIN_ID()
 end
 

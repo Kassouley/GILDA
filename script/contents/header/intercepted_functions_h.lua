@@ -1,10 +1,10 @@
 local itcp_fnct_hdr = {}
 
-function itcp_fnct_hdr.content(includes_str, subcontent)
+function itcp_fnct_hdr.content(subcontent, includes_str)
     local def_header = string.format(
         "%s_%s_FUNCTIONS_H", S:_DOMAIN_UPPER(), S._TOOLS_NAME_UPPER_ADJ
     )
-    local macro_call = string.format("GET_CB_ARGS_DATA_##v##(%s)", S:_API_DATA_VAR())
+    local macro_call = string.format("GET_CB_ARGS_DATA_##v(%s)", S:_API_DATA_VAR())
     return string.format([[
 #ifndef %s
 #define %s
@@ -12,15 +12,14 @@ function itcp_fnct_hdr.content(includes_str, subcontent)
 #include <string.h>
 
 // CALLBACK
-#define %s_CALLBACK_BEFORE(v) { \
-    %s %s = {}; \
+#define %s_CALLBACK_BEFORE(v, %s) { \
     %s; \
-    %s(IS_ENTER, %s##v##, %s); \
+    %s(IS_ENTER, %s##v, %s); \
 };
 
-#define %s_CALLBACK_AFTER(v) { \
+#define %s_CALLBACK_AFTER(v, %s) { \
     %s; \
-    %s(IS_EXIT, %s##v##, %s); \
+    %s(IS_EXIT, %s##v, %s); \
 };
 
 // %s API ID enum
@@ -40,6 +39,7 @@ static inline const char* get_%s_funame_by_id(%s id) {
 static inline %s get_%s_funid_by_name(const char* name) {
     if (name == NULL) return 0;
 %s
+    return -1;
 }
 
 // %s API data
@@ -51,6 +51,8 @@ typedef struct %s {
     } args;
 } %s;
 
+%s
+
 #endif
 ]],
         def_header,
@@ -58,11 +60,12 @@ typedef struct %s {
         includes_str,
 
         S:_DOMAIN_UPPER(),
-        S:_API_DATA_T(), S:_API_DATA_VAR(),
+        S:_API_DATA_VAR(),
         macro_call,
         S:_CALLBACK_FUNCTION(), S:_API_ID_PREFIX(), S:_API_DATA_VAR(), 
 
         S:_DOMAIN_UPPER(),
+        S:_API_DATA_VAR(),
         macro_call,
         S:_CALLBACK_FUNCTION(), S:_API_ID_PREFIX(), S:_API_DATA_VAR(), 
 
@@ -81,10 +84,14 @@ typedef struct %s {
         S:_DOMAIN_UPPER(), 
         S:_API_DATA_S(),
         subcontent.api_data_t_block,
-        S:_API_DATA_T()
+        S:_API_DATA_T(),
+        subcontent.func_proto_block
     )
 end
 
+function itcp_fnct_hdr.func_proto_block(f)
+    return string.format("%s i_%s(%s);", f.return_type, f.name, table.concat(f.args, ", "))
+end
 
 function itcp_fnct_hdr.api_id_enum_block(func_name, i)
     return string.format("\t%s%s = %d,", S:_API_ID_PREFIX(), func_name, i)

@@ -48,15 +48,15 @@ void %s_fini()
     )
 end
 
-function interceptor_src.enable_case_line()
+function interceptor_src.enable_case_block()
     return "\t\tcase "..S:_DOMAIN_ID()..": "..S:_ITM_ENABLE_DOMAIN_FUNC().."(); break;"
 end
 
-function interceptor_src.disable_case_line()
+function interceptor_src.disable_case_block()
     return "\t\tcase "..S:_DOMAIN_ID()..": "..S:_ITM_DISABLE_DOMAIN_FUNC().."(); break;"
 end
 
-function interceptor_src.load_line()
+function interceptor_src.load_block()
     return "\t"..S:_ITM_LOAD_TABLE_FUNC().."();"
 end
 

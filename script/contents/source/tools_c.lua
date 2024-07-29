@@ -1,6 +1,6 @@
 local tools_src = {}
 
-function tools_src.content(subcontents)
+function tools_src.content(subcontent)
     return string.format([[
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,9 +18,9 @@ __attribute__((destructor)) void fini(void) {
 }
 ]],
         S:_INTERCEPTOR_HEAD(),
-        subcontents.callback_block,
+        subcontent.callback_block,
         S._TOOLS_NAME,
-        subcontents.subcontent,
+        subcontent.subcontent,
         S._TOOLS_NAME
     )
 end

@@ -204,7 +204,10 @@ end
 function StringGenerator:_F_HEAD()
     return self:_F()..".h"
 end
-function StringGenerator:_F_SRC_PATH()
+function StringGenerator:_F_MAN_SRC_PATH()
+    return self:_MANGEN_DOMAIN_DIR() .. "/" .. self:_F_SRC()
+end
+function StringGenerator:_F_AUTO_SRC_PATH()
     return self:_AUTOGEN_DOMAIN_DIR() .. "/" .. self:_F_SRC()
 end
 function StringGenerator:_F_HEAD_PATH()
@@ -221,11 +224,8 @@ end
 function StringGenerator:_IF_HEAD()
     return self:_IF()..".h"
 end
-function StringGenerator:_IF_AUTO_SRC_PATH()
+function StringGenerator:_IF_SRC_PATH()
     return self:_AUTOGEN_DOMAIN_DIR() .. "/" .. self:_IF_SRC()
-end
-function StringGenerator:_IF_MAN_SRC_PATH()
-    return self:_MANGEN_DOMAIN_DIR() .. "/" .. self:_IF_SRC()
 end
 function StringGenerator:_IF_HEAD_PATH()
     return self:_AUTOGEN_DOMAIN_DIR() .. "/" .. self:_IF_HEAD()

@@ -1,6 +1,6 @@
 local fnct_src = {}
 
-function fnct_src.content(includes_str, subcontent)
+function fnct_src.content(subcontent, includes_str)
     return string.format([[
 #include "%s"
 %s

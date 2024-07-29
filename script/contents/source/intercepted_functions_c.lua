@@ -1,6 +1,6 @@
 local itcp_fnct_src = {}
 
-function itcp_fnct_src.content(includes_str, subcontent)
+function itcp_fnct_src.content(subcontent, includes_str)
     return string.format([[
 #include "%s"
 #include "%s"
@@ -25,35 +25,39 @@ function itcp_fnct_src.func_blk(f, names_param_str)
         local function_ret_var = "__"..S:_DOMAIN().."_ret__"
         return string.format([[
 %s i_%s(%s) {
+    %s %s = {};
     %s %s;
-    %s_CALLBACK_BEFORE(%s);
+    %s_CALLBACK_BEFORE(%s, %s);
     %s = %s.fn_%s(%s);
-    %s_CALLBACK_AFTER(%s);
+    %s_CALLBACK_AFTER(%s, %s);
     return %s;
 }
     
 ]], 
             f.return_type, f.name, table.concat(f.args, ", "),
+            S:_API_DATA_T(), S:_API_DATA_VAR(),
             f.return_type, function_ret_var,
-            S:_DOMAIN_UPPER(), f.name,
+            S:_DOMAIN_UPPER(), f.name, S:_API_DATA_VAR(),
             function_ret_var, S:_INTERCEPT_TABLE_VAR(), f.name, names_param_str,
-            S:_DOMAIN_UPPER(), f.name,
+            S:_DOMAIN_UPPER(), f.name, S:_API_DATA_VAR(),
             function_ret_var
         )
     else
         return string.format([[
 %s i_%s(%s) {
-    %s_CALLBACK_BEFORE(%s);
+    %s %s = {};
+    %s_CALLBACK_BEFORE(%s, %s);
     %s.fn_%s(%s);
-    %s_CALLBACK_AFTER(%s);
+    %s_CALLBACK_AFTER(%s, %s);
     return;
 }
 
 ]], 
             f.return_type, f.name, table.concat(f.args, ", "),
-            S:_DOMAIN_UPPER(), f.name,
+            S:_API_DATA_T(), S:_API_DATA_VAR(),
+            S:_DOMAIN_UPPER(), f.name, S:_API_DATA_VAR(),
             S:_INTERCEPT_TABLE_VAR(), f.name, names_param_str,
-            S:_DOMAIN_UPPER(), f.name
+            S:_DOMAIN_UPPER(), f.name, S:_API_DATA_VAR()
         )
     end
 end

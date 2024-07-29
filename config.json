@@ -4,14 +4,14 @@
     "tools_name_adj" : "profiled",
     "tools_name_abr" : "prof",
     "hsa" : {
-        "input_csv" : "/home/lneto/Interceptor-Generator/script/output/hsa.csv",
+        "input_csv" : "./script/output/hsa.csv",
         "includes" : ["hsa.h", "hsa_ext_amd.h"],
         "include_path" : "/opt/rocm/include/hsa",
         "compile_flag" : "",
         "lib" : "/opt/rocm/lib/libhsa-runtime64.so"
     },
     "hip" : {
-        "input_csv" : "/home/lneto/Interceptor-Generator/script/output/hip_runtime_api.csv",
+        "input_csv" : "./script/output/hip_runtime_api.csv",
         "includes" : ["hip_runtime.h"],
         "include_path" : "/opt/rocm/include/hip",
         "compile_flag" : "-D __HIP_PLATFORM_AMD__",

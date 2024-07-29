@@ -1,6 +1,6 @@
 local makefile = {}
 
-function makefile.content(include_flag, compile_flag)
+function makefile.content(subcontent)
     return string.format([[
 # Directories
 CORE_DIR = %s
@@ -13,7 +13,7 @@ LIB%s = lib%s.so
 # Compiler and flags
 CC 			= hipcc
 CXX			= hipcc
-CFLAGS 		= -fPIC -Wall $(INC_FLAGS) -Wno-deprecated-declarations %s
+CFLAGS 		= -fPIC -Wall $(INC_FLAGS) -Wno-uninitialized -Wno-deprecated-declarations %s
 LDFLAGS		= -shared
 INC_DIRS   := $(shell find $(CORE_DIR) -type d)
 INC_FLAGS  := $(addprefix -I,$(INC_DIRS)) -I$(CORE_DIR) %s
@@ -56,13 +56,21 @@ clean:
 		S._LIBDIR,
 		S._TOOLS_NAME_UPPER,
 		S._TOOLS_NAME,
-		compile_flag,
-		include_flag,
+		subcontent.compile_flag,
+		subcontent.include_flag,
 		S._TOOLS_NAME_UPPER,
 		S._TOOLS_NAME,
 		S._TOOLS_NAME_UPPER,
 		S._TOOLS_NAME_UPPER
 	)
+end
+
+function makefile.compile_flag(compile_flag)
+    return compile_flag
+end
+
+function makefile.include_flag(include_flag)
+    return "-I"..include_flag
 end
 
 return makefile

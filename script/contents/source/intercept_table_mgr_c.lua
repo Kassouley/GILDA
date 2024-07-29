@@ -1,9 +1,10 @@
 local itcp_tbl_mgr_src = {}
 
-function itcp_tbl_mgr_src.content(includes_str, handler, subcontent)
+function itcp_tbl_mgr_src.content(subcontent, includes_str, handler)
     return string.format([[
 #include "%s"
-#include "handler_manager.h"
+#include "%s"
+#include "%s"
 %s
 %s %s;
 
@@ -23,6 +24,8 @@ void %s() {
 };
 ]],
         S:_ITM_HEAD(),
+        S:_IF_HEAD(),
+        S:_HANDLER_MGR_HEAD(),
         includes_str,
         S:_INTERCEPT_TABLE_T(), S:_INTERCEPT_TABLE_VAR(),
         S:_ITM_ENABLE_DOMAIN_FUNC(),
@@ -35,15 +38,15 @@ void %s() {
     )
 end
 
-function itcp_tbl_mgr_src.handle_line(func_name)
+function itcp_tbl_mgr_src.load_table_block(func_name)
     return string.format("\tHANDLE(%s, %s, handle);", S:_INTERCEPT_TABLE_VAR(), func_name)
 end
 
-function itcp_tbl_mgr_src.enable_domain_line(func_name)
+function itcp_tbl_mgr_src.enable_domain_block(func_name)
     return string.format("\tSWITCH_FILTER(%s, %s, 1);", S:_INTERCEPT_TABLE_VAR(), func_name)
 end
 
-function itcp_tbl_mgr_src.disable_domain_line(func_name)
+function itcp_tbl_mgr_src.disable_domain_block(func_name)
     return string.format("\tSWITCH_FILTER(%s, %s, 0);", S:_INTERCEPT_TABLE_VAR(), func_name)
 end
 
