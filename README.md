@@ -43,6 +43,7 @@ lua gilda.lua parse output.csv header1.h header2.h
 
 ```json
 {
+    "gen_dir" : "./gen",
     "tools_name": "hooker",
     "tools_name_verb": "hook",
     "tools_name_adj": "hooked",
@@ -65,7 +66,7 @@ lua gilda.lua parse output.csv header1.h header2.h
     }
 }
 ```
-
+gen_dir is the directory where the tools directory will be created.
 The tools name variable are used to rename some variable inside the generated code.
 
 **Example:**
