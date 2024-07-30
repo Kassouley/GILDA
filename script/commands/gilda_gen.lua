@@ -1,4 +1,4 @@
-local io_interceptor = require("io_interceptor")
+local common = require("common")
 local FileManager = require("FileManager")
 
 local files = {
@@ -23,26 +23,30 @@ local files = {
     script  = FileManager:new("_SCRIPT_PATH", "script_sh")
 }
 
-local interceptor_generate = {}
-
--- COMMON --
-
-function scandir(dir)
-    local subdirectories = {}
-    local command = "find \"" .. dir .. "\" -maxdepth 1 -type d"
-    for line in io.popen(command):lines() do
-        if line ~= dir then
-            table.insert(subdirectories, string.match(line, "[^/]+$"))
-        end
-    end
-    return subdirectories
-end
+local gilda_gen = {}
 
 local function get_include_str(includes_table)
     return "\n#include \""..table.concat(includes_table, "\"\n#include \"") .. "\"\n"
 end
 
--- COMMON --
+local function parse_variable_declaration(declaration)
+    local pattern1 = "^%s*([%w%s_]+)%s*([%*%s]+)%s*([%w_]+)%s*$"
+    local return_type, pointer_symbol, variable_name = declaration:match(pattern1)
+    if return_type and variable_name and pointer_symbol then
+        local type_str = return_type .. pointer_symbol
+        return type_str, variable_name
+    end
+
+    local pattern2 = "^%s*([%w%s_]+)%s*([%*%s]+)%s*(%(.+%))%s*$"
+    local return_type, pointer_symbol, variable_name = declaration:match(pattern2)
+    if return_type and variable_name and pointer_symbol then
+        local cb_name, cb_args = variable_name:match("^%(%*?([%w_]+)%)%((.+)%)")
+        local cb_type = return_type .. pointer_symbol .. "(*) (" .. cb_args .. ")" 
+        return cb_type, cb_name
+    else
+        return nil, nil
+    end
+end
 
 local function generate_domain_contents(interceptor_data, function_to_intercept)
     local includes_str = get_include_str(interceptor_data.includes)
@@ -59,7 +63,7 @@ local function generate_domain_contents(interceptor_data, function_to_intercept)
         local cb_get_args_lines = {}
         
         for _, arg in ipairs(f.args) do
-            local type_param, name_param = io_interceptor.parse_variable_declaration(arg)
+            local type_param, name_param = parse_variable_declaration(arg)
             table.insert(types_param, type_param)
             table.insert(names_param, name_param)
 
@@ -92,7 +96,6 @@ local function generate_domain_contents(interceptor_data, function_to_intercept)
         end
     end
     
-    
     files.atm_src:generate_file(includes_str, handler)
     files.atm_hdr:generate_file(includes_str)
     files.if_src:generate_file(includes_str)
@@ -101,13 +104,13 @@ local function generate_domain_contents(interceptor_data, function_to_intercept)
     files.cb_hdr:generate_file(includes_str)
     files.f_auto:generate_file(includes_str)
     if files.f_man.subcontents.func_blk then
-        io_interceptor.mkdir(S:_MANGEN_DOMAIN_DIR())
+        common.mkdir(S:_MANGEN_DOMAIN_DIR())
         files.f_man:generate_file(includes_str)
     end
 end
 
 local function generate_common_contents(config_data)
-    local domain_list = scandir(S:_AUTOGENDIR_PATH())
+    local domain_list = common.scandir(S:_AUTOGENDIR_PATH())
     for _, domain in ipairs(domain_list) do
         domain = domain:sub(1, -#("_"..S._TOOLS_NAME)-1)
         local interceptor_data = config_data[domain]
@@ -144,11 +147,35 @@ local function generate_common_contents(config_data)
     os.execute("chmod u+x "..S._SCRIPT_PATH)
 end
 
+function parse_function_csv(filename)
+    local functions = {}
+    -- Read the CSV file
+    for line in io.lines(filename) do
+        local parts = {}
+        for part in line:gmatch("[^;]+") do
+            table.insert(parts, part)
+        end
+        -- Construct function table
+        local func = {
+            gen = parts[1],
+            return_type = parts[2],
+            name = parts[3],
+            args = {}
+        }
+        -- Extract arguments
+        for i = 4, #parts do
+            table.insert(func.args, parts[i]) 
+        end
+        table.insert(functions, func)
+    end
+    return functions
+end
+
 -- COMMAND --
-function interceptor_generate.command(config_data, domain_list)
-    io_interceptor.mkdir(S:_COREDIR_PATH())
-    io_interceptor.mkdir(S:_UTILSDIR_PATH())
-    io_interceptor.mkdir(S:_TOOLSDIR_PATH())
+function gilda_gen.command(config_data, domain_list)
+    common.mkdir(S:_COREDIR_PATH())
+    common.mkdir(S:_UTILSDIR_PATH())
+    common.mkdir(S:_TOOLSDIR_PATH())
 
     for _, domain in ipairs(domain_list) do
         local interceptor_data = config_data[domain]
@@ -157,13 +184,13 @@ function interceptor_generate.command(config_data, domain_list)
         elseif interceptor_data.input_csv == "" or interceptor_data.lib == "" then
             print("Warning: Skipping "..domain..", config file not complete")
         else
-            local function_to_intercept = io_interceptor.parseCSV(interceptor_data.input_csv)
+            local function_to_intercept = parse_function_csv(interceptor_data.input_csv)
             S._CURRENT_DOMAIN = domain
-            io_interceptor.mkdir(S:_AUTOGEN_DOMAIN_DIR())
+            common.mkdir(S:_AUTOGEN_DOMAIN_DIR())
             generate_domain_contents(interceptor_data, function_to_intercept)
         end                  
     end
     generate_common_contents(config_data)
 end
 
-return interceptor_generate
+return gilda_gen

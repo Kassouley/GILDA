@@ -1,38 +1,13 @@
-local function trim(s)
-    s = s:match("^%s*(.-)%s*$")
-    s = s:gsub("%s+", " ")
-    return s
-end
+local common = require("common")
 
-function splitOutsideParentheses(str)
-    local result = {}
-    local bracket_level = 0
-    local start_index = 1
-    
-    for i = 1, #str do
-        local char = str:sub(i, i)
-        
-        if char == '(' then
-            bracket_level = bracket_level + 1
-        elseif char == ')' then
-            bracket_level = bracket_level - 1
-        elseif char == ',' and bracket_level == 0 then
-            table.insert(result, trim(str:sub(start_index, i-1)))  -- trim spaces
-            start_index = i + 1
-        end
-    end
-    
-    table.insert(result, trim(str:sub(start_index)))  -- add the last part and trim spaces
-    
-    return result
-end
+local gilda_parse = {}
 
 local function cleanContent(content)
     local inCommentBlock = false
     local cleanContent = ""
 
     for line in content:lines() do  -- Use gmatch to iterate over lines
-        local trimmedLine = trim(line)  -- Trim leading and trailing spaces
+        local trimmedLine = common.trim(line)  -- Trim leading and trailing spaces
 
         -- Remove single-line comments "//"
         trimmedLine = trimmedLine:gsub("//.-$", "")
@@ -74,7 +49,6 @@ local function cleanContent(content)
     return cleanContent
 end
 
-
 local function parseFunctionPrototype(line)
     local returnType, funcName, params = line:match("([%w_%s]+)%s+([%w_%s]+)%s*%((.*)%)%s*$")
     if not returnType or not funcName then
@@ -84,11 +58,11 @@ local function parseFunctionPrototype(line)
 end
 
 
-local function processHeaderFile(content)
+local function process_header(content)
     -- Split the content by ";" to get complete function prototypes
     functions = {}
     for prototype in content:gmatch("[^;]+") do
-        local returnType, funcName, args = parseFunctionPrototype(trim(prototype))
+        local returnType, funcName, args = parseFunctionPrototype(common.trim(prototype))
         if args == "void" then
             args = ""
         end
@@ -96,7 +70,7 @@ local function processHeaderFile(content)
             table.insert(functions, {
                 returnType = returnType,
                 funcName = funcName,
-                args = splitOutsideParentheses(args)
+                args = common.split_outside_scope(args,",","(",")")
             })
         end
     end
@@ -104,64 +78,53 @@ local function processHeaderFile(content)
     return functions
 end
 
-local function writeCSV(functions, outputFilename)
-    local file = io.open(outputFilename, "w")
-    if not file then
-        print("Error: Unable to open output file " .. outputFilename)
-        return
-    end
-
+local function get_csv_content(functions)
+    local content = ""
     for _, func in ipairs(functions) do
         for _, f in ipairs(func) do
             local line = { "AUTOGEN", f.returnType, f.funcName }
             for _, arg in ipairs(f.args) do
                 table.insert(line, arg)
             end
-            file:write(table.concat(line, ";"), "\n")
+            content = content..table.concat(line, ";").."\n"
         end
     end
-
-    file:close()
+    return content
 end
 
--- Check if a file has a specific extension
-local function hasExtension(filename, ext)
-    return filename:sub(-#ext) == ext
-end
 
--- Main function to handle input and output
-local function main()
-    if #arg < 2 then
-        print("Usage: lua " .. arg[0] .. " <output_csv_file> <header_file1> [<header_file2> ...]")
+-- COMMAND --
+function gilda_parse.command(output_csv_file, header_files)
+    if not common.has_extension(output_csv_file, ".csv") then
+        print("Error: Output file must have a .csv extension")
         return
     end
-
-    local outputFilename = arg[1]
-    if not hasExtension(outputFilename, ".csv") then
-        print("Error: Output file must have a .csv extension")
+    if #header_files == 0 then
+        print("Error: At least one header file must be specified for the 'parse' command.")
         return
     end
 
     local functions = {}
-    for i = 2, #arg do
-        local inputFilename = arg[i]
-        if hasExtension(inputFilename, ".h") or hasExtension(inputFilename, ".hpp") then
-            local file = io.open(inputFilename, "r")
+    for _, header_file in pairs(header_files) do
+        if common.has_extension(header_file, ".h")
+        or common.has_extension(header_file, ".hpp") then
+            local file = io.open(header_file, "r")
             if not file then
-                print("Error: Unable to open file " .. filename)
+                print("Error: Unable to open file " .. header_file)
                 return
             end
-            local file_functions = processHeaderFile(cleanContent(file))
+            local file_functions = process_header(cleanContent(file))
             table.insert(functions, file_functions)
            
             file:close()
         else
-            print("Warning: Skipping non-header file " .. inputFilename)
+            print("Warning: Skipping non-header file " .. header_file)
         end
     end
 
-    writeCSV(functions, outputFilename)
-    print("CSV file generated: " .. outputFilename)
+    local content = get_csv_content(functions)
+    common.write_n_close(output_csv_file, content)
+    print("CSV file generated: " .. output_csv_file)
 end
 
-main()
+return gilda_parse

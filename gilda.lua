@@ -4,14 +4,15 @@ package.path = package.path .. ';./script/contents/source/?.lua'
 package.path = package.path .. ';./script/contents/header/?.lua'
 package.path = package.path .. ';./script/contents/?.lua'
 
-local io_interceptor = require("io_interceptor")
-local interceptor_generate = require("interceptor_generate")
-local interceptor_clean = require("interceptor_clean")
-local StringGenerator = require("string_generator")
+local common = require("common")
+local gilda_gen = require("gilda_gen")
+local gilda_clean = require("gilda_clean")
+local gilda_parse = require("gilda_parse")
+local StringGenerator = require("StringGenerator")
 
 -- Function to parse command-line arguments
 local function parse_args(args)
-    local options = { force = false, all = false }
+    local options = { force = false, all = false, sub_target = {} }
     local i = 1
     while i <= #args do
         local arg = args[i]
@@ -26,7 +27,7 @@ local function parse_args(args)
             elseif i == 2 then
                 options.target = arg
             else
-                table.insert(options.interceptors, arg)
+                table.insert(options.sub_target, arg)
             end
         end
         i = i + 1
@@ -39,34 +40,39 @@ function main()
     local args = parse_args(arg)
 
     if not args.command or not args.target then
-        print("Usage: lua "..arg[0].." [gen <config file> | clean <directory>] [options]")
+        print("Usage: lua "..arg[0].." [gen <config file> | clean <directory> | parse <output_csv_file> <header_file1> [<header_file2> ...]] [options]")
         return
     end
 
     local command = args.command
     local target = args.target
-    local interceptors = args.interceptors or {}
-    
+    local sub_target = args.sub_target or {}
     
     if command == "gen" then
         -- For 'gen' command, the target is expected to be a config file
         local config_file = target
-        local config_data = io_interceptor.load_json(config_file)
+        local config_data = common.load_json(config_file)
         S = StringGenerator.new(config_data)
 
-        if #interceptors == 0 then
+        if #sub_target == 0 then
             for key, value in pairs(config_data) do
                 if type(value) == 'table' then
-                    table.insert(interceptors, key)
+                    table.insert(sub_target, key)
                 end
             end
         end
-        interceptor_generate.command(config_data, interceptors)
+        gilda_gen.command(config_data, sub_target)
 
     elseif command == "clean" then
         -- For 'clean' command, the target is expected to be a directory
         local directory = target
-        interceptor_clean.command(directory, interceptors, args)
+        gilda_clean.command(directory, sub_target, args)
+
+    elseif command == "parse" then
+        -- For 'parse' command, the target is expected to be an output CSV file
+        local output_csv_file = target
+        local header_files = sub_target
+        gilda_parse.command(output_csv_file, header_files)
 
     else    
         print("Error: command "..command.." not available.")

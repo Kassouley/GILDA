@@ -1,11 +1,10 @@
-local interceptor_clean = {}
+local gilda_clean = {}
 
-function interceptor_clean.command(directory, interceptors, opt)
+function gilda_clean.command(directory, interceptors, opt)
     local force = ""
     if opt.force == true then
         force = "-f "
     end
-    -- self._WORKDIR.."/gen/"..directory
     if #interceptors == 0 then
         os.execute("rm -ir "..force..S._AUTOGENDIR)
         if opt.all == true then
@@ -21,4 +20,4 @@ function interceptor_clean.command(directory, interceptors, opt)
     end
 end
 
-return interceptor_clean
+return gilda_clean

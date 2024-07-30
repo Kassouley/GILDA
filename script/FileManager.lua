@@ -1,4 +1,4 @@
-local io_interceptor = require("io_interceptor")
+local common = require("common")
 
 -- FileManager.lua
 local FileManager = {}
@@ -40,7 +40,7 @@ end
 function FileManager:generate_file(...)
     local content = self.getter.content(self.subcontents, ...)
     if content ~= "" then
-        io_interceptor.write_n_close(self:get_path(), content)
+        common.write_n_close(self:get_path(), content)
         print("Content generated in '" .. self:get_path() .. "'")
     end
 end
