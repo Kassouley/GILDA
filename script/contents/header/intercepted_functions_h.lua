@@ -58,7 +58,7 @@ typedef struct %s {
 // %s API Function Prototype
 %s
 
-#endif
+#endif // %s
 ]],
         def_header,
         def_header,
@@ -96,7 +96,8 @@ typedef struct %s {
         S:_API_DATA_T(),
         -- API Function Prototype
         S:_DOMAIN_UPPER(), 
-        subcontent.func_proto_block
+        subcontent.func_proto_block,
+        def_header
     )
 end
 

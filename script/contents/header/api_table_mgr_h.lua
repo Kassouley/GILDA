@@ -18,7 +18,7 @@ typedef struct {
 %s
 } %s;
 
-#endif
+#endif // %s
 ]],
         def_header,
         def_header,
@@ -28,7 +28,8 @@ typedef struct {
         S:_ATM_DISABLE_DOMAIN_FUNC(),
         subcontent.typedef_block,
         subcontent.api_tbl_block,
-        S:_INTERCEPT_TABLE_T()
+        S:_INTERCEPT_TABLE_T(),
+        def_header
     )
 end
 

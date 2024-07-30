@@ -9,10 +9,14 @@ function StringGenerator.new(config_data)
     self._TOOLS_NAME_ADJ = config_data.tools_name_adj
     self._TOOLS_NAME_ABR = config_data.tools_name_abr
     self._TOOLS_NAME_NOUN = config_data.tools_name_noun
+    self._TOOLS_NAME_GERUND = config_data.tools_name_gerund
     
     self._TOOLS_NAME_UPPER = string.upper(self._TOOLS_NAME)
     self._TOOLS_NAME_UPPER_VERB = string.upper(self._TOOLS_NAME_VERB)
     self._TOOLS_NAME_UPPER_ADJ = string.upper(self._TOOLS_NAME_ADJ)
+    self._TOOLS_NAME_UPPER_ABR = string.upper(self._TOOLS_NAME_ABR)
+    self._TOOLS_NAME_UPPER_NOUN = string.upper(self._TOOLS_NAME_NOUN)
+    self._TOOLS_NAME_UPPER_GERUND = string.upper(self._TOOLS_NAME_GERUND)
 
     self._CURRENT_DOMAIN = "NO_DOMAIN_SET"
 

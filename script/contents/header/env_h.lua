@@ -17,7 +17,7 @@ get_%s_domain(bool* is_%s);
 bool 
 is_%s_domain(const char *domain);
 
-#endif
+#endif // ENV_H
 ]], 
         subcontent.set_enabled_block,
         S._TOOLS_NAME_ADJ, S._TOOLS_NAME_ADJ,

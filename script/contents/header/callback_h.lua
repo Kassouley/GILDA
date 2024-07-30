@@ -17,7 +17,7 @@ void %s(void (*%s)(%s));
 
 %s
 
-#endif
+#endif // %s
 ]],
         def_header,
         def_header,
@@ -25,7 +25,8 @@ void %s(void (*%s)(%s));
         includes_str,
         S:_CALLBACK_FUNCTION(), S:_CB_ARGS(),
         S:_SET_CALLBACK(), S:_CALLBACK(), S:_CB_ARGS(),
-        subcontent.cb_get_args_block
+        subcontent.cb_get_args_block,
+        def_header
     )
     return content
 end

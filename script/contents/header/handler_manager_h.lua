@@ -9,9 +9,12 @@ function handler_mgr_hdr.content()
 #include <dlfcn.h>
 #include "%s"
 
-void* load_handle(const char* handle_lib_path);
-void fallback(void);
-
+/**
+ * The `#define HANDLE(api_table, v, handle)` macro is defining a custom macro named 
+ * `HANDLE` that is used for loading function pointers from a dynamically loaded
+ * library handle and assign the loaded function to function pointer that will be
+ * call during the interception. 
+ */
 #define HANDLE(api_table, v, handle) \
 do { \
     api_table.fn_##v = (__##v##_t)(dlsym(handle, #v)); \
@@ -22,19 +25,65 @@ do { \
     api_table.ptr_##v = api_table.fn_##v; \
 } while (false);
 
-#define ENABLE_TRACE(api_table, v, d) \
+
+
+/**
+ * The `#define ENABLE_%s(api_table, v, d)` macro is defining a custom macro named 
+ * `ENABLE_%s` that is used for enabling the interception of the function v from 
+ * domain d
+ */
+#define ENABLE_%s(api_table, v, d) \
 do { \
     if (is_full_enabled || is_function_enabled[d##_API_ID_##v]) \
         api_table.ptr_##v = i_##v; \
 } while (false);
 
-#define DISABLE_TRACE(api_table, v) \
+
+
+/**
+ * The `#define DISABLE_%s(api_table, v)` macro is defining a custom macro named 
+ * `DISABLE_%s` that is used for disabling the interception of the function v
+ */
+#define DISABLE_%s(api_table, v) \
 do { \
     api_table.ptr_##v = api_table.fn_##v; \
 } while (false);
 
-#endif
-]], S:_LOGGER_HEAD())
+
+
+/**
+ * The function `load_handle` loads a dynamic library specified by the given path and returns a handle
+ * to it, or aborts the program if the library is not found.
+ * 
+ * @param handle_lib_path The `handle_lib_path` parameter is a string that represents the file path to
+ * a shared library that you want to load using the `dlopen` function in C.
+ * 
+ * @return If the `dlopen` function successfully loads the dynamic library specified by
+ * `handle_lib_path`, then the handle to that library is being returned. If the library is not found or
+ * there is an error in loading it, the function will print an error message and abort the program.
+ */
+void* load_handle(const char* handle_lib_path);
+
+
+
+/**
+ * The function `fallback` is designed to handle critical errors by displaying an error message and
+ * exiting the program with a failure status.
+ */
+void fallback(void);
+
+
+
+#endif // HANDLER_MANAGER_H
+]], 
+        S:_LOGGER_HEAD(),
+        S._TOOLS_NAME_UPPER_GERUND,
+        S._TOOLS_NAME_UPPER_GERUND,
+        S._TOOLS_NAME_UPPER_GERUND,
+        S._TOOLS_NAME_UPPER_GERUND,
+        S._TOOLS_NAME_UPPER_GERUND,
+        S._TOOLS_NAME_UPPER_GERUND
+    )
 end
 
 return handler_mgr_hdr

@@ -27,7 +27,7 @@ void %s_disable_domain(%s_domain_t domain);
 void %s_init();
 void %s_fini();
 
-#endif
+#endif // %s_H
 ]],
         S._TOOLS_NAME_UPPER,
         S._TOOLS_NAME_UPPER,
@@ -40,7 +40,8 @@ void %s_fini();
         S._TOOLS_NAME, S._TOOLS_NAME,
         S._TOOLS_NAME, S._TOOLS_NAME,
         S._TOOLS_NAME,
-        S._TOOLS_NAME
+        S._TOOLS_NAME,
+        S._TOOLS_NAME_UPPER
     )
 end
 
