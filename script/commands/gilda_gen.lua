@@ -123,14 +123,17 @@ local function generate_common_contents(config_data)
         files.i_hdr:add_subcontent("domain_name_block", "\n")
         files.i_hdr:add_subcontent("include_block", "\n")
         files.i_hdr:add_subcontent("enum_block", ",\n")
-        files.tools:add_subcontent("subcontent", "\n")
-        files.tools:add_subcontent("callback_block", "\n")
-        files.mkf:add_subcontent("include_flag", " ", interceptor_data.include_path)
-        files.mkf:add_subcontent("compile_flag", " ", interceptor_data.compile_flag)
-        files.script:add_subcontent("case_opt", "\n")
-        files.script:add_subcontent("init_opt_block", "\n")
-        files.script:add_subcontent("enabled_block", "\n")
-        files.script:add_subcontent("help_block", "\n")
+
+        if no_sample == false then
+            files.tools:add_subcontent("subcontent", "\n")
+            files.tools:add_subcontent("callback_block", "\n")
+            files.mkf:add_subcontent("include_flag", " ", interceptor_data.include_path)
+            files.mkf:add_subcontent("compile_flag", " ", interceptor_data.compile_flag)
+            files.script:add_subcontent("case_opt", "\n")
+            files.script:add_subcontent("init_opt_block", "\n")
+            files.script:add_subcontent("enabled_block", "\n")
+            files.script:add_subcontent("help_block", "\n")
+        end
     end
     
     files.env_src:generate_file()
@@ -141,10 +144,12 @@ local function generate_common_contents(config_data)
     files.hm_hdr:generate_file()
     files.log_src:generate_file()
     files.log_hdr:generate_file()
-    files.tools:generate_file()
-    files.mkf:generate_file()
-    files.script:generate_file()
-    os.execute("chmod u+x "..S._SCRIPT_PATH)
+    if no_sample == false then
+        files.tools:generate_file()
+        files.mkf:generate_file()
+        files.script:generate_file()
+        os.execute("chmod u+x "..S._SCRIPT_PATH)
+    end
 end
 
 function parse_function_csv(filename)
@@ -173,6 +178,10 @@ end
 
 -- COMMAND --
 function gilda_gen.command(config_data, domain_list)
+    no_sample = false
+    if common.file_exists(S._GENDIR) then
+        no_sample = true
+    end
     common.mkdir(S:_COREDIR_PATH())
     common.mkdir(S:_UTILSDIR_PATH())
     common.mkdir(S:_TOOLSDIR_PATH())

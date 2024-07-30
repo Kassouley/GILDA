@@ -1,5 +1,6 @@
 {
-    "tools_name" : "ratelprof",
+    "gen_dir" : "/home/lneto/RATELProf",
+    "tools_name" : "ratelprof2",
     "tools_name_verb" : "profile",
     "tools_name_adj" : "profiled",
     "tools_name_abr" : "prof",

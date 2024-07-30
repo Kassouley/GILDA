@@ -21,6 +21,7 @@ function StringGenerator.new(config_data)
 # YOU CAN USE THIS FILE AS A TEMPLATE AND MODIFY IT AS NEEDED.
 ]]
     
+    self._GENDIR_NAME = config_data.gen_dir
     self._TOOLS_NAME = config_data.tools_name
     self._TOOLS_NAME_VERB = config_data.tools_name_verb
     self._TOOLS_NAME_ADJ = config_data.tools_name_adj
@@ -38,7 +39,7 @@ function StringGenerator.new(config_data)
     self._CURRENT_DOMAIN = "NO_DOMAIN_SET"
 
     self._WORKDIR = os.getenv("PWD")
-    self._GENDIR = self._WORKDIR.."/gen/"..self._TOOLS_NAME
+    self._GENDIR = self._GENDIR_NAME.."/"..self._TOOLS_NAME
     self._COREDIR = "core"
     self._LIBDIR = "lib"
     self._BUILDDIR = "build"

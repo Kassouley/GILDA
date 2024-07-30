@@ -7,6 +7,11 @@ function common.mkdir(dirname)
     os.execute("mkdir -p "..dirname)
 end
 
+function common.file_exists(name)
+    if type(name)~="string" then return false end
+    return os.rename(name,name) and true or false
+end
+
 function common.scandir(dir)
     local subdirectories = {}
     local command = "find \"" .. dir .. "\" -maxdepth 1 -type d"
