@@ -43,7 +43,7 @@ function display_help() {
 filter_file=""
 %s
 app_args=()
-preload_lib="./lib/libratelprof.so"
+preload_lib="./lib/lib%s.so"
 
 # Parse script arguments
 while [[ $# -gt 0 ]].."]]"..[[; do
@@ -99,6 +99,7 @@ LD_PRELOAD=$preload_lib "${app_args[@]}"
     S._TOOLS_NAME_UPPER,
     subcontent.help_block,
     subcontent.init_opt_block,
+    S._TOOLS_NAME,
     subcontent.case_opt,
     subcontent.enabled_block
 )
