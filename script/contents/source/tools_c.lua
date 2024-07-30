@@ -10,7 +10,13 @@ function tools_src.content(subcontent)
 
 __attribute__((constructor)) void init(void) {
     %s_init();
+
+    bool* is_%s = (bool*)malloc(NB_DOMAIN * sizeof(bool));
+    get_%s_domain(is_%s);
+
 %s
+
+    free(is_%s);
 }
 
 __attribute__((destructor)) void fini(void) {
@@ -20,16 +26,21 @@ __attribute__((destructor)) void fini(void) {
         S:_INTERCEPTOR_HEAD(),
         subcontent.callback_block,
         S._TOOLS_NAME,
+        S._TOOLS_NAME_ADJ, 
+        S._TOOLS_NAME_ADJ, S._TOOLS_NAME_ADJ,
         subcontent.subcontent,
+        S._TOOLS_NAME_ADJ, 
         S._TOOLS_NAME
     )
 end
 
 function tools_src.subcontent()
     return string.format([[
-    %s(%s_callback_sample);
-    %s_enable_domain(%s);
-]],
+    if (is_%s[%s]) {
+        %s(%s_callback_sample);
+        %s_enable_domain(%s);
+    }]],
+        S._TOOLS_NAME_ADJ, S:_DOMAIN_ID(),
         S:_SET_CALLBACK(), S:_DOMAIN(),
         S._TOOLS_NAME, S:_DOMAIN_ID()
         )

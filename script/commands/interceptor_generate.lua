@@ -2,8 +2,8 @@ local io_interceptor = require("io_interceptor")
 local FileManager = require("FileManager")
 
 local files = {
-    itm_src = FileManager:new("_ITM_SRC_PATH", "intercept_table_mgr_c"),
-    itm_hdr = FileManager:new("_ITM_HEAD_PATH", "intercept_table_mgr_h"),
+    atm_src = FileManager:new("_ATM_SRC_PATH", "api_table_mgr_c"),
+    atm_hdr = FileManager:new("_ATM_HEAD_PATH", "api_table_mgr_h"),
     if_src  = FileManager:new("_IF_SRC_PATH", "intercepted_functions_c"),
     if_hdr  = FileManager:new("_IF_HEAD_PATH", "intercepted_functions_h"),
     cb_src  = FileManager:new("_CB_SRC_PATH", "callback_c"),
@@ -19,7 +19,8 @@ local files = {
     env_src = FileManager:new("_ENV_SRC_PATH", "env_c"),
     env_hdr = FileManager:new("_ENV_HEAD_PATH", "env_h"),
     tools   = FileManager:new("_TOOL_SRC_PATH", "tools_c"),
-    mkf     = FileManager:new("_MAKEFILE_PATH", "makefile")
+    mkf     = FileManager:new("_MAKEFILE_PATH", "makefile"),
+    script  = FileManager:new("_SCRIPT_PATH", "script_sh")
 }
 
 local interceptor_generate = {}
@@ -51,7 +52,7 @@ local function generate_domain_contents(interceptor_data, function_to_intercept)
         file:reset_subcontent()
     end
     
-    for i, f in ipairs(function_to_intercept) do
+    for _, f in ipairs(function_to_intercept) do
         local names_param = {}
         local types_param = {}
         local api_data_t_lines = {}
@@ -67,18 +68,18 @@ local function generate_domain_contents(interceptor_data, function_to_intercept)
         end
         local names_param_str = table.concat(names_param, ", ")
 
-        files.itm_src:add_subcontent("load_table_block", "\n", f.name)
-        files.itm_src:add_subcontent("enable_domain_block", "\n", f.name)
-        files.itm_src:add_subcontent("disable_domain_block", "\n", f.name)
+        files.atm_src:add_subcontent("load_table_block", "\n", f.name)
+        files.atm_src:add_subcontent("enable_domain_block", "\n", f.name)
+        files.atm_src:add_subcontent("disable_domain_block", "\n", f.name)
 
-        files.itm_hdr:add_subcontent("typedef_block", "", f)
-        files.itm_hdr:add_subcontent("itcp_tbl_block", "", f.name)
+        files.atm_hdr:add_subcontent("typedef_block", "", f)
+        files.atm_hdr:add_subcontent("api_tbl_block", "", f.name)
 
         files.if_src:add_subcontent("func_blk", "", f, names_param_str)
 
         files.if_hdr:add_subcontent("func_proto_block", "\n", f)
         files.if_hdr:add_subcontent("api_data_t_block", "\n", f.return_type, f.name, table.concat(api_data_t_lines,"\n"))
-        files.if_hdr:add_subcontent("api_id_enum_block", "\n", f.name, i)
+        files.if_hdr:add_subcontent("api_id_enum_block", "\n", f.name)
         files.if_hdr:add_subcontent("get_funame_block", "\n", f.name)
         files.if_hdr:add_subcontent("get_funid_block", "\n", f.name)
 
@@ -92,8 +93,8 @@ local function generate_domain_contents(interceptor_data, function_to_intercept)
     end
     
     
-    files.itm_src:generate_file(includes_str, handler)
-    files.itm_hdr:generate_file(includes_str)
+    files.atm_src:generate_file(includes_str, handler)
+    files.atm_hdr:generate_file(includes_str)
     files.if_src:generate_file(includes_str)
     files.if_hdr:generate_file(includes_str)
     files.cb_src:generate_file()
@@ -106,21 +107,27 @@ local function generate_domain_contents(interceptor_data, function_to_intercept)
 end
 
 local function generate_common_contents(config_data)
-
     local domain_list = scandir(S:_AUTOGENDIR_PATH())
     for _, domain in ipairs(domain_list) do
         domain = domain:sub(1, -#("_"..S._TOOLS_NAME)-1)
         local interceptor_data = config_data[domain]
         S._CURRENT_DOMAIN = domain
+        files.env_src:add_subcontent("set_enabled_block", "\n")
+        files.env_hdr:add_subcontent("set_enabled_block", "\n")
         files.i_src:add_subcontent("load_block", "\n")
         files.i_src:add_subcontent("enable_case_block", "\n")
         files.i_src:add_subcontent("disable_case_block", "\n")
+        files.i_hdr:add_subcontent("domain_name_block", "\n")
         files.i_hdr:add_subcontent("include_block", "\n")
         files.i_hdr:add_subcontent("enum_block", ",\n")
         files.tools:add_subcontent("subcontent", "\n")
         files.tools:add_subcontent("callback_block", "\n")
         files.mkf:add_subcontent("include_flag", " ", interceptor_data.include_path)
         files.mkf:add_subcontent("compile_flag", " ", interceptor_data.compile_flag)
+        files.script:add_subcontent("case_opt", "\n")
+        files.script:add_subcontent("init_opt_block", "\n")
+        files.script:add_subcontent("enabled_block", "\n")
+        files.script:add_subcontent("help_block", "\n")
     end
     
     files.env_src:generate_file()
@@ -133,6 +140,8 @@ local function generate_common_contents(config_data)
     files.log_hdr:generate_file()
     files.tools:generate_file()
     files.mkf:generate_file()
+    files.script:generate_file()
+    os.execute("chmod u+x "..S._SCRIPT_PATH)
 end
 
 -- COMMAND --

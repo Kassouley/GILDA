@@ -9,7 +9,7 @@ extern %s %s;
 %s
 
 ]],
-        S:_ITM_HEAD(),
+        S:_ATM_HEAD(),
         includes_str,
         S:_INTERCEPT_TABLE_T(), S:_INTERCEPT_TABLE_VAR(),
         subcontent.func_blk

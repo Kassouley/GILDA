@@ -1,8 +1,9 @@
 {
     "tools_name" : "ratelprof",
-    "tools_name_verb" : "profile",
-    "tools_name_adj" : "profiled",
-    "tools_name_abr" : "prof",
+    "tools_name_verb" : "intercept",
+    "tools_name_adj" : "intercepted",
+    "tools_name_abr" : "intcp",
+    "tools_name_noun" : "interception",
     "hsa" : {
         "input_csv" : "./script/output/hsa.csv",
         "includes" : ["hsa.h", "hsa_ext_amd.h"],

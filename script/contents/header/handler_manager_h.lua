@@ -12,28 +12,29 @@ function handler_mgr_hdr.content()
 void* load_handle(const char* handle_lib_path);
 void fallback(void);
 
-#define HANDLE(itcp_table, v, handle) \
+#define HANDLE(api_table, v, handle) \
 do { \
-    itcp_table.fn_##v = (__##v##_t)(dlsym(handle, #v)); \
-    if (!itcp_table.fn_##v) { \
-        LOG_MESSAGE("Failed to load \"%s\". Skipping.\n", #v); \
-        itcp_table.fn_##v = (__##v##_t)fallback; \
+    api_table.fn_##v = (__##v##_t)(dlsym(handle, #v)); \
+    if (!api_table.fn_##v) { \
+        LOG_MESSAGE("Failed to load \"%%s\". Skipping.\n", #v); \
+        api_table.fn_##v = (__##v##_t)fallback; \
     } \
-    itcp_table.ptr_##v = itcp_table.fn_##v; \
+    api_table.ptr_##v = api_table.fn_##v; \
 } while (false);
 
-
-#define SWITCH_FILTER(itcp_table, v, is_enable) \
+#define ENABLE_TRACE(api_table, v, d) \
 do { \
-    if (is_enable) { \
-        itcp_table.ptr_##v = i_##v; \
-    } else { \
-        itcp_table.ptr_##v = itcp_table.fn_##v; \
-    } \
+    if (is_full_enabled || is_function_enabled[d##_API_ID_##v]) \
+        api_table.ptr_##v = i_##v; \
+} while (false);
+
+#define DISABLE_TRACE(api_table, v) \
+do { \
+    api_table.ptr_##v = api_table.fn_##v; \
 } while (false);
 
 #endif
-]], S:_LOGGER_HEAD(), "%s")
+]], S:_LOGGER_HEAD())
 end
 
 return handler_mgr_hdr

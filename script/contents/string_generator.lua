@@ -7,13 +7,14 @@ function StringGenerator.new(config_data)
     self._TOOLS_NAME = config_data.tools_name
     self._TOOLS_NAME_VERB = config_data.tools_name_verb
     self._TOOLS_NAME_ADJ = config_data.tools_name_adj
+    self._TOOLS_NAME_ABR = config_data.tools_name_abr
+    self._TOOLS_NAME_NOUN = config_data.tools_name_noun
     
     self._TOOLS_NAME_UPPER = string.upper(self._TOOLS_NAME)
     self._TOOLS_NAME_UPPER_VERB = string.upper(self._TOOLS_NAME_VERB)
     self._TOOLS_NAME_UPPER_ADJ = string.upper(self._TOOLS_NAME_ADJ)
-    self._FUNCTION_FILTER = self._TOOLS_NAME_UPPER.."_FUNCTION_FILTER"
 
-    self._CURRENT_DOMAIN = ""
+    self._CURRENT_DOMAIN = "NO_DOMAIN_SET"
 
     self._WORKDIR = os.getenv("PWD")
     self._GENDIR = self._WORKDIR.."/gen/"..self._TOOLS_NAME
@@ -25,6 +26,7 @@ function StringGenerator.new(config_data)
     self._UTILSDIR = "utils"
     self._TOOLSDIR = "tools"
     self._MAKEFILE_PATH = self._GENDIR.."/Makefile"
+    self._SCRIPT_PATH = self._GENDIR.."/"..self._TOOLS_NAME..".sh"
 
     self._HANDLER_MGR = "handler_manager"
     self._ENV = "env"
@@ -168,29 +170,29 @@ function StringGenerator:_INTERCEPT_TABLE_VAR()
 end
 
 -- INTERCEPT TABLE MANAGER FILE STRING
-function StringGenerator:_ITM()
+function StringGenerator:_ATM()
     return self._CURRENT_DOMAIN.."_api_table_mgr"
 end
-function StringGenerator:_ITM_SRC()
-    return self:_ITM()..".c"
+function StringGenerator:_ATM_SRC()
+    return self:_ATM()..".c"
 end
-function StringGenerator:_ITM_HEAD()
-    return self:_ITM()..".h"
+function StringGenerator:_ATM_HEAD()
+    return self:_ATM()..".h"
 end
-function StringGenerator:_ITM_SRC_PATH()
-    return self:_AUTOGEN_DOMAIN_DIR() .. "/" .. self:_ITM_SRC()
+function StringGenerator:_ATM_SRC_PATH()
+    return self:_AUTOGEN_DOMAIN_DIR() .. "/" .. self:_ATM_SRC()
 end
-function StringGenerator:_ITM_HEAD_PATH()
-    return self:_AUTOGEN_DOMAIN_DIR() .. "/" .. self:_ITM_HEAD()
+function StringGenerator:_ATM_HEAD_PATH()
+    return self:_AUTOGEN_DOMAIN_DIR() .. "/" .. self:_ATM_HEAD()
 end
 
-function StringGenerator:_ITM_ENABLE_DOMAIN_FUNC()
+function StringGenerator:_ATM_ENABLE_DOMAIN_FUNC()
     return "enable_"..self._CURRENT_DOMAIN.."_api_domain"
 end
-function StringGenerator:_ITM_DISABLE_DOMAIN_FUNC()
+function StringGenerator:_ATM_DISABLE_DOMAIN_FUNC()
     return "disable_"..self._CURRENT_DOMAIN.."_api_domain"
 end
-function StringGenerator:_ITM_LOAD_TABLE_FUNC()
+function StringGenerator:_ATM_LOAD_TABLE_FUNC()
     return "load_"..self._CURRENT_DOMAIN.."_api_table"
 end
 

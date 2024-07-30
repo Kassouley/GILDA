@@ -1,6 +1,6 @@
-local itcp_fnct_src = {}
+local api_fnct_src = {}
 
-function itcp_fnct_src.content(subcontent, includes_str)
+function api_fnct_src.content(subcontent, includes_str)
     return string.format([[
 #include "%s"
 #include "%s"
@@ -12,7 +12,7 @@ extern %s %s;
 
 ]],
         S:_IF_HEAD(),
-        S:_ITM_HEAD(),
+        S:_ATM_HEAD(),
         S:_CB_HEAD(),
         includes_str,
         S:_INTERCEPT_TABLE_T(), S:_INTERCEPT_TABLE_VAR(),
@@ -20,7 +20,7 @@ extern %s %s;
     )
 end
 
-function itcp_fnct_src.func_blk(f, names_param_str)
+function api_fnct_src.func_blk(f, names_param_str)
     if f.return_type ~= "void" then
         local function_ret_var = "__"..S:_DOMAIN().."_ret__"
         return string.format([[
@@ -62,4 +62,4 @@ function itcp_fnct_src.func_blk(f, names_param_str)
     end
 end
 
-return itcp_fnct_src
+return api_fnct_src
