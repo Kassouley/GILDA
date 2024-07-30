@@ -1,7 +1,9 @@
 local logger_hdr = {}
 
 function logger_hdr.content()
-    return [[
+    return string.format([[
+%s
+
 #ifndef LOGGER_H
 #define LOGGER_H
 
@@ -49,7 +51,7 @@ extern Logger logger;
     if (logger.file != NULL) { \
         int len = snprintf(logger.buffer + logger.buffer_len, \
                            LOG_BUFFER_SIZE - logger.buffer_len, \
-                           "[%s] " format "\n", current_time(), ##__VA_ARGS__); \
+                           "[%%s] " format "\n", current_time(), ##__VA_ARGS__); \
         if (len > 0) { \
             logger.buffer_len += len; \
             if (logger.buffer_len > LOG_FLUSH_THRESHOLD) { \
@@ -76,7 +78,9 @@ extern Logger logger;
 char* current_time();
 
 #endif // LOGGER_H
-]]
+]],
+        S._WARNING_MSG
+    )
 end
 
 return logger_hdr

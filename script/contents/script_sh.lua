@@ -2,6 +2,8 @@ local script_sh = {}
 
 function script_sh.content(subcontent)
     return string.format([[
+%s
+
 #!/bin/bash
 
 function export_filter_var() {
@@ -96,13 +98,14 @@ fi
 LD_PRELOAD=$preload_lib "${app_args[@]}"
 
 ]],
-    S._TOOLS_NAME_UPPER,
-    subcontent.help_block,
-    subcontent.init_opt_block,
-    S._TOOLS_NAME,
-    subcontent.case_opt,
-    subcontent.enabled_block
-)
+		S._SAMPLE_MSG_2,
+        S._TOOLS_NAME_UPPER,
+        subcontent.help_block,
+        subcontent.init_opt_block,
+        S._TOOLS_NAME,
+        subcontent.case_opt,
+        subcontent.enabled_block
+    )
 end
 
 function script_sh.case_opt()

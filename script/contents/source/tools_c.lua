@@ -2,6 +2,8 @@ local tools_src = {}
 
 function tools_src.content(subcontent)
     return string.format([[
+%s
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "%s"
@@ -23,6 +25,7 @@ __attribute__((destructor)) void fini(void) {
     %s_fini();
 }
 ]],
+        S._SAMPLE_MSG,
         S:_INTERCEPTOR_HEAD(),
         subcontent.callback_block,
         S._TOOLS_NAME,

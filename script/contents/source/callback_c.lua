@@ -3,6 +3,8 @@ local cb_src = {}
 function cb_src.content()
     local stored_cb_decl = "stored_"..S:_DOMAIN().."_callback"
     return string.format([[
+%s
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -23,6 +25,7 @@ void %s(bool is_enter, %s func_id, %s data) {
     }
 }
 ]],
+        S._WARNING_MSG,
         S:_IF_HEAD(),
         S:_CB_HEAD(),
         stored_cb_decl, S:_CB_ARGS(),

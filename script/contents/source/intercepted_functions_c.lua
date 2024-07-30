@@ -2,6 +2,8 @@ local api_fnct_src = {}
 
 function api_fnct_src.content(subcontent, includes_str)
     return string.format([[
+%s
+
 #include "%s"
 #include "%s"
 #include "%s"
@@ -11,6 +13,7 @@ extern %s %s;
 %s
 
 ]],
+        S._WARNING_MSG,
         S:_IF_HEAD(),
         S:_ATM_HEAD(),
         S:_CB_HEAD(),

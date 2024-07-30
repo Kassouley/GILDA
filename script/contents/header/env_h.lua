@@ -2,6 +2,8 @@ local env_hdr = {}
 
 function env_hdr.content(subcontent)
     return string.format([[
+%s
+
 #ifndef ENV_H
 #define ENV_H
 #include <stdbool.h>
@@ -19,6 +21,7 @@ is_%s_domain(const char *domain);
 
 #endif // ENV_H
 ]], 
+        S._WARNING_MSG,
         subcontent.set_enabled_block,
         S._TOOLS_NAME_ADJ, S._TOOLS_NAME_ADJ,
         S._TOOLS_NAME_ADJ

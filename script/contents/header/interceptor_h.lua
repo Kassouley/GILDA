@@ -2,6 +2,8 @@ local interceptor_hdr = {}
 
 function interceptor_hdr.content(subcontent)
     return string.format([[
+%s
+
 #ifndef %s_H
 #define %s_H
 
@@ -29,6 +31,7 @@ void %s_fini();
 
 #endif // %s_H
 ]],
+        S._WARNING_MSG,
         S._TOOLS_NAME_UPPER,
         S._TOOLS_NAME_UPPER,
         subcontent.include_block,

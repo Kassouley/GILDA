@@ -2,6 +2,8 @@ local itcp_tbl_mgr_src = {}
 
 function itcp_tbl_mgr_src.content(subcontent, includes_str, handler)
     return string.format([[
+%s
+
 #include "%s"
 #include "%s"
 #include "%s"
@@ -27,6 +29,7 @@ void %s() {
 %s
 };
 ]],
+        S._WARNING_MSG,
         S:_ATM_HEAD(),
         S:_IF_HEAD(),
         S:_HANDLER_MGR_HEAD(),

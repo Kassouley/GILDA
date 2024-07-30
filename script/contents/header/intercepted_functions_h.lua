@@ -6,6 +6,8 @@ function api_fnct_hdr.content(subcontent, includes_str)
     )
     local macro_call = string.format("GET_CB_ARGS_DATA_##v(%s)", S:_API_DATA_VAR())
     return string.format([[
+%s
+
 #ifndef %s
 #define %s
 %s
@@ -60,6 +62,7 @@ typedef struct %s {
 
 #endif // %s
 ]],
+        S._WARNING_MSG,
         def_header,
         def_header,
         includes_str,

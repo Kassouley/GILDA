@@ -2,6 +2,8 @@ local env_src = {}
 
 function env_src.content(subcontent)
     return string.format([[
+%s
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -50,6 +52,7 @@ int get_%s_domain(bool* is_%s)
     return 0;
 }
 ]], 
+        S._WARNING_MSG,
         S:_INTERCEPTOR_HEAD(),
         S:_ENV_HEAD(),
         subcontent.set_enabled_block,

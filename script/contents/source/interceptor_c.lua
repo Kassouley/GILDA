@@ -2,6 +2,8 @@ local interceptor_src = {}
 
 function interceptor_src.content(subcontent)
     return string.format([[
+%s
+
 #include <stdio.h>
 #include "%s"
 #include "%s"
@@ -36,6 +38,7 @@ void %s_fini()
 }
 
 ]],
+        S._WARNING_MSG,
         S:_INTERCEPTOR_HEAD(),
         S:_LOGGER_HEAD(),
         S._TOOLS_NAME, S._TOOLS_NAME,

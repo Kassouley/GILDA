@@ -4,6 +4,8 @@ local cb_hdr = {}
 function cb_hdr.content(subcontent, includes_str)
     local def_header = S:_DOMAIN_UPPER().."_CALLBACK_H"
     local content = string.format([[
+%s
+
 #ifndef %s
 #define %s
 
@@ -19,6 +21,7 @@ void %s(void (*%s)(%s));
 
 #endif // %s
 ]],
+        S._WARNING_MSG,
         def_header,
         def_header,
         S:_IF_HEAD(),

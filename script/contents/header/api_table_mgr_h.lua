@@ -5,6 +5,8 @@ function api_tbl_mgr_hdr.content(subcontent, includes_str)
         "%s_%s_TABLE_MGR_H", S:_DOMAIN_UPPER(), S._TOOLS_NAME_LOWER_VERB
     )
     return string.format([[
+%s
+
 #ifndef %s
 #define %s
 %s
@@ -20,6 +22,7 @@ typedef struct {
 
 #endif // %s
 ]],
+        S._WARNING_MSG,
         def_header,
         def_header,
         includes_str,

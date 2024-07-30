@@ -2,6 +2,8 @@ local handler_mgr_hdr = {}
 
 function handler_mgr_hdr.content()
     return string.format([[
+%s
+
 #ifndef HANDLER_MANAGER_H
 #define HANDLER_MANAGER_H
 #include <stdio.h>
@@ -76,6 +78,7 @@ void fallback(void);
 
 #endif // HANDLER_MANAGER_H
 ]], 
+        S._WARNING_MSG,
         S:_LOGGER_HEAD(),
         S._TOOLS_NAME_UPPER_GERUND,
         S._TOOLS_NAME_UPPER_GERUND,

@@ -2,6 +2,8 @@ local fnct_src = {}
 
 function fnct_src.content(subcontent, includes_str)
     return string.format([[
+%s
+
 #include "%s"
 %s
 extern %s %s;
@@ -9,6 +11,7 @@ extern %s %s;
 %s
 
 ]],
+        S._WARNING_MSG,
         S:_ATM_HEAD(),
         includes_str,
         S:_INTERCEPT_TABLE_T(), S:_INTERCEPT_TABLE_VAR(),

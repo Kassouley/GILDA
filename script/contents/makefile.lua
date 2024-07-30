@@ -2,6 +2,8 @@ local makefile = {}
 
 function makefile.content(subcontent)
     return string.format([[
+%s
+
 # Directories
 CORE_DIR = %s
 BUILD_DIR = %s
@@ -51,6 +53,7 @@ clean:
 
 .PHONY: all clean
 ]],
+		S._SAMPLE_MSG_2,
 		S._COREDIR,
 		S._BUILDDIR,
 		S._LIBDIR,
