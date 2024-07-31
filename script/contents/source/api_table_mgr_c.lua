@@ -15,7 +15,7 @@ void %s()
 {
     bool is_function_enabled[%sNB_FUNCTION] = { false };
     bool is_full_enabled = true;
-    set_%s_interception_enabled(is_function_enabled, &is_full_enabled);
+    set_%s_%s_enabled(is_function_enabled, &is_full_enabled);
 %s
 }
 
@@ -38,7 +38,7 @@ void %s() {
         S:_INTERCEPT_TABLE_T(), S:_INTERCEPT_TABLE_VAR(),
         S:_ATM_ENABLE_DOMAIN_FUNC(),
         S:_API_ID_PREFIX(),
-        S:_DOMAIN(),
+        S:_DOMAIN(), S._TOOLS_NAME_NOUN,
         subcontent.enable_domain_block,
         S:_ATM_DISABLE_DOMAIN_FUNC(),
         subcontent.disable_domain_block,
