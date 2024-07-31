@@ -53,11 +53,11 @@ function itcp_tbl_mgr_src.load_table_block(func_name)
 end
 
 function itcp_tbl_mgr_src.enable_domain_block(func_name)
-    return string.format("\tENABLE_TRACE(%s, %s, %s);", S:_INTERCEPT_TABLE_VAR(), func_name, S:_DOMAIN_UPPER())
+    return string.format("\tENABLE_%s(%s, %s, %s);", S._TOOLS_NAME_UPPER_GERUND, S:_INTERCEPT_TABLE_VAR(), func_name, S:_DOMAIN_UPPER())
 end
 
 function itcp_tbl_mgr_src.disable_domain_block(func_name)
-    return string.format("\tDISABLE_TRACE(%s, %s);", S:_INTERCEPT_TABLE_VAR(), func_name)
+    return string.format("\tDISABLE_%s(%s, %s);", S._TOOLS_NAME_UPPER_GERUND, S:_INTERCEPT_TABLE_VAR(), func_name)
 end
 
 return itcp_tbl_mgr_src
