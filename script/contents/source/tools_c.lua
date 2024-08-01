@@ -1,40 +1,29 @@
 local tools_src = {}
 
 function tools_src.content(subcontent)
-    return string.format([[
-%s
+    return S._SAMPLE_MSG..[[ 
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "%s"
+#include "]]..S._INTERCEPTOR_HEAD..[["
 
-%s
+]]..subcontent.callback_block..[[ 
 
 __attribute__((constructor)) void init(void) {
-    %s_init();
+    ]]..S._TOOLS_NAME..[[_init();
 
-    bool* is_%s = (bool*)malloc(NB_DOMAIN * sizeof(bool));
-    get_%s_domain(is_%s);
+    bool* is_]]..S._TOOLS_NAME_ADJ..[[ = (bool*)malloc(]]..S._TOOLS_NAME_UPPER..[[_NB_DOMAIN * sizeof(bool));
+    get_]]..S._TOOLS_NAME_ADJ..[[_domain(is_]]..S._TOOLS_NAME_ADJ..[[);
 
-%s
+]]..subcontent.subcontent..[[ 
 
-    free(is_%s);
+    free(is_]]..S._TOOLS_NAME_ADJ..[[);
 }
 
 __attribute__((destructor)) void fini(void) {
-    %s_fini();
+    ]]..S._TOOLS_NAME..[[_fini();
 }
-]],
-        S._SAMPLE_MSG,
-        S:_INTERCEPTOR_HEAD(),
-        subcontent.callback_block,
-        S._TOOLS_NAME,
-        S._TOOLS_NAME_ADJ, 
-        S._TOOLS_NAME_ADJ, S._TOOLS_NAME_ADJ,
-        subcontent.subcontent,
-        S._TOOLS_NAME_ADJ, 
-        S._TOOLS_NAME
-    )
+]]
 end
 
 function tools_src.subcontent()
@@ -43,25 +32,20 @@ function tools_src.subcontent()
         %s(%s_callback_sample);
         %s_enable_domain(%s);
     }]],
-        S._TOOLS_NAME_ADJ, S:_DOMAIN_ID(),
-        S:_SET_CALLBACK(), S:_DOMAIN(),
-        S._TOOLS_NAME, S:_DOMAIN_ID()
+        S._TOOLS_NAME_ADJ, S._DOMAIN_ID,
+        S._SET_CALLBACK, S._DOMAIN,
+        S._TOOLS_NAME, S._DOMAIN_ID
         )
 end
 
 function tools_src.callback_block()
-    return string.format([[
-void %s_callback_sample(bool is_enter, %s func_id, %s data) 
+    return [[
+void ]]..S._DOMAIN..[[_callback_sample(bool is_enter, const ]]..S._API_DATA_T..[[* activity) 
 {
     if (is_enter)
-        printf("%%s\n", get_%s_funame_by_id(func_id));
+        printf("%s\n", get_]]..S._DOMAIN..[[_funame_by_id(activity->funid));
 }
-]],
-        S:_DOMAIN(),
-        S:_API_ID_T(),
-        S:_API_DATA_T(),
-        S:_DOMAIN()
-    )
+]]
 end
 
 return tools_src

@@ -1,18 +1,17 @@
 local env_src = {}
 
 function env_src.content(subcontent)
-    return string.format([[
-%s
+    return S._WARNING_MSG..[[ 
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-#include "%s"
-#include "%s"
+#include "]]..S._INTERCEPTOR_HEAD..[["
+#include "]]..S._ENV_HEAD..[["
 
-%s
+]]..subcontent.set_enabled_block..[[
 
 const char* get_function_filter(const char* env_function_filter) 
 {
@@ -29,12 +28,12 @@ const char* get_function_filter(const char* env_function_filter)
     return env_var;
 }
 
-bool is_%s_domain(const char *domain) 
+bool is_]]..S._TOOLS_NAME_ADJ..[[_domain(const char *domain) 
 {
     const char *env_var = getenv(domain);
     if (env_var != NULL && *env_var != '\0') {
-        int is_%s = atoi(env_var);
-        if (is_%s) {
+        int is_]]..S._TOOLS_NAME_ADJ..[[ = atoi(env_var);
+        if (is_]]..S._TOOLS_NAME_ADJ..[[) {
             return true;
         } else {
             return false;
@@ -43,41 +42,30 @@ bool is_%s_domain(const char *domain)
     return false;
 }
 
-int get_%s_domain(bool* is_%s) 
+int get_]]..S._TOOLS_NAME_ADJ..[[_domain(bool* is_]]..S._TOOLS_NAME_ADJ..[[) 
 {
-    for (%s_domain_t domain = 0; domain < NB_DOMAIN; domain++) {
+    for (]]..S._TOOLS_NAME..[[_domain_t domain = 0; domain < ]]..S._TOOLS_NAME_UPPER..[[_NB_DOMAIN; domain++) {
         const char *domain_name = get_domain_name(domain);
-        is_%s[domain] = is_%s_domain(domain_name);
+        is_]]..S._TOOLS_NAME_ADJ..[[[domain] = is_]]..S._TOOLS_NAME_ADJ..[[_domain(domain_name);
     }
     return 0;
 }
-]], 
-        S._WARNING_MSG,
-        S:_INTERCEPTOR_HEAD(),
-        S:_ENV_HEAD(),
-        subcontent.set_enabled_block,
-        S._TOOLS_NAME_ADJ,
-        S._TOOLS_NAME_ADJ,
-        S._TOOLS_NAME_ADJ,
-        S._TOOLS_NAME_ADJ, S._TOOLS_NAME_ADJ,
-        S._TOOLS_NAME,
-        S._TOOLS_NAME_ADJ, S._TOOLS_NAME_ADJ
-    )
+]]
 end
 
 function env_src.set_enabled_block()
-    return string.format([[
-void set_%s_%s_enabled(bool* enabled_functions, bool* is_full_enabled) 
+    return [[
+void set_]]..S._DOMAIN..[[_]]..S._TOOLS_NAME_NOUN..[[_enabled(bool* enabled_functions, bool* is_full_enabled) 
 {
-    const char *env_var = get_function_filter("%s_FUNCTIONS");
+    const char *env_var = get_function_filter("]]..S._DOMAIN_ID..[[_FUNCTIONS");
     if (env_var != NULL) {
 
         char* functions = strdup(env_var);
         char* token = strtok(functions, ",");
 
         while (token) {
-            %s id = get_%s_funid_by_name(token);
-            if (id >= 0 && id < %sNB_FUNCTION) {
+            ]]..S._API_ID_T..[[ id = get_]]..S._DOMAIN..[[_funid_by_name(token);
+            if (id >= 0 && id < ]]..S._API_ID_PREFIX..[[NB_FUNCTION) {
                 enabled_functions[id] = true;
             }
             token = strtok(NULL, ",");
@@ -88,13 +76,7 @@ void set_%s_%s_enabled(bool* enabled_functions, bool* is_full_enabled)
         *is_full_enabled = true;
     }
 }
-]], 
-        S:_DOMAIN(), S._TOOLS_NAME_NOUN,
-        S:_DOMAIN_ID(),
-        S:_API_ID_T(),
-        S:_DOMAIN(),
-        S:_API_ID_PREFIX()
-    )
+]]
 end
 
 return env_src

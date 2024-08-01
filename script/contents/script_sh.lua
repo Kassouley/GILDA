@@ -1,8 +1,7 @@
 local script_sh = {}
 
 function script_sh.content(subcontent)
-    return string.format([[
-%s
+    return S._SAMPLE_MSG_2..[[ 
 
 #!/bin/bash
 
@@ -25,7 +24,7 @@ function export_filter_var() {
     # For debugging, let's print the cleaned content
     while IFS=: read -r key value; do
         key_upper=$(echo "$key" | tr '[:lower:]' '[:upper:]')
-        var_name="%s_DOMAIN_${key_upper}_FUNCTIONS"
+        var_name="]]..S._TOOLS_NAME_UPPER..[[_DOMAIN_${key_upper}_FUNCTIONS"
         eval "export $var_name=$value"
     done <<< "$file_content"
 }
@@ -37,15 +36,15 @@ function display_help() {
     echo "Options:"
     echo "  -h, --help                       Display this help message"
     echo "  -f, --filter FILE                Specify the input file with functions to intercept"
-%s
+]]..subcontent.help_block..[[
     exit 0
 }
 
 # Variables to store script options
 filter_file=""
-%s
+]]..subcontent.init_opt_block..[[
 app_args=()
-preload_lib="./lib/lib%s.so"
+preload_lib="./lib/lib]]..S._TOOLS_NAME..[[.so"
 
 # Parse script arguments
 while [[ $# -gt 0 ]].."]]"..[[; do
@@ -57,7 +56,7 @@ while [[ $# -gt 0 ]].."]]"..[[; do
             shift
             filter_file=$1
             ;;
-%s
+]]..subcontent.case_opt..[[
         --)
             shift
             app_args=("$@")
@@ -92,20 +91,12 @@ if [ -n "$filter_file" ]; then
 fi
 
 # Handle library interception
-%s
+]]..subcontent.enabled_block..[[
 
 # Preload the library and launch the application
 LD_PRELOAD=$preload_lib "${app_args[@]}"
 
-]],
-		S._SAMPLE_MSG_2,
-        S._TOOLS_NAME_UPPER,
-        subcontent.help_block,
-        subcontent.init_opt_block,
-        S._TOOLS_NAME,
-        subcontent.case_opt,
-        subcontent.enabled_block
-    )
+]]
 end
 
 function script_sh.case_opt()
@@ -113,8 +104,8 @@ function script_sh.case_opt()
         --%s-%s)
             %s_%s_enabled=1
             ;;]], 
-        S:_DOMAIN(), S._TOOLS_NAME_ABR,
-        S:_DOMAIN(), S._TOOLS_NAME_ABR
+        S._DOMAIN, S._TOOLS_NAME_ABR,
+        S._DOMAIN, S._TOOLS_NAME_ABR
     )
 end
 
@@ -122,7 +113,7 @@ function script_sh.init_opt_block()
     return string.format([[
 %s_%s_enabled=0
 ]],     
-        S:_DOMAIN(), S._TOOLS_NAME_ABR
+        S._DOMAIN, S._TOOLS_NAME_ABR
     )
 end
 
@@ -132,15 +123,15 @@ if [ $%s_%s_enabled -eq 1 ]; then
     export %s=1
 fi
 ]],     
-        S:_DOMAIN(), S._TOOLS_NAME_ABR,
-        S:_DOMAIN_ID()
+        S._DOMAIN, S._TOOLS_NAME_ABR,
+        S._DOMAIN_ID
     )
 end
 
 function script_sh.help_block()
     return string.format([[    echo "  --%s-%s                       Enable %s of %s library functions"]],     
-        S:_DOMAIN(), S._TOOLS_NAME_ABR,
-        S._TOOLS_NAME_VERB, S:_DOMAIN_UPPER()
+        S._DOMAIN, S._TOOLS_NAME_ABR,
+        S._TOOLS_NAME_VERB, S._DOMAIN_UPPER
     )
 end
 

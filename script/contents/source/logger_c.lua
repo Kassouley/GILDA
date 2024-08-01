@@ -1,10 +1,9 @@
 local logger_src = {}
 
 function logger_src.content()
-    return string.format([[
-%s
+    return S._WARNING_MSG..[[ 
 
-#include "%s"
+#include "]]..S._LOGGER_HEAD..[["
 
 Logger logger = { NULL, {0}, 0 };  // Definition of the logger instance
 
@@ -16,14 +15,10 @@ char* current_time() {
 
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-    strftime(buffer, sizeof(buffer), "%s", timeinfo);
+    strftime(buffer, sizeof(buffer), "]].."%Y-%m-%d %H:%M:%S"..[[", timeinfo);
     return buffer;
 }
-]], 
-        S._WARNING_MSG,
-        S:_LOGGER_HEAD(), 
-        "%Y-%m-%d %H:%M:%S"
-    )
+]]
 end
 
 return logger_src

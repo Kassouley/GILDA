@@ -1,39 +1,28 @@
 local api_tbl_mgr_hdr = {}
 
+
 function api_tbl_mgr_hdr.content(subcontent, includes_str)
-    local def_header = string.format(
-        "%s_%s_TABLE_MGR_H", S:_DOMAIN_UPPER(), S._TOOLS_NAME_LOWER_VERB
-    )
-    return string.format([[
-%s
-
-#ifndef %s
-#define %s
-%s
-void %s();
-void %s();
-void %s();
-
-%s
-
-typedef struct {
-%s
-} %s;
-
-#endif // %s
-]],
-        S._WARNING_MSG,
-        def_header,
-        def_header,
-        includes_str,
-        S:_ATM_LOAD_TABLE_FUNC(),
-        S:_ATM_ENABLE_DOMAIN_FUNC(),
-        S:_ATM_DISABLE_DOMAIN_FUNC(),
-        subcontent.typedef_block,
-        subcontent.api_tbl_block,
-        S:_INTERCEPT_TABLE_T(),
-        def_header
-    )
+    local def_header = S._DOMAIN_UPPER.."_"..S._TOOLS_NAME_VERB.."_TABLE_MGR_H" 
+    return ""..
+           S._WARNING_MSG.."\n"..
+           "\n"..
+           "\n"..
+           "#ifndef "..def_header.."\n"..
+           "#define "..def_header.."\n"..
+           "\n"..
+           includes_str.."\n"..
+           "\n"..
+           "void "..S._ATM_LOAD_TABLE_FUNC.."();\n"..
+           "void "..S._ATM_ENABLE_DOMAIN_FUNC.."();\n"..
+           "void "..S._ATM_DISABLE_DOMAIN_FUNC.."();\n"..
+           "\n"..
+           subcontent.typedef_block.."\n"..
+           "\n"..
+           "typedef struct {\n"..
+           subcontent.api_tbl_block.."\n"..
+           "} "..S._INTERCEPT_TABLE_T..";\n"..
+           "\n"..
+           "#endif // "..def_header
 end
 
 

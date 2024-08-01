@@ -104,13 +104,13 @@ local function generate_domain_contents(interceptor_data, function_to_intercept)
     files.cb_hdr:generate_file(includes_str)
     files.f_auto:generate_file(includes_str)
     if files.f_man.subcontents.func_blk then
-        common.mkdir(S:_MANGEN_DOMAIN_DIR())
+        common.mkdir(S._MANGEN_DOMAIN_DIR)
         files.f_man:generate_file(includes_str)
     end
 end
 
 local function generate_common_contents(config_data)
-    local domain_list = common.scandir(S:_AUTOGENDIR_PATH())
+    local domain_list = common.scandir(S._AUTOGENDIR_PATH)
     for _, domain in ipairs(domain_list) do
         domain = domain:sub(1, -#("_"..S._TOOLS_NAME)-1)
         local interceptor_data = config_data[domain]
@@ -182,9 +182,9 @@ function gilda_gen.command(config_data, domain_list)
     if common.file_exists(S._GENDIR) then
         no_sample = true
     end
-    common.mkdir(S:_COREDIR_PATH())
-    common.mkdir(S:_UTILSDIR_PATH())
-    common.mkdir(S:_TOOLSDIR_PATH())
+    common.mkdir(S._COREDIR_PATH)
+    common.mkdir(S._UTILSDIR_PATH)
+    common.mkdir(S._TOOLSDIR_PATH)
 
     for _, domain in ipairs(domain_list) do
         local interceptor_data = config_data[domain]
@@ -195,7 +195,7 @@ function gilda_gen.command(config_data, domain_list)
         else
             local function_to_intercept = parse_function_csv(interceptor_data.input_csv)
             S._CURRENT_DOMAIN = domain
-            common.mkdir(S:_AUTOGEN_DOMAIN_DIR())
+            common.mkdir(S._AUTOGEN_DOMAIN_DIR)
             generate_domain_contents(interceptor_data, function_to_intercept)
         end                  
     end

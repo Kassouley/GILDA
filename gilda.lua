@@ -5,9 +5,6 @@ package.path = package.path .. ';./script/contents/header/?.lua'
 package.path = package.path .. ';./script/contents/?.lua'
 
 local common = require("common")
-local gilda_gen = require("gilda_gen")
-local gilda_clean = require("gilda_clean")
-local gilda_parse = require("gilda_parse")
 local StringGenerator = require("StringGenerator")
 
 -- Function to parse command-line arguments
@@ -53,6 +50,7 @@ function main()
         local config_file = target
         local config_data = common.load_json(config_file)
         S = StringGenerator.new(config_data)
+        local gilda_gen = require("gilda_gen")
 
         if #sub_target == 0 then
             for key, value in pairs(config_data) do
@@ -64,11 +62,13 @@ function main()
         gilda_gen.command(config_data, sub_target)
 
     elseif command == "clean" then
+        local gilda_clean = require("gilda_clean")
         -- For 'clean' command, the target is expected to be a directory
         local directory = target
         gilda_clean.command(directory, sub_target, args)
 
     elseif command == "parse" then
+        local gilda_parse = require("gilda_parse")
         -- For 'parse' command, the target is expected to be an output CSV file
         local output_csv_file = target
         local header_files = sub_target

@@ -1,15 +1,15 @@
 local handler_mgr_hdr = {}
 
 function handler_mgr_hdr.content()
-    return string.format([[
-%s
+    return S._WARNING_MSG..[[
+
 
 #ifndef HANDLER_MANAGER_H
 #define HANDLER_MANAGER_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
-#include "%s"
+#include "]]..S._LOGGER_HEAD..[["
 
 /**
  * The `#define HANDLE(api_table, v, handle)` macro is defining a custom macro named 
@@ -21,7 +21,7 @@ function handler_mgr_hdr.content()
 do { \
     api_table.fn_##v = (__##v##_t)(dlsym(handle, #v)); \
     if (!api_table.fn_##v) { \
-        LOG_MESSAGE("Failed to load \"%%s\". Skipping.\n", #v); \
+        LOG_MESSAGE("Failed to load \"%s\". Skipping.\n", #v); \
         api_table.fn_##v = (__##v##_t)fallback; \
     } \
     api_table.ptr_##v = api_table.fn_##v; \
@@ -30,11 +30,11 @@ do { \
 
 
 /**
- * The `#define ENABLE_%s(api_table, v, d)` macro is defining a custom macro named 
- * `ENABLE_%s` that is used for enabling the interception of the function v from 
+ * The `#define ENABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[(api_table, v, d)` macro is defining a custom macro named 
+ * `ENABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[` that is used for enabling the interception of the function v from 
  * domain d
  */
-#define ENABLE_%s(api_table, v, d) \
+#define ENABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[(api_table, v, d) \
 do { \
     if (is_full_enabled || is_function_enabled[d##_API_ID_##v]) \
         api_table.ptr_##v = i_##v; \
@@ -43,10 +43,10 @@ do { \
 
 
 /**
- * The `#define DISABLE_%s(api_table, v)` macro is defining a custom macro named 
- * `DISABLE_%s` that is used for disabling the interception of the function v
+ * The `#define DISABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[(api_table, v)` macro is defining a custom macro named 
+ * `DISABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[` that is used for disabling the interception of the function v
  */
-#define DISABLE_%s(api_table, v) \
+#define DISABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[(api_table, v) \
 do { \
     api_table.ptr_##v = api_table.fn_##v; \
 } while (false);
@@ -77,16 +77,7 @@ void fallback(void);
 
 
 #endif // HANDLER_MANAGER_H
-]], 
-        S._WARNING_MSG,
-        S:_LOGGER_HEAD(),
-        S._TOOLS_NAME_UPPER_GERUND,
-        S._TOOLS_NAME_UPPER_GERUND,
-        S._TOOLS_NAME_UPPER_GERUND,
-        S._TOOLS_NAME_UPPER_GERUND,
-        S._TOOLS_NAME_UPPER_GERUND,
-        S._TOOLS_NAME_UPPER_GERUND
-    )
+]]
 end
 
 return handler_mgr_hdr
