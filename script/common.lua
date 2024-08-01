@@ -1,4 +1,3 @@
-package.path = package.path .. ';./script/json/?.lua'
 local json = require("json")
 
 local common = {}
