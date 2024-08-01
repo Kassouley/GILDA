@@ -2,3 +2,4 @@ gen/
 input/
 output/
 config.json
+./config.json

@@ -18,6 +18,8 @@ local files = {
     f_auto  = FileManager:new("_F_AUTO_SRC_PATH", "functions_c"),
     env_src = FileManager:new("_ENV_SRC_PATH", "env_c"),
     env_hdr = FileManager:new("_ENV_HEAD_PATH", "env_h"),
+    cid_src = FileManager:new("_CID_SRC_PATH", "cid_c"),
+    cid_hdr = FileManager:new("_CID_HEAD_PATH", "cid_h"),
     tools   = FileManager:new("_TOOL_SRC_PATH", "tools_c"),
     mkf     = FileManager:new("_MAKEFILE_PATH", "makefile"),
     script  = FileManager:new("_SCRIPT_PATH", "script_sh")
@@ -144,6 +146,8 @@ local function generate_common_contents(config_data)
     files.hm_hdr:generate_file()
     files.log_src:generate_file()
     files.log_hdr:generate_file()
+    files.cid_src:generate_file()
+    files.cid_hdr:generate_file()
     if no_sample == false then
         files.tools:generate_file()
         files.mkf:generate_file()

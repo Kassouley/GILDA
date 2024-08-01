@@ -44,6 +44,8 @@ typedef struct ]]..S._API_DATA_S..[[ {
     uint64_t corrId;
     uint64_t start_time;
     uint64_t stop_time;
+    uint64_t pid;
+    uint64_t tid;
     ]]..S._API_ARGS_T..[[ args;
 } ]]..S._API_DATA_T..[[;
 

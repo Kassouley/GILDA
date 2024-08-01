@@ -8,8 +8,8 @@ function interceptor_hdr.content(subcontent)
 #define ]]..def_header..[[ 
 
 ]]..subcontent.include_block..[[ 
-
 #include "]]..S._ENV_HEAD..[["
+#include "]]..S._CID_HEAD..[["
 
 typedef enum {
 ]]..subcontent.enum_block..[[,

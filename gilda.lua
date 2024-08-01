@@ -36,7 +36,7 @@ end
 function main()
     local args = parse_args(arg)
 
-    if not args.command or not args.target then
+    if not args.command then
         print("Usage: lua "..arg[0].." [gen <config file> | clean <directory> | parse <output_csv_file> <header_file1> [<header_file2> ...]] [options]")
         return
     end
@@ -44,10 +44,17 @@ function main()
     local command = args.command
     local target = args.target
     local sub_target = args.sub_target or {}
-    
+
     if command == "gen" then
-        -- For 'gen' command, the target is expected to be a config file
         local config_file = target
+        -- If no config file is specified, use 'config.json' in PWD
+        if not config_file or not common.file_exists(config_file) then
+            config_file = "config.json"
+            if not common.file_exists(config_file) then
+                print("Error: config file not found.")
+                return
+            end
+        end
         local config_data = common.load_json(config_file)
         S = StringGenerator.new(config_data)
         local gilda_gen = require("gilda_gen")

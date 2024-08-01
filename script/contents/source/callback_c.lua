@@ -16,7 +16,7 @@ void ]]..S._SET_CALLBACK..[[(void (*]]..S._CALLBACK..[[)(]]..S._CB_ARGS..[[)) {
     ]]..stored_cb_decl..[[ = ]]..S._CALLBACK..[[;
 }
 
-void ]]..S._CALLBACK_FUNCTION..[[(bool is_enter, const ]]..S._API_DATA_T..[[* activity) {
+void ]]..S._CALLBACK_FUNCTION..[[(bool is_enter, ]]..S._API_DATA_T..[[* activity) {
     if (]]..stored_cb_decl..[[) {
         ]]..stored_cb_decl..[[(is_enter, activity);
     } else {

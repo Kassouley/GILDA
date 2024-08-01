@@ -26,6 +26,7 @@ void ]]..S._TOOLS_NAME..[[_disable_domain(]]..S._TOOLS_NAME..[[_domain_t domain)
 void ]]..S._TOOLS_NAME..[[_init()
 {
     INIT_LOGGER();
+    init_correlation_id();
 ]]..subcontent.load_block..[[ 
     printf("Profiler initialized.\n");
 }
@@ -33,6 +34,7 @@ void ]]..S._TOOLS_NAME..[[_init()
 void ]]..S._TOOLS_NAME..[[_fini()
 {
     CLOSE_LOGGER();
+    cleanup_correlation_id();
     printf("Profiler finalized.\n");
 }
 

@@ -40,10 +40,10 @@ end
 
 function tools_src.callback_block()
     return [[
-void ]]..S._DOMAIN..[[_callback_sample(bool is_enter, const ]]..S._API_DATA_T..[[* activity) 
+void ]]..S._DOMAIN..[[_callback_sample(bool is_enter, ]]..S._API_DATA_T..[[* activity) 
 {
     if (is_enter)
-        printf("%s\n", get_]]..S._DOMAIN..[[_funame_by_id(activity->funid));
+        printf("%s | CID: %lu\n", get_]]..S._DOMAIN..[[_funame_by_id(activity->funid), get_next_correlation_id());
 }
 ]]
 end
