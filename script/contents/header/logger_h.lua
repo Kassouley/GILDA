@@ -1,8 +1,7 @@
 local logger_hdr = {}
 
 function logger_hdr.content()
-    return S._WARNING_MSG..[[
-
+    return S._WARNING_MSG..[[ 
 
 #ifndef LOGGER_H
 #define LOGGER_H

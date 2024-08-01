@@ -1,14 +1,13 @@
 local env_hdr = {}
 
 function env_hdr.content(subcontent)
-    return S._WARNING_MSG..[[
-
+    return S._WARNING_MSG..[[ 
 
 #ifndef ENV_H
 #define ENV_H
 #include <stdbool.h>
 
-]]..subcontent.set_enabled_block..[[
+]]..subcontent.set_enabled_block..[[ 
 
 const char* 
 get_function_filter(const char* env_function_filter);

@@ -2,8 +2,7 @@ local interceptor_hdr = {}
 
 function interceptor_hdr.content(subcontent)
     local def_header = S._TOOLS_NAME_UPPER.."_H"
-    return S._WARNING_MSG..[[
-
+    return S._WARNING_MSG..[[ 
 
 #ifndef ]]..def_header..[[ 
 #define ]]..def_header..[[ 

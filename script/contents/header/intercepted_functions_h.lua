@@ -6,6 +6,7 @@ function api_fnct_hdr.content(subcontent, includes_str)
 
 #ifndef ]]..def_header..[[ 
 #define ]]..def_header..[[ 
+
 ]]..includes_str..[[
 #include <string.h>
 
@@ -49,8 +50,7 @@ typedef struct ]]..S._API_DATA_S..[[ {
 // ]]..S._DOMAIN_UPPER..[[ API Function Prototype
 ]]..subcontent.func_proto_block..[[ 
 
-#endif // ]]..def_header..[[
-]]
+#endif // ]]..def_header
 end
 
 function api_fnct_hdr.func_proto_block(f)

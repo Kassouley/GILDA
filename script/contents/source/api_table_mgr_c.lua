@@ -7,7 +7,8 @@ function itcp_tbl_mgr_src.content(subcontent, includes_str, handler)
 #include "]]..S._IF_HEAD..[["
 #include "]]..S._HANDLER_MGR_HEAD..[["
 #include "]]..S._ENV_HEAD..[["
-]]..includes_str..[[
+]]..includes_str..[[ 
+
 ]]..S._INTERCEPT_TABLE_T..[[ ]]..S._INTERCEPT_TABLE_VAR..[[;
 
 void ]]..S._ATM_ENABLE_DOMAIN_FUNC..[[()
@@ -20,7 +21,7 @@ void ]]..S._ATM_ENABLE_DOMAIN_FUNC..[[()
 
 void ]]..S._ATM_DISABLE_DOMAIN_FUNC..[[()
 {
-]]..subcontent.disable_domain_block..[[	
+]]..subcontent.disable_domain_block..[[ 
 }
 
 void ]]..S._ATM_LOAD_TABLE_FUNC..[[ ()

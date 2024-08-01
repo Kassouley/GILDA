@@ -5,16 +5,13 @@ local cb_hdr = {}
 function cb_hdr.content(subcontent, includes_str)
     local def_header = S._DOMAIN_UPPER.."_CALLBACK_H"
     local macro_call = string.format("GET_CB_ARGS_DATA_##v(%s)", S._API_DATA_VAR)
-    local content =S._WARNING_MSG..[[
+    local content =S._WARNING_MSG..[[ 
 
-
-#ifndef ]]..def_header..[[
-
-#define ]]..def_header..[[
-
+#ifndef ]]..def_header..[[ 
+#define ]]..def_header..[[ 
 
 #include "]]..S._IF_HEAD..[["
-]]..includes_str..[[
+]]..includes_str..[[ 
 
 #define IS_ENTER 1
 #define IS_EXIT 0
@@ -35,10 +32,9 @@ void ]]..S._SET_CALLBACK..[[(void (*]]..S._CALLBACK..")("..S._CB_ARGS..[[));
     ]]..S._CALLBACK_FUNCTION..[[(IS_EXIT, ]]..S._API_DATA_VAR..[[); \
 };
 
-]]..subcontent.cb_get_args_block..[[
+]]..subcontent.cb_get_args_block..[[ 
 
-#endif // ]]..def_header..[[
-]]
+#endif // ]]..def_header
     return content
 end
 

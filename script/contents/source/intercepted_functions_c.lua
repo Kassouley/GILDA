@@ -7,7 +7,8 @@ function api_fnct_src.content(subcontent, includes_str)
 #include "]]..S._IF_HEAD..[["
 #include "]]..S._ATM_HEAD..[["
 #include "]]..S._CB_HEAD..[["
-]]..includes_str..[[
+
+]]..includes_str..[[ 
 
 extern ]]..S._INTERCEPT_TABLE_T..[[ ]]..S._INTERCEPT_TABLE_VAR..[[;
 

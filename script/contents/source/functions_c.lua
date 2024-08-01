@@ -7,9 +7,7 @@ function fnct_src.content(subcontent, includes_str)
 ]]..includes_str..[[ 
 extern ]]..S._INTERCEPT_TABLE_T..[[ ]]..S._INTERCEPT_TABLE_VAR..[[;
 
-]]..subcontent.func_blk..[[ 
-
-]]
+]]..subcontent.func_blk
 end
 
 function fnct_src.func_blk(f, names_param_str)

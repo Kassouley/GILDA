@@ -1,8 +1,7 @@
 local handler_mgr_hdr = {}
 
 function handler_mgr_hdr.content()
-    return S._WARNING_MSG..[[
-
+    return S._WARNING_MSG..[[ 
 
 #ifndef HANDLER_MANAGER_H
 #define HANDLER_MANAGER_H
@@ -73,7 +72,6 @@ void* load_handle(const char* handle_lib_path);
  * exiting the program with a failure status.
  */
 void fallback(void);
-
 
 
 #endif // HANDLER_MANAGER_H

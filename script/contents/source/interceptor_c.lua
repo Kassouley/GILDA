@@ -26,7 +26,7 @@ void ]]..S._TOOLS_NAME..[[_disable_domain(]]..S._TOOLS_NAME..[[_domain_t domain)
 void ]]..S._TOOLS_NAME..[[_init()
 {
     INIT_LOGGER();
-]]..subcontent.load_block..[[
+]]..subcontent.load_block..[[ 
     printf("Profiler initialized.\n");
 }
 
