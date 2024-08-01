@@ -18,7 +18,7 @@ void ]]..S._TOOLS_NAME..[[_enable_domain(]]..S._TOOLS_NAME..[[_domain_t domain)
 void ]]..S._TOOLS_NAME..[[_disable_domain(]]..S._TOOLS_NAME..[[_domain_t domain)
 {
     switch (domain) {
-]]..subcontent.disable_case_block..[[
+]]..subcontent.disable_case_block..[[ 
         default: break;
     }
 }
