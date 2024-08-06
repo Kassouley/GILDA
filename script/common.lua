@@ -83,4 +83,33 @@ function common.split_outside_scope(str, sep, scope_open, scope_close)
     return result
 end
 
+-- Function to split a string by a delimiter
+function common.split(str, delimiter)
+    local result = {}
+    local pattern = string.format("([^%s]+)", delimiter)
+    for match in string.gmatch(str, pattern) do
+        table.insert(result, match)
+    end
+    return result
+end
+
+function common.alternate_concat(arr1, arr2, sep)
+    sep = sep or " "
+    local result = {}
+    local len1 = #arr1
+    local len2 = #arr2
+    local max_len = math.max(len1, len2)
+
+    for i = 1, max_len do
+        if i <= len1 then
+            table.insert(result, arr1[i])
+        end
+        if i <= len2 then
+            table.insert(result, arr2[i])
+        end
+    end
+
+    return table.concat(result, sep)
+end
+
 return common

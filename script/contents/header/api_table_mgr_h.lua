@@ -26,8 +26,8 @@ function api_tbl_mgr_hdr.content(subcontent, includes_str)
 end
 
 
-function api_tbl_mgr_hdr.typedef_block(f)
-    return string.format("typedef %s (*__%s_t)(%s);\n", f.return_type, f.name, table.concat(f.args, ", "))
+function api_tbl_mgr_hdr.typedef_block(ftype, fname, concat_pname)
+    return string.format("typedef %s (*__%s_t)(%s);\n", ftype, fname, concat_pname)
 end
 
 function api_tbl_mgr_hdr.api_tbl_block(func_name)

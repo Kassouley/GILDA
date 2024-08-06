@@ -39,14 +39,14 @@ void ]]..S._SET_CALLBACK..[[(void (*]]..S._CALLBACK..")("..S._CB_ARGS..[[));
 end
 
 -- Generates the macro definition for getting callback arguments data
-function cb_hdr.cb_get_args_block(return_type, func_name, cb_get_args_block)
-    if return_type == "void" then
+function cb_hdr.cb_get_args_block(ftype, fname, cb_get_args_block)
+    if ftype == "void" then
         return string.format([[
 #define GET_CB_ARGS_DATA_%s(%s) { \
 %s
 };
 ]],
-        func_name, S._API_DATA_VAR,
+        fname, S._API_DATA_VAR,
         cb_get_args_block == "" and "\\" or cb_get_args_block
     )
     else
@@ -56,11 +56,11 @@ function cb_hdr.cb_get_args_block(return_type, func_name, cb_get_args_block)
 %s
 };
 ]],
-        func_name,
+        fname,
         S._API_DATA_VAR,
         S._API_DATA_VAR, 
-        func_name, 
-        return_type, 
+        fname, 
+        ftype, 
         "__"..S._DOMAIN.."_ret__",
         cb_get_args_block == "" and "\\" or cb_get_args_block
     )
@@ -68,13 +68,13 @@ function cb_hdr.cb_get_args_block(return_type, func_name, cb_get_args_block)
 end
 
 -- Generates a line for setting a callback argument
-function cb_hdr.cb_get_args_line(func_name, arg, arg_type)
+function cb_hdr.cb_get_args_line(fname, ptype, pname)
     return string.format("\t%s->args.%s.%s = (%s)%s; \\", 
         S._API_DATA_VAR, 
-        func_name, 
-        arg, 
-        arg_type, 
-        arg
+        fname, 
+        pname, 
+        ptype, 
+        pname
     )
 end
 

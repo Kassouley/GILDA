@@ -1,14 +1,18 @@
 local script_dir = debug.getinfo(1, "S").source:match("@(.*[\\/]?.*)") or ""
-script_dir = script_dir:gsub('\\', '/')
-script_dir = script_dir:match("(.*[\\/])") or ""
+script_dir = script_dir:gsub('\\', '/'):match("(.*[\\/])") or ""
 
-package.path = package.path .. ';' .. script_dir .. '/script/?.lua'
-package.path = package.path .. ';' .. script_dir .. '/script/commands/?.lua'
-package.path = package.path .. ';' .. script_dir .. '/script/contents/source/?.lua'
-package.path = package.path .. ';' .. script_dir .. '/script/contents/header/?.lua'
-package.path = package.path .. ';' .. script_dir .. '/script/contents/?.lua'
-package.path = package.path .. ';' .. script_dir .. './script/json/?.lua'
+local paths = {
+    '',
+    'commands/',
+    'contents/source/',
+    'contents/header/',
+    'contents/',
+    './json/'
+}
 
+for _, path in ipairs(paths) do
+    package.path = package.path .. ';' .. script_dir .. path .. '?.lua'
+end
 
 local common = require("common")
 local StringGenerator = require("StringGenerator")

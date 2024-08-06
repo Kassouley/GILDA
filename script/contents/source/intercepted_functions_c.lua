@@ -17,8 +17,8 @@ extern ]]..S._INTERCEPT_TABLE_T..[[ ]]..S._INTERCEPT_TABLE_VAR..[[;
 ]]
 end
 
-function api_fnct_src.func_blk(f, names_param_str)
-    if f.return_type ~= "void" then
+function api_fnct_src.func_blk(ftype, fname, concat_pname, concat_param)
+    if ftype ~= "void" then
         local function_ret_var = "__"..S._DOMAIN.."_ret__"
         return string.format([[
 %s i_%s(%s) {
@@ -31,12 +31,12 @@ function api_fnct_src.func_blk(f, names_param_str)
 }
     
 ]], 
-            f.return_type, f.name, table.concat(f.args, ", "),
+            ftype, fname, concat_param,
             S._API_DATA_T, S._API_DATA_VAR, S._API_DATA_T, S._API_DATA_T,
-            f.return_type, function_ret_var,
-            S._DOMAIN_UPPER, f.name, S._API_DATA_VAR,
-            function_ret_var, S._INTERCEPT_TABLE_VAR, f.name, names_param_str,
-            S._DOMAIN_UPPER, f.name, S._API_DATA_VAR,
+            ftype, function_ret_var,
+            S._DOMAIN_UPPER, fname, S._API_DATA_VAR,
+            function_ret_var, S._INTERCEPT_TABLE_VAR, fname, concat_pname,
+            S._DOMAIN_UPPER, fname, S._API_DATA_VAR,
             function_ret_var
         )
     else
@@ -50,11 +50,11 @@ function api_fnct_src.func_blk(f, names_param_str)
 }
 
 ]], 
-            f.return_type, f.name, table.concat(f.args, ", "),
+            ftype, fname, concat_param,
             S._API_DATA_T, S._API_DATA_VAR, S._API_DATA_T, S._API_DATA_T,
-            S._DOMAIN_UPPER, f.name, S._API_DATA_VAR,
-            S._INTERCEPT_TABLE_VAR, f.name, names_param_str,
-            S._DOMAIN_UPPER, f.name, S._API_DATA_VAR
+            S._DOMAIN_UPPER, fname, S._API_DATA_VAR,
+            S._INTERCEPT_TABLE_VAR, fname, concat_pname,
+            S._DOMAIN_UPPER, fname, S._API_DATA_VAR
         )
     end
 end

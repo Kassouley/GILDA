@@ -1,4 +1,5 @@
 local common = require("common")
+local parser = require("parser")
 local FileManager = require("FileManager")
 
 local files = {
@@ -31,70 +32,66 @@ local function get_include_str(includes_table)
     return "\n#include \""..table.concat(includes_table, "\"\n#include \"") .. "\"\n"
 end
 
-local function parse_variable_declaration(declaration)
-    local pattern1 = "^%s*([%w%s_]+)%s*([%*%s]+)%s*([%w_]+)%s*$"
-    local return_type, pointer_symbol, variable_name = declaration:match(pattern1)
-    if return_type and variable_name and pointer_symbol then
-        local type_str = return_type .. pointer_symbol
-        return type_str, variable_name
-    end
-
-    local pattern2 = "^%s*([%w%s_]+)%s*([%*%s]+)%s*(%(.+%))%s*$"
-    local return_type, pointer_symbol, variable_name = declaration:match(pattern2)
-    if return_type and variable_name and pointer_symbol then
-        local cb_name, cb_args = variable_name:match("^%(%*?([%w_]+)%)%((.+)%)")
-        local cb_type = return_type .. pointer_symbol .. "(*) (" .. cb_args .. ")" 
-        return cb_type, cb_name
+local function get_c_param_content(ptype, pname, data)
+    local decl, nb_ptr = c_manager.get_real_type(data, ptype)
+    if type(decl) == 'table' then
+        print(ptype .. " " .. pname)
+        for _, pair in ipairs(decl) do
+            get_c_param_content(pair.type, pair.name, data)
+        end
     else
-        return nil, nil
+        return generate_pointer_print_statement(decl, pname, nb_ptr)
     end
 end
 
-local function generate_domain_contents(interceptor_data, function_to_intercept)
-    local includes_str = get_include_str(interceptor_data.includes)
-    local handler = interceptor_data.lib
+local function generate_domain_contents(gilda_data, data_csv)
+    local includes_str = get_include_str(gilda_data.includes)
+    local handler = gilda_data.lib
 
     for _, file in pairs(files) do
         file:reset_subcontent()
     end
     
-    for _, f in ipairs(function_to_intercept) do
+    for _, f in ipairs(data_csv.function_csv) do
         local names_param = {}
         local types_param = {}
         local api_data_t_lines = {}
         local cb_get_args_lines = {}
         
-        for _, arg in ipairs(f.args) do
-            local type_param, name_param = parse_variable_declaration(arg)
-            table.insert(types_param, type_param)
-            table.insert(names_param, name_param)
+        local fname = f.fname
+        local ftype = f.fname
+        for i = 1, #f.pname do
+            local ptype = f.ptype[i]
+            local pname = f.pname[i]
 
-            table.insert(api_data_t_lines, files.if_hdr.getter.api_data_t_line(arg))
-            table.insert(cb_get_args_lines, files.cb_hdr.getter.cb_get_args_line(f.name, name_param, type_param))
+            table.insert(api_data_t_lines, files.if_hdr.getter.api_data_t_line(ptype, pname))
+            table.insert(cb_get_args_lines, files.cb_hdr.getter.cb_get_args_line(fname, ptype, pname))
+            get_c_param_content(ptype, pname, data_csv)
         end
-        local names_param_str = table.concat(names_param, ", ")
+        local concat_pname = table.concat(f.pname, ", ")
+        local concat_param = common.alternate_concat(f.ptype, f.pname, ", ")
 
-        files.atm_src:add_subcontent("load_table_block", "\n", f.name)
-        files.atm_src:add_subcontent("enable_domain_block", "\n", f.name)
-        files.atm_src:add_subcontent("disable_domain_block", "\n", f.name)
+        files.atm_src:add_subcontent("load_table_block", "\n", fname)
+        files.atm_src:add_subcontent("enable_domain_block", "\n", fname)
+        files.atm_src:add_subcontent("disable_domain_block", "\n", fname)
 
-        files.atm_hdr:add_subcontent("typedef_block", "", f)
-        files.atm_hdr:add_subcontent("api_tbl_block", "", f.name)
+        files.atm_hdr:add_subcontent("typedef_block", "", ftype, fname, concat_pname)
+        files.atm_hdr:add_subcontent("api_tbl_block", "", fname)
 
-        files.if_src:add_subcontent("func_blk", "", f, names_param_str)
+        files.if_src:add_subcontent("func_blk", "", ftype, fname, concat_pname, concat_param)
 
-        files.if_hdr:add_subcontent("func_proto_block", "\n", f)
-        files.if_hdr:add_subcontent("api_data_t_block", "\n", f.return_type, f.name, table.concat(api_data_t_lines,"\n"))
-        files.if_hdr:add_subcontent("api_id_enum_block", "\n", f.name)
-        files.if_hdr:add_subcontent("get_funame_block", "\n", f.name)
-        files.if_hdr:add_subcontent("get_funid_block", "\n", f.name)
+        files.if_hdr:add_subcontent("func_proto_block", "\n", ftype, name, concat_param)
+        files.if_hdr:add_subcontent("api_data_t_block", "\n", ftype, fname, table.concat(api_data_t_lines,"\n"))
+        files.if_hdr:add_subcontent("api_id_enum_block", "\n", fname)
+        files.if_hdr:add_subcontent("get_funame_block", "\n", fname)
+        files.if_hdr:add_subcontent("get_funid_block", "\n", fname)
 
-        files.cb_hdr:add_subcontent("cb_get_args_block", "\n", f.return_type, f.name, table.concat(cb_get_args_lines,"\n"))
+        files.cb_hdr:add_subcontent("cb_get_args_block", "\n", ftype, fname, table.concat(cb_get_args_lines,"\n"))
     
         if f.gen == "AUTOGEN" then
-            files.f_auto:add_subcontent("func_blk", "", f, names_param_str)
+            files.f_auto:add_subcontent("func_blk", "", ftype, fname, concat_param)
         else
-            files.f_man:add_subcontent("func_blk", "", f, names_param_str)
+            files.f_man:add_subcontent("func_blk", "", ftype, fname, concat_param)
         end
     end
     
@@ -115,7 +112,7 @@ local function generate_common_contents(config_data)
     local domain_list = common.scandir(S._AUTOGENDIR_PATH)
     for _, domain in ipairs(domain_list) do
         domain = domain:sub(1, -#("_"..S._TOOLS_NAME)-1)
-        local interceptor_data = config_data[domain]
+        local gilda_data = config_data[domain]
         S._CURRENT_DOMAIN = domain
         files.env_src:add_subcontent("set_enabled_block", "\n")
         files.env_hdr:add_subcontent("set_enabled_block", "\n")
@@ -129,8 +126,8 @@ local function generate_common_contents(config_data)
         if no_sample == false then
             files.tools:add_subcontent("subcontent", "\n")
             files.tools:add_subcontent("callback_block", "\n")
-            files.mkf:add_subcontent("include_flag", " ", interceptor_data.include_path)
-            files.mkf:add_subcontent("compile_flag", " ", interceptor_data.compile_flag)
+            files.mkf:add_subcontent("include_flag", " ", gilda_data.include_path)
+            files.mkf:add_subcontent("compile_flag", " ", gilda_data.compile_flag)
             files.script:add_subcontent("case_opt", "\n")
             files.script:add_subcontent("init_opt_block", "\n")
             files.script:add_subcontent("enabled_block", "\n")
@@ -156,30 +153,6 @@ local function generate_common_contents(config_data)
     end
 end
 
-function parse_function_csv(filename)
-    local functions = {}
-    -- Read the CSV file
-    for line in io.lines(filename) do
-        local parts = {}
-        for part in line:gmatch("[^;]+") do
-            table.insert(parts, part)
-        end
-        -- Construct function table
-        local func = {
-            gen = parts[1],
-            return_type = parts[2],
-            name = parts[3],
-            args = {}
-        }
-        -- Extract arguments
-        for i = 4, #parts do
-            table.insert(func.args, parts[i]) 
-        end
-        table.insert(functions, func)
-    end
-    return functions
-end
-
 -- COMMAND --
 function gilda_gen.command(config_data, domain_list)
     no_sample = false
@@ -191,16 +164,20 @@ function gilda_gen.command(config_data, domain_list)
     common.mkdir(S._TOOLSDIR_PATH)
 
     for _, domain in ipairs(domain_list) do
-        local interceptor_data = config_data[domain]
-        if interceptor_data == nil then
+        local gilda_data = config_data[domain]
+        if gilda_data == nil then
             print("Warning: Skipping "..domain..", doesn't exist in config file")
-        elseif interceptor_data.input_csv == "" or interceptor_data.lib == "" then
+        elseif gilda_data.input_csv == "" or gilda_data.lib == "" then
             print("Warning: Skipping "..domain..", config file not complete")
         else
-            local function_to_intercept = parse_function_csv(interceptor_data.input_csv)
+            local data_csv = {
+                function_csv = parser.parse_function_csv(gilda_data.function_csv),
+                typedef_csv = parser.parse_function_csv(gilda_data.typedef_csv),
+                struct_csv = parser.parse_function_csv(gilda_data.struct_csv)
+            }
             S._CURRENT_DOMAIN = domain
             common.mkdir(S._AUTOGEN_DOMAIN_DIR)
-            generate_domain_contents(interceptor_data, function_to_intercept)
+            generate_domain_contents(gilda_data, data_csv)
         end                  
     end
     generate_common_contents(config_data)

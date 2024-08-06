@@ -55,30 +55,30 @@ typedef struct ]]..S._API_DATA_S..[[ {
 #endif // ]]..def_header
 end
 
-function api_fnct_hdr.func_proto_block(f)
-    return string.format("%s i_%s(%s);", f.return_type, f.name, table.concat(f.args, ", "))
+function api_fnct_hdr.func_proto_block(ftype, name, concat_param)
+    return string.format("%s i_%s(%s);", ftype, fname, concat_param)
 end
 
-function api_fnct_hdr.api_id_enum_block(func_name)
-    return string.format("\t%s%s,", S._API_ID_PREFIX, func_name)
+function api_fnct_hdr.api_id_enum_block(fname)
+    return string.format("\t%s%s,", S._API_ID_PREFIX, fname)
 end
 
-function api_fnct_hdr.get_funame_block(func_name)
-    return string.format("\t\tcase %s%s : return \"%s\";", S._API_ID_PREFIX, func_name, func_name)
+function api_fnct_hdr.get_funame_block(fname)
+    return string.format("\t\tcase %s%s : return \"%s\";", S._API_ID_PREFIX, fname, fname)
 end
 
-function api_fnct_hdr.get_funid_block(func_name)
-    return string.format("\telse if (strcmp(name, \"%s\") == 0) return %s%s;", func_name, S._API_ID_PREFIX, func_name)
+function api_fnct_hdr.get_funid_block(fname)
+    return string.format("\telse if (strcmp(name, \"%s\") == 0) return %s%s;", fname, S._API_ID_PREFIX, fname)
 end
 
-function api_fnct_hdr.api_data_t_block(return_type, func_name, args_block)
-    if return_type == "void" then
+function api_fnct_hdr.api_data_t_block(ftype, fname, args_block)
+    if ftype == "void" then
         return string.format([[
     struct {
 %s
     } %s;
 ]], 
-        args_block, func_name)
+        args_block, fname)
     else
         return string.format([[
     struct {
@@ -86,12 +86,12 @@ function api_fnct_hdr.api_data_t_block(return_type, func_name, args_block)
 %s
     } %s;
 ]], 
-        return_type, args_block, func_name)
+        ftype, args_block, fname)
     end
 end
 
-function api_fnct_hdr.api_data_t_line(arg)
-    return "\t\t" .. arg .. ";"
+function api_fnct_hdr.api_data_t_line(ptype, pname)
+    return "\t\t" .. ptype .. " " .. pname .. ";"
 end
 
 return api_fnct_hdr
