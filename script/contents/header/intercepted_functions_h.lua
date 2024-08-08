@@ -1,18 +1,18 @@
 local api_fnct_hdr = {}
 
-function api_fnct_hdr.content(subcontent, includes_str)
+function api_fnct_hdr.content(subcontents)
     local def_header = S._DOMAIN_UPPER.."_"..S._TOOLS_NAME_UPPER_ADJ.."_FUNCTIONS_H"
     return S._WARNING_MSG..[[ 
 
 #ifndef ]]..def_header..[[ 
 #define ]]..def_header..[[ 
 
-]]..includes_str..[[
+]]..subcontents.include..[[
 #include <string.h>
 
 // ]]..S._DOMAIN_UPPER..[[ API ID enum
 typedef enum {
-]]..subcontent.api_id_enum_block..[[
+]]..subcontents.api_id_enum_block..[[
     ]]..S._API_ID_PREFIX..[[NB_FUNCTION,
     ]]..S._API_ID_PREFIX..[[UNKNOWN,
 } ]]..S._API_ID_T..[[;
@@ -20,7 +20,7 @@ typedef enum {
 // Return ]]..S._DOMAIN_UPPER..[[ API function name for a given ID
 static inline const char* get_]]..S._DOMAIN..[[_funame_by_id(]]..S._API_ID_T..[[ id) {
     switch(id) {
-]]..subcontent.get_funame_block..[[ 
+]]..subcontents.get_funame_block..[[ 
         default : return NULL;
     }
     return NULL;
@@ -29,13 +29,13 @@ static inline const char* get_]]..S._DOMAIN..[[_funame_by_id(]]..S._API_ID_T..[[
 // Return ]]..S._DOMAIN_UPPER..[[ API function ID for a given name
 static inline ]]..S._API_ID_T..[[ get_]]..S._DOMAIN..[[_funid_by_name(const char* name) {
     if (name == NULL) return ]]..S._API_ID_PREFIX..[[UNKNOWN;
-]]..subcontent.get_funid_block..[[ 
+]]..subcontents.get_funid_block..[[ 
     return ]]..S._API_ID_PREFIX..[[UNKNOWN;
 }
 
 // ]]..S._DOMAIN_UPPER..[[ API args
 typedef union ]]..S._API_ARGS_S..[[ {
-]]..subcontent.api_data_t_block..[[ 
+]]..subcontents.api_data_t_block..[[ 
 } ]]..S._API_ARGS_T..[[;
 
 // ]]..S._DOMAIN_UPPER..[[ API activity
@@ -50,12 +50,12 @@ typedef struct ]]..S._API_DATA_S..[[ {
 } ]]..S._API_DATA_T..[[;
 
 // ]]..S._DOMAIN_UPPER..[[ API Function Prototype
-]]..subcontent.func_proto_block..[[ 
+]]..subcontents.func_proto_block..[[ 
 
 #endif // ]]..def_header
 end
 
-function api_fnct_hdr.func_proto_block(ftype, name, concat_param)
+function api_fnct_hdr.func_proto_block(ftype, fname, concat_param)
     return string.format("%s i_%s(%s);", ftype, fname, concat_param)
 end
 
@@ -90,8 +90,8 @@ function api_fnct_hdr.api_data_t_block(ftype, fname, args_block)
     end
 end
 
-function api_fnct_hdr.api_data_t_line(ptype, pname)
-    return "\t\t" .. ptype .. " " .. pname .. ";"
+function api_fnct_hdr.api_data_t_line(declaration)
+    return "\t\t" .. declaration .. ";"
 end
 
 return api_fnct_hdr

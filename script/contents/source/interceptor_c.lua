@@ -1,6 +1,6 @@
 local interceptor_src = {}
 
-function interceptor_src.content(subcontent)
+function interceptor_src.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #include <stdio.h>
@@ -10,7 +10,7 @@ function interceptor_src.content(subcontent)
 void ]]..S._TOOLS_NAME..[[_enable_domain(]]..S._TOOLS_NAME..[[_domain_t domain)
 {
     switch (domain) {
-]]..subcontent.enable_case_block..[[ 
+]]..subcontents.enable_case_block..[[ 
         default: break;
     }
 }
@@ -18,7 +18,7 @@ void ]]..S._TOOLS_NAME..[[_enable_domain(]]..S._TOOLS_NAME..[[_domain_t domain)
 void ]]..S._TOOLS_NAME..[[_disable_domain(]]..S._TOOLS_NAME..[[_domain_t domain)
 {
     switch (domain) {
-]]..subcontent.disable_case_block..[[ 
+]]..subcontents.disable_case_block..[[ 
         default: break;
     }
 }
@@ -27,7 +27,7 @@ void ]]..S._TOOLS_NAME..[[_init()
 {
     INIT_LOGGER();
     init_correlation_id();
-]]..subcontent.load_block..[[ 
+]]..subcontents.load_block..[[ 
     printf("Profiler initialized.\n");
 }
 

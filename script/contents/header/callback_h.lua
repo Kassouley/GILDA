@@ -2,7 +2,7 @@ local cb_hdr = {}
 
 
 -- Generates the content for the callback header file
-function cb_hdr.content(subcontent, includes_str)
+function cb_hdr.content(subcontents)
     local def_header = S._DOMAIN_UPPER.."_CALLBACK_H"
     local macro_call = string.format("GET_CB_ARGS_DATA_##v(%s)", S._API_DATA_VAR)
     local content =S._WARNING_MSG..[[ 
@@ -11,7 +11,7 @@ function cb_hdr.content(subcontent, includes_str)
 #define ]]..def_header..[[ 
 
 #include "]]..S._IF_HEAD..[["
-]]..includes_str..[[ 
+]]..subcontents.include..[[ 
 
 #define IS_ENTER 1
 #define IS_EXIT 0
@@ -32,7 +32,7 @@ void ]]..S._SET_CALLBACK..[[(void (*]]..S._CALLBACK..")("..S._CB_ARGS..[[));
     ]]..S._CALLBACK_FUNCTION..[[(IS_EXIT, ]]..S._API_DATA_VAR..[[); \
 };
 
-]]..subcontent.cb_get_args_block..[[ 
+]]..subcontents.cb_get_args_block..[[ 
 
 #endif // ]]..def_header
     return content

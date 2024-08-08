@@ -1,16 +1,14 @@
-local plug_src = {}
+local plg_src = {}
 
-function plug_src.content(subcontent, includes_str)
+function plg_src.content(subcontents)
     return S._SAMPLE_MSG..[[ 
 
 #include "]]..S._ATM_HEAD..[["
-]]..includes_str..[[ 
-extern ]]..S._INTERCEPT_TABLE_T..[[ ]]..S._INTERCEPT_TABLE_VAR..[[;
 
-]]..subcontent.func_blk
+]]
 end
 
-function plug_src.prcss_args_blk(decl, var, pointer_count)
+function plg_src.prcss_args_blk(decl, var, pointer_count)
     local print_statement = var.." = "
     if decl == "void" and pointer_count > 0 then
         print_statement = print_statement .. ("%p" .. (" -> %p"):rep(pointer_count - 1))
@@ -22,4 +20,4 @@ function plug_src.prcss_args_blk(decl, var, pointer_count)
     return print_statement
 end
 
-return plug_src
+return plg_src

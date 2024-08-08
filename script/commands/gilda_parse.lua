@@ -94,37 +94,34 @@ end
 
 
 -- COMMAND --
-function gilda_parse.command(output_csv_file, header_files)
-    if not common.has_extension(output_csv_file, ".csv") then
-        print("Error: Output file must have a .csv extension")
-        return
-    end
+function gilda_parse.command(domain, header_files, output_dir, options)
     if #header_files == 0 then
         print("Error: At least one header file must be specified for the 'parse' command.")
         return
     end
-
-    local functions = {}
-    for _, header_file in pairs(header_files) do
-        if common.has_extension(header_file, ".h")
-        or common.has_extension(header_file, ".hpp") then
-            local file = io.open(header_file, "r")
-            if not file then
-                print("Error: Unable to open file " .. header_file)
-                return
-            end
-            local file_functions = process_header(cleanContent(file))
-            table.insert(functions, file_functions)
+    common.mkdir(output_dir.."/"..domain)
+    os.execute("python3 script/header_parser.py "..domain.." "..output_dir.."/"..domain.." "..table.concat(header_files, " "))
+    -- local functions = {}
+    -- for _, header_file in pairs(header_files) do
+    --     if common.has_extension(header_file, ".h")
+    --     or common.has_extension(header_file, ".hpp") then
+    --         local file = io.open(header_file, "r")
+    --         if not file then
+    --             print("Error: Unable to open file " .. header_file)
+    --             return
+    --         end
+    --         local file_functions = process_header(cleanContent(file))
+    --         table.insert(functions, file_functions)
            
-            file:close()
-        else
-            print("Warning: Skipping non-header file " .. header_file)
-        end
-    end
+    --         file:close()
+    --     else
+    --         print("Warning: Skipping non-header file " .. header_file)
+    --     end
+    -- end
 
-    local content = get_csv_content(functions)
-    common.write_n_close(output_csv_file, content)
-    print("CSV file generated: " .. output_csv_file)
+    -- local content = get_csv_content(functions)
+    -- common.write_n_close(output_csv_file, content)
+    -- print("CSV file generated: " .. output_csv_file)
 end
 
 return gilda_parse

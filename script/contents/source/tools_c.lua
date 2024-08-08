@@ -1,13 +1,13 @@
 local tools_src = {}
 
-function tools_src.content(subcontent)
+function tools_src.content(subcontents)
     return S._SAMPLE_MSG..[[ 
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "]]..S._INTERCEPTOR_HEAD..[["
 
-]]..subcontent.callback_block..[[ 
+]]..subcontents.callback_block..[[ 
 
 __attribute__((constructor)) void init(void) {
     ]]..S._TOOLS_NAME..[[_init();
@@ -15,7 +15,7 @@ __attribute__((constructor)) void init(void) {
     bool* is_]]..S._TOOLS_NAME_ADJ..[[ = (bool*)malloc(]]..S._TOOLS_NAME_UPPER..[[_NB_DOMAIN * sizeof(bool));
     get_]]..S._TOOLS_NAME_ADJ..[[_domain(is_]]..S._TOOLS_NAME_ADJ..[[);
 
-]]..subcontent.subcontent..[[ 
+]]..subcontents.subcontent..[[ 
 
     free(is_]]..S._TOOLS_NAME_ADJ..[[);
 }

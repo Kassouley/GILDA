@@ -44,13 +44,13 @@ def extract_typedefs_structs_and_functions(header_file):
 
 def write_typedefs_csv(typedefs, output_file):
     with open(output_file, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
+        writer = csv.writer(csvfile, delimiter=";")
         for typedef in typedefs:
             writer.writerow(typedef)
 
 def write_structs_unions_csv(structs_unions, output_file):
     with open(output_file, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
+        writer = csv.writer(csvfile, delimiter=";")
         for struct_union in structs_unions:
             row = [struct_union[0]]
             for field in struct_union[1]:
@@ -60,7 +60,7 @@ def write_structs_unions_csv(structs_unions, output_file):
 
 def write_functions_csv(functions, output_file):
     with open(output_file, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
+        writer = csv.writer(csvfile, delimiter=";")
         for function in functions:
             row = ["AUTOGEN", function[0], function[1]]  # return type and function name
             for param in function[2]:

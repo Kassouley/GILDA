@@ -1,0 +1,218 @@
+__blkcnt_t;long
+va_list;int
+hsa_variable_allocation_t;enum hsa_variable_allocation_t
+__id_t;unsigned int
+hsa_amd_memory_pool_info_t;enum hsa_amd_memory_pool_info_t
+hsa_status_t;enum hsa_status_t
+hsa_amd_memory_type_t;enum hsa_amd_memory_type_t
+uintptr_t;unsigned long
+__u_short;unsigned short
+hsa_isa_info_t;enum hsa_isa_info_t
+__rlim_t;unsigned long
+fpos_t;__fpos_t
+hsa_amd_packet_type_t;enum hsa_amd_packet_type_t
+bool;int (int *)
+hsa_amd_memory_pool_link_info_t;struct hsa_amd_memory_pool_link_info_s
+__mode_t;unsigned int
+int_fast16_t;long
+FILE;struct _IO_FILE
+hsa_endianness_t;enum hsa_endianness_t
+hsa_amd_profiling_async_copy_time_t;struct hsa_amd_profiling_async_copy_time_s
+hsa_code_symbol_t;struct hsa_code_symbol_s
+hsa_barrier_and_packet_t;struct hsa_barrier_and_packet_s
+int_fast32_t;long
+hsa_region_info_t;enum hsa_region_info_t
+hsa_executable_state_t;enum hsa_executable_state_t
+hsa_symbol_linkage_t;enum hsa_symbol_linkage_t
+hsa_amd_packet_type8_t;uint8_t
+__int_least8_t;__int8_t
+int32_t;__int32_t
+__u_long;unsigned long
+__int64_t;long
+hsa_cache_info_t;enum hsa_cache_info_t
+hsa_agent_info_t;enum hsa_agent_info_t
+uint8_t;__uint8_t
+uint_fast64_t;unsigned long
+__int_least32_t;__int32_t
+hsa_loaded_code_object_t;struct hsa_loaded_code_object_s
+hsa_amd_agent_memory_properties_t;enum hsa_amd_agent_memory_properties_s
+hsa_variable_segment_t;enum hsa_variable_segment_t
+hsa_kernel_dispatch_packet_setup_t;enum hsa_kernel_dispatch_packet_setup_t
+__socklen_t;unsigned int
+hsa_amd_svm_attribute_t;enum hsa_amd_svm_attribute_s
+__intmax_t;long
+hsa_amd_event_t;struct hsa_amd_event_s
+__off64_t;long
+__int16_t;short
+__fsfilcnt64_t;unsigned long
+hsa_queue_t;struct hsa_queue_s
+hsa_extension_t;enum hsa_extension_t
+hsa_executable_t;struct hsa_executable_s
+hsa_amd_agent_info_t;enum hsa_amd_agent_info_s
+hsa_kernel_dispatch_packet_setup_width_t;enum hsa_kernel_dispatch_packet_setup_width_t
+__uint64_t;unsigned long
+_Float32x;double
+hsa_round_method_t;enum hsa_round_method_t
+__uint_least32_t;__uint32_t
+hsa_agent_t;struct hsa_agent_s
+hsa_amd_deallocation_callback_t;void (*)(void *, void *)
+hsa_fence_scope_t;enum hsa_fence_scope_t
+hsa_code_symbol_info_t;enum hsa_code_symbol_info_t
+__syscall_ulong_t;unsigned long
+_Float32;float
+hsa_amd_queue_priority_t;enum hsa_amd_queue_priority_s
+hsa_amd_vmem_alloc_handle_t;struct hsa_amd_vmem_alloc_handle_s
+hsa_signal_condition32_t;uint32_t
+__uint8_t;unsigned char
+uint_fast8_t;unsigned char
+hsa_code_object_info_t;enum hsa_code_object_info_t
+__u_quad_t;unsigned long
+hsa_amd_sdma_engine_id_t;enum hsa_amd_sdma_engine_id
+__uid_t;unsigned int
+__useconds_t;unsigned int
+hsa_device_type_t;enum hsa_device_type_t
+hsa_amd_memory_pool_t;struct hsa_amd_memory_pool_s
+hsa_amd_vendor_packet_header_t;struct hsa_amd_packet_header_s
+hsa_packet_header_width_t;enum hsa_packet_header_width_t
+uint_fast32_t;unsigned long
+__int32_t;int
+hsa_amd_memory_pool_access_t;enum hsa_amd_memory_pool_access_t
+__off_t;long
+int_fast8_t;signed char
+uint16_t;__uint16_t
+uint_least64_t;__uint_least64_t
+hsa_wait_state_t;enum hsa_wait_state_t
+int8_t;__int8_t
+hsa_pitched_ptr_t;struct hsa_pitched_ptr_s
+__fsblkcnt_t;unsigned long
+__fpos64_t;struct _G_fpos64_t
+hsa_region_global_flag_t;enum hsa_region_global_flag_t
+hsa_amd_system_event_callback_t;hsa_status_t (*)(const hsa_amd_event_t *, void *)
+hsa_agent_dispatch_packet_t;struct hsa_agent_dispatch_packet_s
+hsa_amd_memory_pool_flag_t;enum hsa_amd_memory_pool_flag_s
+uintmax_t;__uintmax_t
+__fpos_t;struct _G_fpos_t
+__uint16_t;unsigned short
+hsa_wavefront_info_t;enum hsa_wavefront_info_t
+hsa_amd_ipc_memory_t;struct hsa_amd_ipc_memory_s
+hsa_queue_type32_t;uint32_t
+hsa_code_object_reader_t;struct hsa_code_object_reader_s
+hsa_wavefront_t;struct hsa_wavefront_s
+__gid_t;unsigned int
+__intptr_t;long
+hsa_signal_condition_t;enum hsa_signal_condition_t
+hsa_queue_feature_t;enum hsa_queue_feature_t
+__caddr_t;char *
+int_least8_t;__int_least8_t
+hsa_amd_hdp_flush_t;struct hsa_amd_hdp_flush_s
+hsa_amd_copy_direction_t;enum hsa_amd_copy_direction_t
+hsa_default_float_rounding_mode_t;enum hsa_default_float_rounding_mode_t
+hsa_amd_svm_attribute_pair_t;struct hsa_amd_svm_attribute_pair_s
+__fsid_t;struct __fsid_t
+off_t;__off_t
+__uint32_t;unsigned int
+hsa_executable_symbol_info_t;enum hsa_executable_symbol_info_t
+hsa_amd_gpu_memory_fault_info_t;struct hsa_amd_gpu_memory_fault_info_s
+hsa_code_object_type_t;enum hsa_code_object_type_t
+uint_least8_t;__uint_least8_t
+__ino64_t;unsigned long
+hsa_isa_t;struct hsa_isa_s
+hsa_amd_memory_pool_location_t;enum hsa_amd_memory_pool_location_s
+hsa_amd_link_info_type_t;enum hsa_amd_link_info_type_t
+hsa_packet_type_t;enum hsa_packet_type_t
+__int8_t;signed char
+hsa_profile_t;enum hsa_profile_t
+__suseconds64_t;long
+__rlim64_t;unsigned long
+hsa_amd_pointer_info_t;struct hsa_amd_pointer_info_s
+__clock_t;long
+hsa_amd_hw_exception_reset_type_t;enum hsa_amd_hw_exception_reset_type_t
+__uintmax_t;unsigned long
+hsa_amd_gpu_hw_exception_info_t;struct hsa_amd_gpu_hw_exception_info_s
+__FILE;struct _IO_FILE
+__sig_atomic_t;int
+hsa_amd_svm_model_t;enum hsa_amd_svm_model_s
+hsa_amd_ipc_signal_t;hsa_amd_ipc_memory_t
+hsa_agent_feature_t;enum hsa_agent_feature_t
+hsa_amd_event_type_t;enum hsa_amd_event_type_s
+int_least64_t;__int_least64_t
+hsa_region_segment_t;enum hsa_region_segment_t
+int_least32_t;__int_least32_t
+int64_t;__int64_t
+__ssize_t;long
+uint_least32_t;__uint_least32_t
+hsa_barrier_or_packet_t;struct hsa_barrier_or_packet_s
+hsa_amd_memory_pool_global_flag_t;enum hsa_amd_memory_pool_global_flag_s
+__nlink_t;unsigned long
+__int_least64_t;__int64_t
+_Float64;double
+__fsword_t;long
+uint32_t;__uint32_t
+intptr_t;long
+__time_t;long
+__int_least16_t;__int16_t
+__blkcnt64_t;long
+__blksize_t;long
+hsa_access_permission_t;enum hsa_access_permission_t
+hsa_amd_signal_attribute_t;enum hsa_amd_signal_attribute_t
+__loff_t;__off64_t
+hsa_flush_mode_t;enum hsa_flush_mode_t
+hsa_code_object_t;struct hsa_code_object_s
+hsa_callback_data_t;struct hsa_callback_data_s
+hsa_amd_hw_exception_reset_cause_t;enum hsa_amd_hw_exception_reset_cause_t
+hsa_exception_policy_t;enum hsa_exception_policy_t
+hsa_executable_symbol_t;struct hsa_executable_symbol_s
+hsa_amd_agent_memory_pool_info_t;enum hsa_amd_agent_memory_pool_info_t
+int_fast64_t;long
+__u_char;unsigned char
+uint_least16_t;__uint_least16_t
+hsa_amd_barrier_value_packet_t;struct hsa_amd_barrier_value_packet_s
+hsa_signal_t;struct hsa_signal_s
+int_least16_t;__int_least16_t
+hsa_amd_region_info_t;enum hsa_amd_region_info_s
+hsa_signal_value_t;int64_t
+hsa_cache_t;struct hsa_cache_s
+hsa_symbol_kind_t;enum hsa_symbol_kind_t
+hsa_amd_memory_fault_reason_t;enum hsa_amd_memory_fault_reason_t
+hsa_packet_header_t;enum hsa_packet_header_t
+intmax_t;__intmax_t
+hsa_amd_iommu_version_t;enum hsa_amd_iommu_version_t
+__fsblkcnt64_t;unsigned long
+uint64_t;__uint64_t
+int16_t;__int16_t
+hsa_dim3_t;struct hsa_dim3_s
+__uint_least16_t;__uint16_t
+hsa_kernel_dispatch_packet_t;struct hsa_kernel_dispatch_packet_s
+__mbstate_t;struct __mbstate_t
+__suseconds_t;long
+__daddr_t;int
+hsa_executable_info_t;enum hsa_executable_info_t
+hsa_signal_group_t;struct hsa_signal_group_s
+__uint_least8_t;__uint8_t
+__timer_t;void *
+_IO_lock_t;void
+ssize_t;__ssize_t
+hsa_amd_image_descriptor_t;struct hsa_amd_image_descriptor_s
+__fsfilcnt_t;unsigned long
+hsa_amd_coherency_type_t;enum hsa_amd_coherency_type_s
+hsa_file_t;int
+hsa_queue_type_t;enum hsa_queue_type_t
+hsa_amd_profiling_dispatch_time_t;struct hsa_amd_profiling_dispatch_time_s
+__dev_t;unsigned long
+uint_fast16_t;unsigned long
+hsa_machine_model_t;enum hsa_machine_model_t
+hsa_amd_segment_t;enum hsa_amd_segment_t
+hsa_amd_pointer_type_t;enum hsa_amd_pointer_type_t
+__clockid_t;int
+__pid_t;int
+__syscall_slong_t;long
+hsa_amd_memory_access_desc_t;struct hsa_amd_memory_access_desc_s
+__key_t;int
+__ino_t;unsigned long
+__u_int;unsigned int
+__uint_least64_t;__uint64_t
+_Float64x;long double
+hsa_fp_type_t;enum hsa_fp_type_t
+hsa_region_t;struct hsa_region_s
+hsa_system_info_t;enum hsa_system_info_t
+__quad_t;long

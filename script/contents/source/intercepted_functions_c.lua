@@ -1,6 +1,6 @@
 local api_fnct_src = {}
 
-function api_fnct_src.content(subcontent, includes_str)
+function api_fnct_src.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #include <stdlib.h>
@@ -8,11 +8,11 @@ function api_fnct_src.content(subcontent, includes_str)
 #include "]]..S._ATM_HEAD..[["
 #include "]]..S._CB_HEAD..[["
 
-]]..includes_str..[[ 
+]]..subcontents.include..[[ 
 
 extern ]]..S._INTERCEPT_TABLE_T..[[ ]]..S._INTERCEPT_TABLE_VAR..[[;
 
-]]..subcontent.func_blk..[[ 
+]]..subcontents.func_blk..[[ 
 
 ]]
 end

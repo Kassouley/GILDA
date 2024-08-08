@@ -42,6 +42,7 @@ function StringGenerator.new(data)
     self._TOOL = "tool"
     self._LOGGER = "logger"
     self._CID = "correlation_id"
+    self._PLUG = "plugin"
 
     -- Setup metatable for dynamic concatenation
     setmetatable(self, {
@@ -83,6 +84,11 @@ function StringGenerator.new(data)
             elseif key == "_INTERCEPTOR_HEAD" then          return table._TOOLS_NAME..".h"
             elseif key == "_INTERCEPTOR_SRC_PATH" then      return table._COREDIR_PATH.."/"..table._INTERCEPTOR_SRC
             elseif key == "_INTERCEPTOR_HEAD_PATH" then     return table._COREDIR_PATH.."/"..table._INTERCEPTOR_HEAD
+            -- Plugin source and path
+            elseif key == "_PLUG_SRC" then                  return table._PLUG..".c"
+            elseif key == "_PLUG_HEAD" then                 return table._PLUG..".h"
+            elseif key == "_PLUG_SRC_PATH" then             return table._COREDIR_PATH.."/"..table._PLUG_SRC
+            elseif key == "_PLUG_HEAD_PATH" then            return table._COREDIR_PATH.."/"..table._PLUG_HEAD
             -- Env source and path
             elseif key == "_ENV_SRC" then                   return table._ENV..".c"
             elseif key == "_ENV_HEAD" then                  return table._ENV..".h"

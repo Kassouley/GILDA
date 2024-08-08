@@ -78,16 +78,16 @@ local function _count_pointers(_type)
 end
 
 
-function get_real_type(data, decl, pointer_count)
+function c_manager.get_real_type(data, decl, pointer_count)
     local is_struct, cleaned_decl = _clean_keyword(decl)
     local cnt_tmp, cleaned_decl = _count_pointers(cleaned_decl)
     pointer_count = (pointer_count or 0) + cnt_tmp
     if _is_c_type(cleaned_decl) then
         return cleaned_decl or "void", pointer_count
     elseif is_struct then
-        return data.struct[cleaned_decl] or "void", pointer_count
+        return data.struct_csv[cleaned_decl] or "void", pointer_count
     else
-        cleaned_decl, pointer_count = get_real_type(data, data.typedef[cleaned_decl], pointer_count)
+        cleaned_decl, pointer_count = c_manager.get_real_type(data, data.typedef_csv[cleaned_decl], pointer_count)
         return cleaned_decl or "void", pointer_count
     end
 end

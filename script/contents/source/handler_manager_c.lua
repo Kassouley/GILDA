@@ -1,6 +1,6 @@
 local handler_mgr_src = {}
 
-function handler_mgr_src.content()
+function handler_mgr_src.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #include <stdio.h>

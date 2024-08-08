@@ -1,16 +1,16 @@
 local fnct_src = {}
 
-function fnct_src.content(subcontent, includes_str)
+function fnct_src.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #include "]]..S._ATM_HEAD..[["
-]]..includes_str..[[ 
+]]..subcontents.include..[[ 
 extern ]]..S._INTERCEPT_TABLE_T..[[ ]]..S._INTERCEPT_TABLE_VAR..[[;
 
-]]..subcontent.func_blk
+]]..subcontents.func_blk
 end
 
-function fnct_src.func_blk(ftype, fname, fparam, concat_pname)
+function fnct_src.func_blk(ftype, fname, concat_pname, concat_param)
     if ftype ~= "void" then
         return string.format([[
 %s %s(%s) { 
@@ -18,7 +18,7 @@ function fnct_src.func_blk(ftype, fname, fparam, concat_pname)
 }
 
 ]], 
-            ftype, fname, fparam,
+            ftype, fname, concat_param,
             S._INTERCEPT_TABLE_VAR, fname, concat_pname
         )
     else
@@ -28,7 +28,7 @@ function fnct_src.func_blk(ftype, fname, fparam, concat_pname)
 }
 
 ]], 
-            ftype, fname, fparam,
+            ftype, fname, concat_param,
             S._INTERCEPT_TABLE_VAR, fname, concat_pname
         )
     end

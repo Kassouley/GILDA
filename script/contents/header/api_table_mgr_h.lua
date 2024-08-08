@@ -1,8 +1,8 @@
 local api_tbl_mgr_hdr = {}
 
 
-function api_tbl_mgr_hdr.content(subcontent, includes_str)
-    local def_header = S._DOMAIN_UPPER.."_"..S._TOOLS_NAME_VERB.."_TABLE_MGR_H" 
+function api_tbl_mgr_hdr.content(subcontents)
+    local def_header = S._DOMAIN_UPPER.."_"..S._TOOLS_NAME_UPPER_VERB.."_TABLE_MGR_H" 
     return ""..
            S._WARNING_MSG.."\n"..
            "\n"..
@@ -10,24 +10,24 @@ function api_tbl_mgr_hdr.content(subcontent, includes_str)
            "#ifndef "..def_header.."\n"..
            "#define "..def_header.."\n"..
            "\n"..
-           includes_str.."\n"..
+           subcontents.include.."\n"..
            "\n"..
            "void "..S._ATM_LOAD_TABLE_FUNC.."();\n"..
            "void "..S._ATM_ENABLE_DOMAIN_FUNC.."();\n"..
            "void "..S._ATM_DISABLE_DOMAIN_FUNC.."();\n"..
            "\n"..
-           subcontent.typedef_block.."\n"..
+           subcontents.typedef_block.."\n"..
            "\n"..
            "typedef struct {\n"..
-           subcontent.api_tbl_block.."\n"..
+           subcontents.api_tbl_block.."\n"..
            "} "..S._INTERCEPT_TABLE_T..";\n"..
            "\n"..
            "#endif // "..def_header
 end
 
 
-function api_tbl_mgr_hdr.typedef_block(ftype, fname, concat_pname)
-    return string.format("typedef %s (*__%s_t)(%s);\n", ftype, fname, concat_pname)
+function api_tbl_mgr_hdr.typedef_block(ftype, fname, concat_param)
+    return string.format("typedef %s (*__%s_t)(%s);\n", ftype, fname, concat_param)
 end
 
 function api_tbl_mgr_hdr.api_tbl_block(func_name)

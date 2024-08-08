@@ -1,6 +1,6 @@
 local corrid_hdr = {}
 
-function corrid_hdr.content()
+function corrid_hdr.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #ifndef CORRELATION_ID_H

@@ -1,24 +1,24 @@
 local interceptor_hdr = {}
 
-function interceptor_hdr.content(subcontent)
+function interceptor_hdr.content(subcontents)
     local def_header = S._TOOLS_NAME_UPPER.."_H"
     return S._WARNING_MSG..[[ 
 
 #ifndef ]]..def_header..[[ 
 #define ]]..def_header..[[ 
 
-]]..subcontent.include_block..[[ 
+]]..subcontents.include_block..[[ 
 #include "]]..S._ENV_HEAD..[["
 #include "]]..S._CID_HEAD..[["
 
 typedef enum {
-]]..subcontent.enum_block..[[,
+]]..subcontents.enum_block..[[,
     ]]..S._TOOLS_NAME_UPPER..[[_NB_DOMAIN
 } ]]..S._TOOLS_NAME..[[_domain_t;
 
 static inline const char* get_domain_name(]]..S._TOOLS_NAME..[[_domain_t domain) {
 	switch(domain) {
-]]..subcontent.domain_name_block..[[ 
+]]..subcontents.domain_name_block..[[ 
 		default : return "Unknown domain";
 	}
 	return "Unknown domain";

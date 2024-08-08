@@ -1,6 +1,6 @@
 local logger_src = {}
 
-function logger_src.content()
+function logger_src.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #include "]]..S._LOGGER_HEAD..[["

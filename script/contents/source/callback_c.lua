@@ -1,6 +1,6 @@
 local cb_src = {}
 
-function cb_src.content()
+function cb_src.content(subcontents)
     local stored_cb_decl = "stored_"..S._DOMAIN.."_callback"
     return S._WARNING_MSG..[[ 
 

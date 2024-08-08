@@ -1,6 +1,6 @@
 local makefile = {}
 
-function makefile.content(subcontent)
+function makefile.content(subcontents)
     return S._SAMPLE_MSG_2..[[ 
 
 # Directories
@@ -17,10 +17,10 @@ LIB]]..S._TOOLS_NAME_UPPER..[[ = lib]]..S._TOOLS_NAME..[[.so
 # Compiler and flags
 CC 			= hipcc
 CXX			= hipcc
-CFLAGS 		= -fPIC -Wall $(INC_FLAGS) -Wno-uninitialized -Wno-deprecated-declarations ]]..subcontent.compile_flag..[[ 
+CFLAGS 		= -fPIC -Wall $(INC_FLAGS) -Wno-uninitialized -Wno-deprecated-declarations ]]..subcontents.compile_flag..[[ 
 LDFLAGS		= -shared
 INC_DIRS   := $(shell find $(CORE_DIR) -type d)
-INC_FLAGS  := $(addprefix -I,$(INC_DIRS)) -I$(CORE_DIR) ]]..subcontent.include_flag..[[
+INC_FLAGS  := $(addprefix -I,$(INC_DIRS)) -I$(CORE_DIR) ]]..subcontents.include_flag..[[
 
 
 # Source files

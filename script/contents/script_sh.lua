@@ -1,6 +1,6 @@
 local script_sh = {}
 
-function script_sh.content(subcontent)
+function script_sh.content(subcontents)
     return S._SAMPLE_MSG_2..[[ 
 
 #!/bin/bash
@@ -36,13 +36,13 @@ function display_help() {
     echo "Options:"
     echo "  -h, --help                       Display this help message"
     echo "  -f, --filter FILE                Specify the input file with functions to intercept"
-]]..subcontent.help_block..[[
+]]..subcontents.help_block..[[
     exit 0
 }
 
 # Variables to store script options
 filter_file=""
-]]..subcontent.init_opt_block..[[
+]]..subcontents.init_opt_block..[[
 app_args=()
 preload_lib="./lib/lib]]..S._TOOLS_NAME..[[.so"
 
@@ -56,7 +56,7 @@ while [[ $# -gt 0 ]].."]]"..[[; do
             shift
             filter_file=$1
             ;;
-]]..subcontent.case_opt..[[
+]]..subcontents.case_opt..[[
         --)
             shift
             app_args=("$@")
@@ -91,7 +91,7 @@ if [ -n "$filter_file" ]; then
 fi
 
 # Handle library interception
-]]..subcontent.enabled_block..[[
+]]..subcontents.enabled_block..[[
 
 # Preload the library and launch the application
 LD_PRELOAD=$preload_lib "${app_args[@]}"

@@ -1,6 +1,6 @@
 local corrid_src = {}
 
-function corrid_src.content()
+function corrid_src.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #include <pthread.h>

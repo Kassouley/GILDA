@@ -1,6 +1,6 @@
 local env_src = {}
 
-function env_src.content(subcontent)
+function env_src.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #include <stdio.h>
@@ -11,7 +11,7 @@ function env_src.content(subcontent)
 #include "]]..S._INTERCEPTOR_HEAD..[["
 #include "]]..S._ENV_HEAD..[["
 
-]]..subcontent.set_enabled_block..[[ 
+]]..subcontents.set_enabled_block..[[ 
 
 const char* get_function_filter(const char* env_function_filter) 
 {

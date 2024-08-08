@@ -1,6 +1,6 @@
 local handler_mgr_hdr = {}
 
-function handler_mgr_hdr.content()
+function handler_mgr_hdr.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #ifndef HANDLER_MANAGER_H
