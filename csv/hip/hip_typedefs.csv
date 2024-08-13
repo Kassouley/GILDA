@@ -138,6 +138,7 @@ hipKernelNodeAttrID;enum hipKernelNodeAttrID
 hipGraphicsRegisterFlags;enum hipGraphicsRegisterFlags
 __int8_t;signed char
 __ssize_t;long
+size_t;unsigned long
 hipMemAccessDesc;struct hipMemAccessDesc
 hipGraphicsResource_t;hipGraphicsResource *
 int_least32_t;__int_least32_t

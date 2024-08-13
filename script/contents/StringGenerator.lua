@@ -34,6 +34,7 @@ function StringGenerator.new(data)
     self._AUTOGENDIR = "autogen"
     self._MANGENDIR = "mangen"
     self._UTILSDIR = "utils"
+    self._PLUGDIR = "plugin"
     self._TOOLSDIR = "tools"
 
     -- Files
@@ -69,6 +70,7 @@ function StringGenerator.new(data)
             elseif key == "_AUTOGENDIR_PATH" then           return table._COREDIR_PATH.."/"..table._AUTOGENDIR
             elseif key == "_MANGENDIR_PATH" then            return table._COREDIR_PATH.."/"..table._MANGENDIR
             elseif key == "_UTILSDIR_PATH" then             return table._COREDIR_PATH.."/"..table._UTILSDIR
+            elseif key == "_PLUGDIR_PATH" then              return table._COREDIR_PATH.."/"..table._PLUGDIR
             -- Makefile and script path
             elseif key == "_MAKEFILE_PATH" then             return table._GENDIR.."/Makefile"
             elseif key == "_SCRIPT_PATH" then               return table._GENDIR.."/"..table._TOOLS_NAME..".sh"
@@ -85,10 +87,10 @@ function StringGenerator.new(data)
             elseif key == "_INTERCEPTOR_SRC_PATH" then      return table._COREDIR_PATH.."/"..table._INTERCEPTOR_SRC
             elseif key == "_INTERCEPTOR_HEAD_PATH" then     return table._COREDIR_PATH.."/"..table._INTERCEPTOR_HEAD
             -- Plugin source and path
-            elseif key == "_PLUG_SRC" then                  return table._PLUG..".c"
-            elseif key == "_PLUG_HEAD" then                 return table._PLUG..".h"
-            elseif key == "_PLUG_SRC_PATH" then             return table._COREDIR_PATH.."/"..table._PLUG_SRC
-            elseif key == "_PLUG_HEAD_PATH" then            return table._COREDIR_PATH.."/"..table._PLUG_HEAD
+            elseif key == "_PLUG_SRC" then                  return table._DOMAIN.."_"..table._PLUG..".c"
+            elseif key == "_PLUG_HEAD" then                 return table._DOMAIN.."_"..table._PLUG..".h"
+            elseif key == "_PLUG_SRC_PATH" then             return table._PLUGDIR_PATH.."/"..table._PLUG_SRC
+            elseif key == "_PLUG_HEAD_PATH" then            return table._PLUGDIR_PATH.."/"..table._PLUG_HEAD
             -- Env source and path
             elseif key == "_ENV_SRC" then                   return table._ENV..".c"
             elseif key == "_ENV_HEAD" then                  return table._ENV..".h"

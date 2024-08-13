@@ -12,16 +12,16 @@ local function init_file(details)
 end
 
 local domain_file_details = {
-    {default_gen = true, key = "atm_src", path = "_ATM_SRC_PATH", name = "api_table_mgr_c"},
-    {default_gen = true, key = "atm_hdr", path = "_ATM_HEAD_PATH", name = "api_table_mgr_h"},
+    {default_gen = true, key = "atm_src", path = "_ATM_SRC_PATH", name = "api_table_mgr"},
+    {default_gen = true, key = "atm_hdr", path = "_ATM_HEAD_PATH", name = "api_table_mgr"},
     {default_gen = true, key = "if_src", path = "_IF_SRC_PATH", name = "intercepted_functions_c"},
     {default_gen = true, key = "if_hdr", path = "_IF_HEAD_PATH", name = "intercepted_functions_h"},
     {default_gen = true, key = "cb_src", path = "_CB_SRC_PATH", name = "callback_c"},
     {default_gen = true, key = "cb_hdr", path = "_CB_HEAD_PATH", name = "callback_h"},
     {default_gen = false, key = "f_man", path = "_F_MAN_SRC_PATH", name = "functions_c"},
     {default_gen = true, key = "f_auto", path = "_F_AUTO_SRC_PATH", name = "functions_c"},
-    {default_gen = true, key = "plg_src", path = "_PLUG_SRC_PATH", name = "plugin_c"}
-    -- {default_gen = true, key = "plg_hdr", path = "_PLUG_HEAD_PATH", name = "plugin_h"} -- TODO DIRECTORY PLUG WITH INDEPENDANT PLUG
+    {default_gen = false, key = "plg_src", path = "_PLUG_SRC_PATH", name = "plugin_c"},
+    {default_gen = false, key = "plg_hdr", path = "_PLUG_HEAD_PATH", name = "plugin_h"}
 }
 
 local common_file_details = {
@@ -59,17 +59,6 @@ local function get_include_str(includes_table)
     return "\n#include \""..table.concat(includes_table, "\"\n#include \"") .. "\"\n"
 end
 
-local function get_c_param_content(ptype, pname, data)
-    local decl, nb_ptr = c_manager.get_real_type(data, ptype)
-    if type(decl) == 'table' then
-        print(ptype .. " " .. pname)
-        for _, pair in ipairs(decl) do
-            get_c_param_content(pair.type, pair.name, data)
-        end
-    else
-        return "test"
-    end
-end
 
 local function add_includes_and_handlers(gilda_data)
     local includes_str = get_include_str(gilda_data.includes)
@@ -104,6 +93,11 @@ local function set_domain_contents(gilda_data, data_csv, options)
     if has_mangen(data_csv.function_csv) then
         files_domain.f_man:set_do_generate(true)
     end
+    if options.gen_options.plugin then
+        files_domain.plg_src:set_do_generate(true)
+        files_domain.plg_hdr:set_do_generate(true)
+        common.mkdir(S._PLUGDIR_PATH)
+    end
 
     for _, f in pairs(files_domain) do
         f:reset_subcontent()
@@ -122,6 +116,7 @@ local function set_domain_contents(gilda_data, data_csv, options)
         local ftype = f.ftype
         local pname = f.pname
         local ptype = f.ptype
+        local cparam = {}
         for i = 1, #pname do
             local i_ptype = ptype[i]
             local i_pname = pname[i]
@@ -129,7 +124,7 @@ local function set_domain_contents(gilda_data, data_csv, options)
             table.insert(param, i_param)
             table.insert(api_data_t_lines, files_domain.if_hdr.getter.api_data_t_line(i_param))
             table.insert(cb_get_args_lines, files_domain.cb_hdr.getter.cb_get_args_line(fname, i_ptype, i_pname))
-            -- get_c_param_content(i_ptype, i_pname, data_csv)
+            table.insert(cparam, c_manager.get_real_cparam(i_ptype, i_pname, data_csv))
         end
         local concat_pname = table.concat(pname, ", ")
         local concat_param = table.concat(param, ", ")
@@ -150,6 +145,9 @@ local function set_domain_contents(gilda_data, data_csv, options)
         files_domain.if_hdr:add_subcontent("get_funid_block", "\n", fname)
 
         files_domain.cb_hdr:add_subcontent("cb_get_args_block", "\n", ftype, fname, table.concat(cb_get_args_lines,"\n"))
+        
+        files_domain.plg_src:add_subcontent("case_block", "\n", fname)
+        files_domain.plg_hdr:add_subcontent("prcss_args_blk", "\n", fname, cparam)
     
         if f.gen == "AUTOGEN" then
             files_domain.f_auto:add_subcontent("func_blk", "", ftype, fname, concat_pname, concat_param)

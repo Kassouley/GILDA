@@ -3,6 +3,7 @@ local common = require("common")
 local c_manager = {}
 
 c_manager.c_types = {
+    ["N/A"] = "",
     ["void"] = "",
     ["char"] = "%c",
     ["signed char"] = "%hhd",
@@ -35,61 +36,88 @@ c_manager.c_types = {
     ["enum"] = "%d",
 }
 
-local function _clean_keyword(declaration)
+local function _clean_keyword(ptype)
     local keywords = {
         "const", "volatile", "static", "extern", "inline", "register", "restrict",
         "struct", "union", "enum"
     }
-    local found_struct = false
-    local cleaned_declaration = declaration or "void"
+    local is = {}
+    local cleaned_ptype = ptype or "N/A"
+    
+    
     for _, keyword in ipairs(keywords) do
         local pattern = "%f[%w_]" .. keyword .. "%f[^%w_]%s*"
-        if cleaned_declaration:find(pattern) then
-            cleaned_declaration = cleaned_declaration:gsub(pattern, "")
-            
-            if keyword == "struct" or keyword == "union" then
-                found_struct = true
-            end
-            if keyword == "enum" then
-                cleaned_declaration = "enum"
+        if cleaned_ptype:find(pattern) then
+            cleaned_ptype = cleaned_ptype:gsub(pattern, "")
+            if keyword == "struct" then
+                is.struct = true
+            elseif keyword == "union" then
+                is.union = true
+            elseif keyword == "enum" then
+                is.enum = true
+                cleaned_ptype = "enum"
             end
         end
     end
-    return found_struct, cleaned_declaration
+    
+    if cleaned_ptype:find("%(%*%)") then
+        is.callback = true
+        cleaned_ptype = "void*"
+    end
+    return is, cleaned_ptype
 end
 
 
-local function _is_c_type(_type)
-    return c_manager.c_types[_type:gsub("%s*%*$", "")] ~= nil
+local function _is_c_type(t)
+    return c_manager.c_types[t:gsub("%s*%*$", "")] ~= nil
 end
 
 local function _count_pointers(_type)
-    local pointer_count = 0
+    local ptr_count = 0
     local cleaned_type = _type
     cleaned_type = cleaned_type:gsub("%s*%*", function()
-        pointer_count = pointer_count + 1
+        ptr_count = ptr_count + 1
         return ""
     end)
     cleaned_type = cleaned_type:gsub("%s*%[%d*%]", function()
-        pointer_count = pointer_count + 1
+        ptr_count = ptr_count + 1
         return ""
     end)
-    return pointer_count, common.trim(cleaned_type)
+    return ptr_count, common.trim(cleaned_type)
 end
 
 
-function c_manager.get_real_type(data, decl, pointer_count)
-    local is_struct, cleaned_decl = _clean_keyword(decl)
-    local cnt_tmp, cleaned_decl = _count_pointers(cleaned_decl)
-    pointer_count = (pointer_count or 0) + cnt_tmp
-    if _is_c_type(cleaned_decl) then
-        return cleaned_decl or "void", pointer_count
-    elseif is_struct then
-        return data.struct_csv[cleaned_decl] or "void", pointer_count
+local function _get_real_type(data, ptype, ptr_count)
+    local is, cleaned_ptype = _clean_keyword(ptype)
+    local cnt_tmp, cleaned_ptype = _count_pointers(cleaned_ptype)
+    ptr_count = (ptr_count or 0) + cnt_tmp
+    if _is_c_type(cleaned_ptype) then
+        return cleaned_ptype or "N/A", ptr_count, "ctype"
+    elseif is.struct then
+        return data.struct_csv[cleaned_ptype] or "N/A", ptr_count, "struct"
+    elseif is.union then
+        return data.struct_csv[cleaned_ptype] or "N/A", ptr_count, "union"
     else
-        cleaned_decl, pointer_count = c_manager.get_real_type(data, data.typedef_csv[cleaned_decl], pointer_count)
-        return cleaned_decl or "void", pointer_count
+        cleaned_ptype, ptr_count, kind = _get_real_type(data, data.typedef_csv[cleaned_ptype], ptr_count)
+        return cleaned_ptype or "N/A", ptr_count, kind
     end
+end
+
+function c_manager.get_real_cparam(ptype, pname, data)
+    local result
+    local ctype, nb_ptr, kind = _get_real_type(data, ptype)
+    if type(ctype) == 'table' then
+        local struct_fields = {}
+        for _, pair in ipairs(ctype) do
+            table.insert(struct_fields, 
+                c_manager.get_real_cparam(pair.type, pair.name, data)
+            )
+        end
+        result = {pname=pname, ptype=ptype, ctype=struct_fields, ptr=nb_ptr, kind=kind}
+    else
+        result = {pname=pname, ptype=ptype, ctype=ctype, ptr=nb_ptr, kind=kind}
+    end
+    return result
 end
 
 return c_manager

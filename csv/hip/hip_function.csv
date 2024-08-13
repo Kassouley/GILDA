@@ -320,7 +320,6 @@ AUTOGEN;hipError_t;hipMemPoolSetAccess;hipMemPool_t;mem_pool;const hipMemAccessD
 AUTOGEN;hipError_t;hipGraphExecExternalSemaphoresWaitNodeSetParams;hipGraphExec_t;hGraphExec;hipGraphNode_t;hNode;const hipExternalSemaphoreWaitNodeParams *;nodeParams
 AUTOGEN;hipError_t;hipMemcpy;void *;dst;const void *;src;size_t;sizeBytes;hipMemcpyKind;kind
 AUTOGEN;hipError_t;hipDeviceDisablePeerAccess;int;peerDeviceId
-AUTOGEN;const char *;hipKernelNameRef;const hipFunction_t;f
 AUTOGEN;hipError_t;hipGraphKernelNodeSetAttribute;hipGraphNode_t;hNode;hipKernelNodeAttrID;attr;const hipKernelNodeAttrValue *;value
 AUTOGEN;hipError_t;hipGraphAddMemcpyNode1D;hipGraphNode_t *;pGraphNode;hipGraph_t;graph;const hipGraphNode_t *;pDependencies;size_t;numDependencies;void *;dst;const void *;src;size_t;count;hipMemcpyKind;kind
 AUTOGEN;hipError_t;hipGraphExecEventRecordNodeSetEvent;hipGraphExec_t;hGraphExec;hipGraphNode_t;hNode;hipEvent_t;event

@@ -1,13 +1,20 @@
 import clang.cindex
 import sys
 import csv
+import subprocess
 
 # Set the path to your libclang library
 clang.cindex.Config.set_library_file('/opt/rocm-6.1.1/lib/llvm/lib/libclang.so')
 
-def extract_typedefs_structs_and_functions(header_file):
+def preprocess_file(header_file):
+    """ Preprocess the file using cpp command and return the preprocessed file content. """
+    cpp_command = ['cpp', '-E', header_file]
+    preprocessed_file = subprocess.run(cpp_command, stdout=subprocess.PIPE, universal_newlines=True)
+    return preprocessed_file.stdout
+
+def extract_typedefs_structs_and_functions(preprocessed_code):
     index = clang.cindex.Index.create()
-    translation_unit = index.parse(header_file)
+    translation_unit = index.parse('tmp.c', unsaved_files=[('tmp.c', preprocessed_code)], args=['-I/usr/include', '-I/usr/local/include'])
 
     typedefs = set()
     structs_unions = set()
@@ -69,8 +76,8 @@ def write_functions_csv(functions, output_file):
             writer.writerow(row)
 
 def main():
-    if len(sys.argv) < 3:
-        print(f"Usage: python {sys.argv[0]} <domain_name> <output_dir> <header_file1> <header_file2> ...")
+    if len(sys.argv) < 4:
+        print(f"Usage: python {sys.argv[0]} <domain_name> <output_dir> <header_file>")
         sys.exit(1)
 
     domain_name = sys.argv[1]
@@ -82,7 +89,8 @@ def main():
     all_function_prototypes = set()
 
     for header_file in header_files:
-        typedefs, structs_unions, function_prototypes = extract_typedefs_structs_and_functions(header_file)
+        preprocessed_code = preprocess_file(header_file)
+        typedefs, structs_unions, function_prototypes = extract_typedefs_structs_and_functions(preprocessed_code)
         all_typedefs.update(typedefs)
         all_structs_unions.update(structs_unions)
         all_function_prototypes.update(function_prototypes)

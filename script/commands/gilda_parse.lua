@@ -95,12 +95,14 @@ end
 
 -- COMMAND --
 function gilda_parse.command(domain, header_files, output_dir, options)
+    output_dir = output_dir or "csv/"
     if #header_files == 0 then
         print("Error: At least one header file must be specified for the 'parse' command.")
         return
     end
     common.mkdir(output_dir.."/"..domain)
-    os.execute("python3 script/header_parser.py "..domain.." "..output_dir.."/"..domain.." "..table.concat(header_files, " "))
+
+    os.execute("python3 script/header_parser.py "..domain.." "..output_dir.."/"..domain.." "..output_dir.."/tmp/header.c")
     -- local functions = {}
     -- for _, header_file in pairs(header_files) do
     --     if common.has_extension(header_file, ".h")
