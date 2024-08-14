@@ -47,120 +47,179 @@ function StringGenerator.new(data)
 
     -- Setup metatable for dynamic concatenation
     setmetatable(self, {
-        __index = function(table, key)
-            if key == "_GENDIR_NAME" then                   return self.config_data and self.config_data.gen_dir or "not set"
-            -- Tools string
-            elseif key == "_TOOLS_NAME" then                return self.config_data and self.config_data.tools_name or "not set"
-            elseif key == "_TOOLS_NAME_VERB" then           return self.config_data and self.config_data.tools_name_verb or "not set"
-            elseif key == "_TOOLS_NAME_ADJ" then            return self.config_data and self.config_data.tools_name_adj or "not set"
-            elseif key == "_TOOLS_NAME_ABR" then            return self.config_data and self.config_data.tools_name_abr or "not set"
-            elseif key == "_TOOLS_NAME_NOUN" then           return self.config_data and self.config_data.tools_name_noun or "not set"
-            elseif key == "_TOOLS_NAME_GERUND" then         return self.config_data and self.config_data.tools_name_gerund or "not set"
-            elseif key == "_TOOLS_NAME_UPPER" then          return string.upper(table._TOOLS_NAME)
-            elseif key == "_TOOLS_NAME_UPPER_VERB" then     return string.upper(table._TOOLS_NAME_VERB)
-            elseif key == "_TOOLS_NAME_UPPER_ADJ" then      return string.upper(table._TOOLS_NAME_ADJ)
-            elseif key == "_TOOLS_NAME_UPPER_ABR" then      return string.upper(table._TOOLS_NAME_ABR)
-            elseif key == "_TOOLS_NAME_UPPER_NOUN" then     return string.upper(table._TOOLS_NAME_NOUN)
-            elseif key == "_TOOLS_NAME_UPPER_GERUND" then   return string.upper(table._TOOLS_NAME_GERUND)
-            -- Directory string
-            elseif key == "_GENDIR" then                    return table._GENDIR_NAME.."/"..table._TOOLS_NAME
-            elseif key == "_COREDIR_PATH" then              return table._GENDIR.."/"..table._COREDIR
-            elseif key == "_TOOLSDIR_PATH" then             return table._COREDIR_PATH.."/"..table._TOOLSDIR
-            elseif key == "_BUILDDIR_PATH" then             return table._COREDIR_PATH.."/"..table._BUILDDIR
-            elseif key == "_AUTOGENDIR_PATH" then           return table._COREDIR_PATH.."/"..table._AUTOGENDIR
-            elseif key == "_MANGENDIR_PATH" then            return table._COREDIR_PATH.."/"..table._MANGENDIR
-            elseif key == "_UTILSDIR_PATH" then             return table._COREDIR_PATH.."/"..table._UTILSDIR
-            elseif key == "_PLUGDIR_PATH" then              return table._COREDIR_PATH.."/"..table._PLUGDIR
-            -- Makefile and script path
-            elseif key == "_MAKEFILE_PATH" then             return table._GENDIR.."/Makefile"
-            elseif key == "_SCRIPT_PATH" then               return table._GENDIR.."/"..table._TOOLS_NAME..".sh"
-            -- Domain string
-            elseif key == "_DOMAIN" then                    return table._CURRENT_DOMAIN
-            elseif key == "_DOMAIN_UPPER" then              return string.upper(table._CURRENT_DOMAIN)
-            elseif key == "_DOMAIN_ID" then                 return table._TOOLS_NAME_UPPER.."_DOMAIN_"..table._DOMAIN_UPPER
-            -- Tool source and path
-            elseif key == "_TOOL_SRC" then                  return table._TOOL..".c"
-            elseif key == "_TOOL_SRC_PATH" then             return table._TOOLSDIR_PATH.."/"..table._TOOL_SRC
-            -- Interceptor source and path
-            elseif key == "_INTERCEPTOR_SRC" then           return table._TOOLS_NAME..".c"
-            elseif key == "_INTERCEPTOR_HEAD" then          return table._TOOLS_NAME..".h"
-            elseif key == "_INTERCEPTOR_SRC_PATH" then      return table._COREDIR_PATH.."/"..table._INTERCEPTOR_SRC
-            elseif key == "_INTERCEPTOR_HEAD_PATH" then     return table._COREDIR_PATH.."/"..table._INTERCEPTOR_HEAD
-            -- Plugin source and path
-            elseif key == "_PLUG_SRC" then                  return table._DOMAIN.."_"..table._PLUG..".c"
-            elseif key == "_PLUG_HEAD" then                 return table._DOMAIN.."_"..table._PLUG..".h"
-            elseif key == "_PLUG_SRC_PATH" then             return table._PLUGDIR_PATH.."/"..table._PLUG_SRC
-            elseif key == "_PLUG_HEAD_PATH" then            return table._PLUGDIR_PATH.."/"..table._PLUG_HEAD
-            -- Env source and path
-            elseif key == "_ENV_SRC" then                   return table._ENV..".c"
-            elseif key == "_ENV_HEAD" then                  return table._ENV..".h"
-            elseif key == "_ENV_SRC_PATH" then              return table._UTILSDIR_PATH.."/"..table._ENV_SRC
-            elseif key == "_ENV_HEAD_PATH" then             return table._UTILSDIR_PATH.."/"..table._ENV_HEAD
-            -- Logger source and path
-            elseif key == "_LOGGER_SRC" then                return table._LOGGER..".c"
-            elseif key == "_LOGGER_HEAD" then               return table._LOGGER..".h"
-            elseif key == "_LOGGER_SRC_PATH" then           return table._UTILSDIR_PATH.."/"..table._LOGGER_SRC
-            elseif key == "_LOGGER_HEAD_PATH" then          return table._UTILSDIR_PATH.."/"..table._LOGGER_HEAD
-            -- Handler manager source and path
-            elseif key == "_HANDLER_MGR_SRC" then           return table._HANDLER_MGR..".c"             
-            elseif key == "_HANDLER_MGR_HEAD" then          return table._HANDLER_MGR..".h"             
-            elseif key == "_HANDLER_MGR_SRC_PATH" then      return table._UTILSDIR_PATH.."/"..table._HANDLER_MGR_SRC
-            elseif key == "_HANDLER_MGR_HEAD_PATH" then     return table._UTILSDIR_PATH.."/"..table._HANDLER_MGR_HEAD
+        __index = function(t, k)
+            if k == "_GENDIR_NAME" then                   return self.config_data and self.config_data.gen_dir or "not set"
+            -- Tools name string
+            elseif k == "_TOOLS_NAME" then                return self.config_data and self.config_data.tools_name or "not set"
+            elseif k == "_TOOLS_NAME_VERB" then           return self.config_data and self.config_data.tools_name_verb or "not set"
+            elseif k == "_TOOLS_NAME_ADJ" then            return self.config_data and self.config_data.tools_name_adj or "not set"
+            elseif k == "_TOOLS_NAME_ABR" then            return self.config_data and self.config_data.tools_name_abr or "not set"
+            elseif k == "_TOOLS_NAME_NOUN" then           return self.config_data and self.config_data.tools_name_noun or "not set"
+            elseif k == "_TOOLS_NAME_GERUND" then         return self.config_data and self.config_data.tools_name_gerund or "not set"
+            elseif k == "_TOOLS_NAME_UPPER" then          return string.upper(t._TOOLS_NAME)
+            elseif k == "_TOOLS_NAME_UPPER_VERB" then     return string.upper(t._TOOLS_NAME_VERB)
+            elseif k == "_TOOLS_NAME_UPPER_ADJ" then      return string.upper(t._TOOLS_NAME_ADJ)
+            elseif k == "_TOOLS_NAME_UPPER_ABR" then      return string.upper(t._TOOLS_NAME_ABR)
+            elseif k == "_TOOLS_NAME_UPPER_NOUN" then     return string.upper(t._TOOLS_NAME_NOUN)
+            elseif k == "_TOOLS_NAME_UPPER_GERUND" then   return string.upper(t._TOOLS_NAME_GERUND)
+            -- Directories string
+            elseif k == "_GENDIR" then                    return t._GENDIR_NAME.."/"..t._TOOLS_NAME
+            elseif k == "_COREDIR_PATH" then              return t._GENDIR.."/"..t._COREDIR
+            elseif k == "_TOOLSDIR_PATH" then             return t._COREDIR_PATH.."/"..t._TOOLSDIR
+            elseif k == "_BUILDDIR_PATH" then             return t._COREDIR_PATH.."/"..t._BUILDDIR
+            elseif k == "_AUTOGENDIR_PATH" then           return t._COREDIR_PATH.."/"..t._AUTOGENDIR
+            elseif k == "_MANGENDIR_PATH" then            return t._COREDIR_PATH.."/"..t._MANGENDIR
+            elseif k == "_UTILSDIR_PATH" then             return t._COREDIR_PATH.."/"..t._UTILSDIR
+            elseif k == "_PLUGDIR_PATH" then              return t._COREDIR_PATH.."/"..t._PLUGDIR
             -- Domain directories
-            elseif key == "_DOMAIN_DIR" then                return table._CURRENT_DOMAIN.."_"..table._TOOLS_NAME
-            elseif key == "_AUTOGEN_DOMAIN_DIR" then        return table._AUTOGENDIR_PATH.."/"..table._DOMAIN_DIR
-            elseif key == "_MANGEN_DOMAIN_DIR" then         return table._MANGENDIR_PATH.."/"..table._DOMAIN_DIR
-            -- Var and types strings
-            elseif key == "_API_ID_T" then                  return table._CURRENT_DOMAIN.."_api_id_t"
-            elseif key == "_API_ID_PREFIX" then             return table._DOMAIN_UPPER.."_API_ID_"
-            elseif key == "_API_DATA_S" then                return table._TOOLS_NAME.."_"..table._CURRENT_DOMAIN.."_api_activity_s"
-            elseif key == "_API_DATA_T" then                return table._TOOLS_NAME.."_"..table._CURRENT_DOMAIN.."_api_activity_t"
-            elseif key == "_API_ARGS_S" then                return table._CURRENT_DOMAIN.."_api_args_s"
-            elseif key == "_API_ARGS_T" then                return table._CURRENT_DOMAIN.."_api_args_t"
-            elseif key == "_API_DATA_VAR" then              return "__"..table._CURRENT_DOMAIN.."_data__"
-            elseif key == "_INTERCEPT_TABLE_T" then         return table._CURRENT_DOMAIN.."_api_table_t"
-            elseif key == "_INTERCEPT_TABLE_VAR" then       return table._CURRENT_DOMAIN.."_api_table"
-            -- Api table manager source and path
-            elseif key == "_ATM" then                       return table._CURRENT_DOMAIN.."_api_table_mgr"
-            elseif key == "_ATM_SRC" then                   return table._ATM..".c"
-            elseif key == "_ATM_HEAD" then                  return table._ATM..".h"
-            elseif key == "_ATM_SRC_PATH" then              return table._AUTOGEN_DOMAIN_DIR .. "/" .. table._ATM_SRC
-            elseif key == "_ATM_HEAD_PATH" then             return table._AUTOGEN_DOMAIN_DIR .. "/" .. table._ATM_HEAD
-            -- Api table manager functions string
-            elseif key == "_ATM_ENABLE_DOMAIN_FUNC" then    return "enable_"..table._CURRENT_DOMAIN.."_api_domain"
-            elseif key == "_ATM_DISABLE_DOMAIN_FUNC" then   return "disable_"..table._CURRENT_DOMAIN.."_api_domain"
-            elseif key == "_ATM_LOAD_TABLE_FUNC" then       return "load_"..table._CURRENT_DOMAIN.."_api_table"
+            elseif k == "_DOMAIN_DIR" then                return t._CURRENT_DOMAIN.."_"..t._TOOLS_NAME
+            elseif k == "_AUTOGEN_DOMAIN_DIR" then        return t._AUTOGENDIR_PATH.."/"..t._DOMAIN_DIR
+            elseif k == "_MANGEN_DOMAIN_DIR" then         return t._MANGENDIR_PATH.."/"..t._DOMAIN_DIR
+            -- Makefile and script path
+            elseif k == "_MAKEFILE_PATH" then             return t._GENDIR.."/Makefile"
+            elseif k == "_SCRIPT_PATH" then               return t._GENDIR.."/"..t._TOOLS_NAME..".sh"
+            -- Tool source and path
+            elseif k == "_TOOL_SRC" then                  return t._TOOL..".c"
+            elseif k == "_TOOL_SRC_PATH" then             return t._TOOLSDIR_PATH.."/"..t._TOOL_SRC
+            -- Interceptor source and path
+            elseif k == "_INTERCEPTOR_SRC" then           return t._TOOLS_NAME..".c"
+            elseif k == "_INTERCEPTOR_HDR" then           return t._TOOLS_NAME..".h"
+            elseif k == "_INTERCEPTOR_SRC_PATH" then      return t._COREDIR_PATH.."/"..t._INTERCEPTOR_SRC
+            elseif k == "_INTERCEPTOR_HDR_PATH" then      return t._COREDIR_PATH.."/"..t._INTERCEPTOR_HDR
+            -- Plugin source and path
+            elseif k == "_PLG_SRC" then                   return t._PLUG..".c"
+            elseif k == "_PLG_HDR" then                   return t._PLUG..".h"
+            elseif k == "_PLG_SRC_PATH" then              return t._PLUGDIR_PATH.."/"..t._PLG_SRC
+            elseif k == "_PLG_HDR_PATH" then              return t._PLUGDIR_PATH.."/"..t._PLG_HDR
+            elseif k == "_DPLG_SRC" then                  return t._DOMAIN.."_"..t._PLUG..".c"
+            elseif k == "_DPLG_HDR" then                  return t._DOMAIN.."_"..t._PLUG..".h"
+            elseif k == "_DPLG_SRC_PATH" then             return t._PLUGDIR_PATH.."/"..t._DPLG_SRC
+            elseif k == "_DPLG_HDR_PATH" then             return t._PLUGDIR_PATH.."/"..t._DPLG_HDR
+            -- Env source and path
+            elseif k == "_ENV_SRC" then                   return t._ENV..".c"
+            elseif k == "_ENV_HDR" then                   return t._ENV..".h"
+            elseif k == "_ENV_SRC_PATH" then              return t._UTILSDIR_PATH.."/"..t._ENV_SRC
+            elseif k == "_ENV_HDR_PATH" then              return t._UTILSDIR_PATH.."/"..t._ENV_HDR
+            -- Logger source and path
+            elseif k == "_LOGGER_SRC" then                return t._LOGGER..".c"
+            elseif k == "_LOGGER_HDR" then                return t._LOGGER..".h"
+            elseif k == "_LOGGER_SRC_PATH" then           return t._UTILSDIR_PATH.."/"..t._LOGGER_SRC
+            elseif k == "_LOGGER_HDR_PATH" then           return t._UTILSDIR_PATH.."/"..t._LOGGER_HDR
+            -- Handler manager source and path
+            elseif k == "_HANDLER_MGR_SRC" then           return t._HANDLER_MGR..".c"             
+            elseif k == "_HANDLER_MGR_HDR" then           return t._HANDLER_MGR..".h"             
+            elseif k == "_HANDLER_MGR_SRC_PATH" then      return t._UTILSDIR_PATH.."/"..t._HANDLER_MGR_SRC
+            elseif k == "_HANDLER_MGR_HDR_PATH" then      return t._UTILSDIR_PATH.."/"..t._HANDLER_MGR_HDR
+            -- Api t manager source and path
+            elseif k == "_ATM" then                       return t._CURRENT_DOMAIN.."_api_table_mgr"
+            elseif k == "_ATM_SRC" then                   return t._ATM..".c"
+            elseif k == "_ATM_HDR" then                   return t._ATM..".h"
+            elseif k == "_ATM_SRC_PATH" then              return t._AUTOGEN_DOMAIN_DIR .. "/" .. t._ATM_SRC
+            elseif k == "_ATM_HDR_PATH" then              return t._AUTOGEN_DOMAIN_DIR .. "/" .. t._ATM_HDR
             -- Functions source and path
-            elseif key == "_F" then                         return table._CURRENT_DOMAIN.."_functions"
-            elseif key == "_F_SRC" then                     return table._F..".c"
-            elseif key == "_F_HEAD" then                    return table._F..".h"
-            elseif key == "_F_MAN_SRC_PATH" then            return table._MANGEN_DOMAIN_DIR .. "/" .. table._F_SRC
-            elseif key == "_F_AUTO_SRC_PATH" then           return table._AUTOGEN_DOMAIN_DIR .. "/" .. table._F_SRC
-            elseif key == "_F_HEAD_PATH" then               return table._AUTOGEN_DOMAIN_DIR .. "/" .. table._F_HEAD
+            elseif k == "_F" then                         return t._CURRENT_DOMAIN.."_functions"
+            elseif k == "_F_SRC" then                     return t._F..".c"
+            elseif k == "_F_MAN_SRC_PATH" then            return t._MANGEN_DOMAIN_DIR .. "/" .. t._F_SRC
+            elseif k == "_F_AUTO_SRC_PATH" then           return t._AUTOGEN_DOMAIN_DIR .. "/" .. t._F_SRC
             -- Intercepted Functions source and path
-            elseif key == "_IF" then                        return table._CURRENT_DOMAIN.."_"..table._TOOLS_NAME_ADJ.."_functions"
-            elseif key == "_IF_SRC" then                    return table._IF..".c"
-            elseif key == "_IF_HEAD" then                   return table._IF..".h"
-            elseif key == "_IF_SRC_PATH" then               return table._AUTOGEN_DOMAIN_DIR .. "/" .. table._IF_SRC
-            elseif key == "_IF_HEAD_PATH" then              return table._AUTOGEN_DOMAIN_DIR .. "/" .. table._IF_HEAD
+            elseif k == "_IF" then                        return t._CURRENT_DOMAIN.."_"..t._TOOLS_NAME_ADJ.."_functions"
+            elseif k == "_IF_SRC" then                    return t._IF..".c"
+            elseif k == "_IF_HDR" then                    return t._IF..".h"
+            elseif k == "_IF_SRC_PATH" then               return t._AUTOGEN_DOMAIN_DIR .. "/" .. t._IF_SRC
+            elseif k == "_IF_HDR_PATH" then               return t._AUTOGEN_DOMAIN_DIR .. "/" .. t._IF_HDR
             -- Correlation ID source and path
-            elseif key == "_CID_SRC" then                    return table._CID..".c"
-            elseif key == "_CID_HEAD" then                   return table._CID..".h"
-            elseif key == "_CID_SRC_PATH" then               return table._UTILSDIR_PATH .. "/" .. table._CID_SRC
-            elseif key == "_CID_HEAD_PATH" then              return table._UTILSDIR_PATH .. "/" .. table._CID_HEAD
+            elseif k == "_CID_SRC" then                   return t._CID..".c"
+            elseif k == "_CID_HDR" then                   return t._CID..".h"
+            elseif k == "_CID_SRC_PATH" then              return t._UTILSDIR_PATH .. "/" .. t._CID_SRC
+            elseif k == "_CID_HDR_PATH" then              return t._UTILSDIR_PATH .. "/" .. t._CID_HDR
             -- Callback source and path
-            elseif key == "_CB" then                        return table._CURRENT_DOMAIN.."_callback"
-            elseif key == "_CB_SRC" then                    return table._CB..".c"
-            elseif key == "_CB_HEAD" then                   return table._CB..".h"
-            elseif key == "_CB_SRC_PATH" then               return table._AUTOGEN_DOMAIN_DIR .. "/" .. table._CB_SRC
-            elseif key == "_CB_HEAD_PATH" then              return table._AUTOGEN_DOMAIN_DIR .. "/" .. table._CB_HEAD
-            -- Callback function and var string
-            elseif key == "_CALLBACK" then                  return table._CURRENT_DOMAIN.."_callback"
-            elseif key == "_SET_CALLBACK" then              return "set_"..table._CURRENT_DOMAIN.."_"..table._TOOLS_NAME_VERB.."_callback"
-            elseif key == "_CB_ARGS" then                   return "bool is_enter, "..table._API_DATA_T.."* activity"
-            elseif key == "_CALLBACK_FUNCTION" then         return table._CURRENT_DOMAIN.."_callback_function"
-            else
-                return rawget(table, key)
+            elseif k == "_CB" then                        return t._CURRENT_DOMAIN.."_callback"
+            elseif k == "_CB_SRC" then                    return t._CB..".c"
+            elseif k == "_CB_HDR" then                    return t._CB..".h"
+            elseif k == "_CB_SRC_PATH" then               return t._AUTOGEN_DOMAIN_DIR .. "/" .. t._CB_SRC
+            elseif k == "_CB_HDR_PATH" then               return t._AUTOGEN_DOMAIN_DIR .. "/" .. t._CB_HDR
+            -- Domain string
+            elseif k == "_DOMAIN" then                    return t._CURRENT_DOMAIN
+            elseif k == "_DOMAIN_UPPER" then              return string.upper(t._CURRENT_DOMAIN)
+            elseif k == "_DOMAIN_ID" then                 return t._TOOLS_NAME_UPPER.."_DOMAIN_"..t._DOMAIN_UPPER
+            -- Api t manager functions string
+            elseif k == "_ATM_INTERCEPT_TABLE_VAR" then           return t._CURRENT_DOMAIN.."_api_table"
+            elseif k == "_ATM_INTERCEPT_TABLE_T" then             return t._CURRENT_DOMAIN.."_api_table_t"
+            elseif k == "_ATM_ENABLE_DOMAIN_FUNC" then            return "enable_"..t._CURRENT_DOMAIN.."_api_domain"
+            elseif k == "_ATM_ENABLE_DOMAIN_FUNC_DECL" then       return "void "..t._ATM_ENABLE_DOMAIN_FUNC.."()"
+            elseif k == "_ATM_DISABLE_DOMAIN_FUNC" then           return "disable_"..t._CURRENT_DOMAIN.."_api_domain"
+            elseif k == "_ATM_DISABLE_DOMAIN_FUNC_DECL" then      return "void "..t._ATM_DISABLE_DOMAIN_FUNC.."()"
+            elseif k == "_ATM_LOAD_TABLE_FUNC" then               return "load_"..t._CURRENT_DOMAIN.."_api_table"
+            elseif k == "_ATM_LOAD_TABLE_FUNC_DECL" then          return "void "..t._ATM_LOAD_TABLE_FUNC.."()"
+            -- Callback functions string
+            elseif k == "_CB_CALLBACK" then               return "__"..t._CURRENT_DOMAIN.."_callback"
+            elseif k == "_CB_ARGS" then                   return "bool is_enter, "..t._IF_API_DATA_T.."* activity"
+            elseif k == "_CB_STORED_CALLBACK_FUNC" then   return "__stored_"..t._CURRENT_DOMAIN.."_callback"
+            elseif k == "_CB_CALLBACK_FUNC" then          return "__"..t._CURRENT_DOMAIN.."_callback_function"
+            elseif k == "_CB_CALLBACK_FUNC_DECL" then     return "void "..t._CB_CALLBACK_FUNC.."("..t._CB_ARGS..")"
+            elseif k == "_CB_SET_CALLBACK_FUNC" then      return "set_"..t._CURRENT_DOMAIN.."_"..t._TOOLS_NAME_VERB.."_callback"
+            elseif k == "_CB_SET_CALLBACK_FUNC_DECL" then return "void "..t._CB_SET_CALLBACK_FUNC.."(void (*"..t._CB_CALLBACK..")("..t._CB_ARGS.."))"
+            elseif k == "_CB_API_DATA_VAR" then           return "__"..t._CURRENT_DOMAIN.."_data__"
+            elseif k == "_CB_MACRO_BEFORE" then           return t._DOMAIN_UPPER.."_CALLBACK_BEFORE"
+            elseif k == "_CB_MACRO_AFTER" then            return t._DOMAIN_UPPER.."_CALLBACK_AFTER"
+            -- Handler manager functions string
+            elseif k == "_HM_LOAD_FUNC" then              return "load_handle"
+            elseif k == "_HM_LOAD_FUNC_DECL" then         return "void* "..t._HM_LOAD_FUNC.."(const char* handle_lib_path)"
+            elseif k == "_HM_ENABLE_MACRO" then           return "ENABLE_"..t._TOOLS_NAME_UPPER_GERUND
+            elseif k == "_HM_DISABLE_MACRO" then          return "DISABLE_"..t._TOOLS_NAME_UPPER_GERUND
+            elseif k == "_HM_HANDLE_MACRO" then           return "HANDLE"
+                -- Correlation ID functions string
+            elseif k == "_CID_INIT_FUNC" then             return "init_correlation_id"
+            elseif k == "_CID_INIT_FUNC_DECL" then        return "void "..t._CID_INIT_FUNC.."()"
+            elseif k == "_CID_FINI_FUNC" then             return "cleanup_correlation_id"
+            elseif k == "_CID_FINI_FUNC_DECL" then        return "void "..t._CID_FINI_FUNC.."()"
+            elseif k == "_CID_GET_NEXT_FUNC" then         return "get_next_correlation_id"
+            elseif k == "_CID_GET_NEXT_FUNC_DECL" then    return "uint64_t "..t._CID_GET_NEXT_FUNC.."()"
+            elseif k == "_CID_GET_CURR_FUNC" then         return "get_curr_correlation_id"
+            elseif k == "_CID_GET_CURR_FUNC_DECL" then    return "uint64_t "..t._CID_GET_CURR_FUNC.."()"
+            -- Env var functions string
+            elseif k == "_ENV_GET_FILTER_FUNC" then       return "get_function_filter"
+            elseif k == "_ENV_GET_FILTER_FUNC_DECL" then  return "const char* "..t._ENV_GET_FILTER_FUNC.."(const char* env_function_filter)"
+            elseif k == "_ENV_IS_DOMAIN_FUNC" then        return "is_"..t._TOOLS_NAME_ADJ.."_domain"
+            elseif k == "_ENV_IS_DOMAIN_FUNC_DECL" then   return "bool "..t._ENV_IS_DOMAIN_FUNC.."(const char *domain)"
+            elseif k == "_ENV_GET_DOMAIN_FUNC" then       return "get_"..t._TOOLS_NAME_ADJ.."_domain"
+            elseif k == "_ENV_GET_DOMAIN_FUNC_DECL" then  return "int "..t._ENV_GET_DOMAIN_FUNC.."(bool* is_"..t._TOOLS_NAME_ADJ..")"
+            elseif k == "_ENV_SET_ENABLED_FUNC" then      return "set_"..t._DOMAIN.."_"..t._TOOLS_NAME_NOUN.."_enabled"
+            elseif k == "_ENV_SET_ENABLED_FUNC_DECL" then return "void "..t._ENV_SET_ENABLED_FUNC.."(bool* enabled_functions, bool* is_full_enabled)"
+            -- Intercepted functions functions string
+            elseif k == "_IF_GET_FUNAME_FUNC" then        return "get_"..t._DOMAIN.."_funame_by_id"
+            elseif k == "_IF_GET_FUNAME_FUNC_DECL" then   return "static inline const char* "..t._IF_GET_FUNAME_FUNC.."("..t._IF_API_ID_T.." id)"
+            elseif k == "_IF_GET_FUNID_FUNC" then         return "get_"..t._DOMAIN.."_funid_by_name"
+            elseif k == "_IF_GET_FUNID_FUNC_DECL" then    return "static inline "..t._IF_API_ID_T.." "..t._IF_GET_FUNID_FUNC.."(const char* name)"
+            elseif k == "_IF_API_ID_T" then               return t._CURRENT_DOMAIN.."_api_id_t"
+            elseif k == "_IF_API_ID_PREFIX" then          return t._DOMAIN_UPPER.."_API_ID_"
+            elseif k == "_IF_API_DATA_S" then             return t._TOOLS_NAME.."_"..t._CURRENT_DOMAIN.."_api_activity_s"
+            elseif k == "_IF_API_DATA_T" then             return t._TOOLS_NAME.."_"..t._CURRENT_DOMAIN.."_api_activity_t"
+            elseif k == "_IF_API_ARGS_S" then             return t._CURRENT_DOMAIN.."_api_args_s"
+            elseif k == "_IF_API_ARGS_T" then             return t._CURRENT_DOMAIN.."_api_args_t"
+            -- Interceptor functions string
+            elseif k == "_I_DOMAIN_T" then                    return t._TOOLS_NAME.."_domain_t"
+            elseif k == "_I_ENABLE_DOMAIN_FUNC" then          return t._TOOLS_NAME.."_enable_domain"
+            elseif k == "_I_ENABLE_DOMAIN_FUNC_DECL" then     return "void "..t._I_ENABLE_DOMAIN_FUNC.."("..t._I_DOMAIN_T.." domain)"
+            elseif k == "_I_DISABLE_DOMAIN_FUNC" then         return t._TOOLS_NAME.."_disable_domain"
+            elseif k == "_I_DISABLE_DOMAIN_FUNC_DECL" then    return "void "..t._I_DISABLE_DOMAIN_FUNC.."("..t._I_DOMAIN_T.." domain)"
+            elseif k == "_I_INIT_FUNC" then                   return t._TOOLS_NAME.."_init"
+            elseif k == "_I_INIT_FUNC_DECL" then              return "void "..t._I_INIT_FUNC.."()"
+            elseif k == "_I_FINI_FUNC" then                   return t._TOOLS_NAME.."_fini"
+            elseif k == "_I_FINI_FUNC_DECL" then              return "void "..t._I_FINI_FUNC.."()"
+            elseif k == "_I_GET_DOMAIN_FUNC" then             return "get_domain_name"
+            elseif k == "_I_GET_DOMAIN_FUNC_DECL" then        return "static inline const char* "..t._I_GET_DOMAIN_FUNC.."("..t._I_DOMAIN_T.." domain)"
+            -- Plugin functions string
+            elseif k == "_PLG_PROCESS_FUNC" then              return "process_"..t._DOMAIN.."_args_for"
+            elseif k == "_PLG_PROCESS_FUNC_DECL" then         return "void "..t._PLG_PROCESS_FUNC.."("..t._IF_API_ID_T.." funid, const "..t._IF_API_ARGS_T.."* args)"
+            elseif k == "_PLG_CALLBACK_FUNC" then             return S._DOMAIN.."_callback"
+            elseif k == "_PLG_CALLBACK_FUNC_DECL" then        return "void "..S._PLG_CALLBACK_FUNC.."("..S._CB_ARGS..")" 
+                -- Logger functions string
+            elseif k == "_LOG_INIT_MACRO" then                return "INIT_LOGGER"
+            elseif k == "_LOG_FINI_MACRO" then                return "CLOSE_LOGGER"
+            elseif k == "_LOG_FLUSH_MACRO" then               return "FLUSH_LOGGER"
+            elseif k == "_LOG_MSG_MACRO" then                 return "LOG_MESSAGE"
+            else                                              return rawget(t, k)
             end
         end
     })

@@ -1,6 +1,38 @@
-local logger_hdr = {}
+local src = {}
+local hdr = {}
 
-function logger_hdr.content(subcontents)
+src.kpath = "_LOGGER_SRC_PATH"
+hdr.kpath = "_LOGGER_HDR_PATH"
+
+-----------------------------
+-- SOURCE CONTENT
+-----------------------------
+function src.content(subcontents)
+    return S._WARNING_MSG..[[ 
+
+#include "]]..S._LOGGER_HDR..[["
+
+Logger logger = { NULL, {0}, 0 };  // Definition of the logger instance
+
+// Function to get current time as a string
+char* current_time() {
+    time_t rawtime;
+    struct tm *timeinfo;
+    static char buffer[20];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(buffer, sizeof(buffer), "]].."%Y-%m-%d %H:%M:%S"..[[", timeinfo);
+    return buffer;
+}
+]]
+end
+
+
+-----------------------------
+-- HEADER CONTENT
+-----------------------------
+function hdr.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #ifndef LOGGER_H
@@ -26,7 +58,7 @@ typedef struct {
 extern Logger logger;
 
 // Initialize the logger
-#define INIT_LOGGER() do { \
+#define ]]..S._LOG_INIT_MACRO..[[() do { \
     if (logger.file == NULL) { \
         logger.file = fopen(LOG_FILE, "a"); \
         if (logger.file == NULL) { \
@@ -37,7 +69,7 @@ extern Logger logger;
 } while (0)
 
 // Flush the buffer to the file
-#define FLUSH_LOGGER() do { \
+#define ]]..S._LOG_FLUSH_MACRO..[[() do { \
     if (logger.file && logger.buffer_len > 0) { \
         fwrite(logger.buffer, 1, logger.buffer_len, logger.file); \
         fflush(logger.file); \
@@ -46,7 +78,7 @@ extern Logger logger;
 } while (0)
 
 // Log a message with format
-#define LOG_MESSAGE(format, ...) do { \
+#define ]]..S._LOG_MSG_MACRO..[[(format, ...) do { \
     if (logger.file != NULL) { \
         int len = snprintf(logger.buffer + logger.buffer_len, \
                            LOG_BUFFER_SIZE - logger.buffer_len, \
@@ -54,7 +86,7 @@ extern Logger logger;
         if (len > 0) { \
             logger.buffer_len += len; \
             if (logger.buffer_len > LOG_FLUSH_THRESHOLD) { \
-                FLUSH_LOGGER(); \
+                ]]..S._LOG_FLUSH_MACRO..[[(); \
             } \
         } else { \
             fprintf(stderr, "Warning: Log message formatting failed\n"); \
@@ -65,8 +97,8 @@ extern Logger logger;
 } while (0)
 
 // Close the logger
-#define CLOSE_LOGGER() do { \
-    FLUSH_LOGGER(); \
+#define ]]..S._LOG_FINI_MACRO..[[() do { \
+    ]]..S._LOG_FLUSH_MACRO..[[(); \
     if (logger.file) { \
         fclose(logger.file); \
         logger.file = NULL; \
@@ -80,4 +112,5 @@ char* current_time();
 ]]
 end
 
-return logger_hdr
+return {src=src, hdr=hdr}
+

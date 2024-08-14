@@ -1,6 +1,8 @@
-local script_sh = {}
+local f = {}
 
-function script_sh.content(subcontents)
+f.kpath = "_SCRIPT_PATH"
+
+function f.content(subcontents)
     return S._SAMPLE_MSG_2..[[ 
 
 #!/bin/bash
@@ -99,7 +101,7 @@ LD_PRELOAD=$preload_lib "${app_args[@]}"
 ]]
 end
 
-function script_sh.case_opt()
+function f.case_opt()
     return string.format([[
         --%s-%s)
             %s_%s_enabled=1
@@ -109,7 +111,7 @@ function script_sh.case_opt()
     )
 end
 
-function script_sh.init_opt_block()
+function f.init_opt_block()
     return string.format([[
 %s_%s_enabled=0
 ]],     
@@ -117,7 +119,7 @@ function script_sh.init_opt_block()
     )
 end
 
-function script_sh.enabled_block()
+function f.enabled_block()
     return string.format([[
 if [ $%s_%s_enabled -eq 1 ]; then
     export %s=1
@@ -128,7 +130,7 @@ fi
     )
 end
 
-function script_sh.help_block()
+function f.help_block()
     return string.format([[    echo "  --%s-%s                       Enable %s of %s library functions"]],     
         S._DOMAIN, S._TOOLS_NAME_ABR,
         S._TOOLS_NAME_VERB, S._DOMAIN_UPPER
@@ -136,5 +138,4 @@ function script_sh.help_block()
 end
 
 
-
-return script_sh
+return {f=f}

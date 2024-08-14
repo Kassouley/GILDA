@@ -1,16 +1,47 @@
-local plg_hdr = {}
-
 local c_manager = require("c_manager")
 
-function plg_hdr.content(subcontents)
+local src = {}
+local hdr = {}
+
+src.kpath = "_DPLG_SRC_PATH"
+hdr.kpath = "_DPLG_HDR_PATH"
+
+-----------------------------
+-- SOURCE CONTENT
+-----------------------------
+function src.content(subcontents)
+    return S._SAMPLE_MSG..[[ 
+
+#include "]]..S._INTERCEPTOR_HDR..[["
+#include "]]..S._DPLG_HDR..[["
+
+]]..S._PLG_PROCESS_FUNC_DECL..[[ 
+{
+    switch(funid) {
+]]..subcontents.case_block..[[ 
+        default : break;
+    }
+}
+
+]]
+end
+
+function src.case_block(fname)
+    return string.format("\t\tcase %s%s : PROCESS_ARGS_%s(args); break;", S._IF_API_ID_PREFIX, fname, fname)
+end
+
+
+-----------------------------
+-- HEADER CONTENT
+-----------------------------
+function hdr.content(subcontents)
     local def_header = S._DOMAIN_UPPER.."_PLUGIN_H"
     return S._SAMPLE_MSG..[[ 
 
 #ifndef ]]..def_header..[[ 
 #define ]]..def_header..[[ 
 
-void 
-process_]]..S._DOMAIN..[[_args_for(]]..S._API_ID_T..[[ funid, const ]]..S._API_ARGS_T..[[* args);
+]]..S._PLG_PROCESS_FUNC_DECL..[[;
 
 ]]..subcontents.prcss_args_blk..[[
 
@@ -80,7 +111,7 @@ local function prcss_args_blk_aux(fname, cparam, content, depth, parent_vname)
 end
 
 
-function plg_hdr.prcss_args_blk(fname, cparam)
+function hdr.prcss_args_blk(fname, cparam)
     local prcss_args_blk = table.concat(prcss_args_blk_aux(fname, cparam), "\n")
     return string.format([[
 #define PROCESS_ARGS_%s(args) { \
@@ -90,7 +121,6 @@ function plg_hdr.prcss_args_blk(fname, cparam)
         fname,
         prcss_args_blk == "" and "\\" or prcss_args_blk
     )
-
 end
 
-return plg_hdr
+return {src=src, hdr=hdr}

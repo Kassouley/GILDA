@@ -1,6 +1,41 @@
-local handler_mgr_hdr = {}
+local src = {}
+local hdr = {}
 
-function handler_mgr_hdr.content(subcontents)
+src.kpath = "_HANDLER_MGR_SRC_PATH"
+hdr.kpath = "_HANDLER_MGR_HDR_PATH"
+
+-----------------------------
+-- SOURCE CONTENT
+-----------------------------
+function src.content(subcontents)
+    return S._WARNING_MSG..[[ 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+#include "]]..S._LOGGER_HDR..[["
+#include "]]..S._HANDLER_MGR_HDR..[["
+
+]]..S._HM_LOAD_FUNC_DECL..[[ 
+{
+    void *handle = dlopen(handle_lib_path, RTLD_LOCAL | RTLD_LAZY);
+    if (handle)
+        return handle;
+    fprintf(stderr, "%s not found\n", handle_lib_path);
+    abort();
+}
+
+void fallback(void) {
+    fprintf(stderr, "Critical error: Unable to load a function. See logs for more details.\n");
+    exit(EXIT_FAILURE);
+}
+]]
+end
+
+-----------------------------
+-- HEADER CONTENT
+-----------------------------
+function hdr.content(subcontents)
     return S._WARNING_MSG..[[ 
 
 #ifndef HANDLER_MANAGER_H
@@ -8,19 +43,18 @@ function handler_mgr_hdr.content(subcontents)
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
-#include "]]..S._LOGGER_HEAD..[["
+#include "]]..S._LOGGER_HDR..[["
 
 /**
- * The `#define HANDLE(api_table, v, handle)` macro is defining a custom macro named 
- * `HANDLE` that is used for loading function pointers from a dynamically loaded
+ * Used for loading function pointers from a dynamically loaded
  * library handle and assign the loaded function to function pointer that will be
  * call during the interception. 
  */
-#define HANDLE(api_table, v, handle) \
+#define ]]..S._HM_HANDLE_MACRO..[[(api_table, v, handle) \
 do { \
     api_table.fn_##v = (__##v##_t)(dlsym(handle, #v)); \
     if (!api_table.fn_##v) { \
-        LOG_MESSAGE("Failed to load \"%s\". Skipping.\n", #v); \
+        ]]..S._LOG_MSG_MACRO..[[("Failed to load \"%s\". Skipping.\n", #v); \
         api_table.fn_##v = (__##v##_t)fallback; \
     } \
     api_table.ptr_##v = api_table.fn_##v; \
@@ -29,11 +63,9 @@ do { \
 
 
 /**
- * The `#define ENABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[(api_table, v, d)` macro is defining a custom macro named 
- * `ENABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[` that is used for enabling the interception of the function v from 
- * domain d
+ * Used for enabling the interception of the function v from domain d
  */
-#define ENABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[(api_table, v, d) \
+#define ]]..S._HM_ENABLE_MACRO..[[(api_table, v, d) \
 do { \
     if (is_full_enabled || is_function_enabled[d##_API_ID_##v]) \
         api_table.ptr_##v = i_##v; \
@@ -42,10 +74,9 @@ do { \
 
 
 /**
- * The `#define DISABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[(api_table, v)` macro is defining a custom macro named 
- * `DISABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[` that is used for disabling the interception of the function v
+ * Used for disabling the interception of the function v
  */
-#define DISABLE_]]..S._TOOLS_NAME_UPPER_GERUND..[[(api_table, v) \
+#define ]]..S._HM_DISABLE_MACRO..[[(api_table, v) \
 do { \
     api_table.ptr_##v = api_table.fn_##v; \
 } while (false);
@@ -53,7 +84,7 @@ do { \
 
 
 /**
- * The function `load_handle` loads a dynamic library specified by the given path and returns a handle
+ * Loads a dynamic library specified by the given path and returns a handle
  * to it, or aborts the program if the library is not found.
  * 
  * @param handle_lib_path The `handle_lib_path` parameter is a string that represents the file path to
@@ -63,7 +94,7 @@ do { \
  * `handle_lib_path`, then the handle to that library is being returned. If the library is not found or
  * there is an error in loading it, the function will print an error message and abort the program.
  */
-void* load_handle(const char* handle_lib_path);
+]]..S._HM_LOAD_FUNC_DECL..[[;
 
 
 
@@ -78,4 +109,4 @@ void fallback(void);
 ]]
 end
 
-return handler_mgr_hdr
+return {src=src, hdr=hdr}

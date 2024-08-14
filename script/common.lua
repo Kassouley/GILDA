@@ -112,4 +112,25 @@ function common.alternate_concat(arr1, arr2, sep)
     return table.concat(result, sep)
 end
 
+
+function common.deepcopy(o, seen)
+    seen = seen or {}
+    if o == nil then return nil end
+    if seen[o] then return seen[o] end
+
+    local no
+    if type(o) == 'table' then
+        no = {}
+        seen[o] = no
+
+        for k, v in next, o, nil do
+        no[common.deepcopy(k, seen)] = common.deepcopy(v, seen)
+        end
+        setmetatable(no, common.deepcopy(getmetatable(o), seen))
+    else -- number, string, boolean, etc
+        no = o
+    end
+    return no
+end
+  
 return common

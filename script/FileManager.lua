@@ -4,16 +4,19 @@ local common = require("common")
 local FileManager = {}
 FileManager.__index = FileManager
 
-function FileManager:new(path_callback, getter_name, default_gen, domain)
-    local instance = {
-        path_callback = path_callback,
-        getter = require(getter_name),
-        subcontents = {},
-        do_generate = default_gen,
-        domain = domain
-    }
-    setmetatable(instance, FileManager)
-    return instance
+function FileManager:new(getter_name, default_gen)
+    local getters = require(getter_name)
+    local instances = {}
+    for key, getter in pairs(getters) do
+        local instance = {
+            getter = getter,
+            subcontents = {},
+            do_generate = default_gen
+        }
+        setmetatable(instance, FileManager)
+        instances[key] = instance
+    end
+    return instances
 end
 
 function FileManager:reset_subcontent()
@@ -23,10 +26,10 @@ function FileManager:reset_subcontent()
 end
 
 function FileManager:get_path()
-    if type(S[self.path_callback]) == "function" then
-        return S[self.path_callback](S)
+    if type(S[self.getter.kpath]) == "function" then
+        return S[self.getter.kpath](S)
     end
-    return S[self.path_callback]
+    return S[self.getter.kpath]
 end
 
 function FileManager:set_do_generate(do_gen)

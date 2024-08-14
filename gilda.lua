@@ -4,8 +4,6 @@ local paths = {
     '',
     'script/',
     'script/commands/',
-    'script/contents/source/',
-    'script/contents/header/',
     'script/contents/',
     'script/json/'
 }

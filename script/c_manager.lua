@@ -120,4 +120,20 @@ function c_manager.get_real_cparam(ptype, pname, data)
     return result
 end
 
+
+function c_manager.concat_param(ptype, pname)
+    local pos = ptype:find("%(%*%)")
+    if pos then
+        return ptype:sub(1, pos+1) .. pname .. ptype:sub(pos + 2)
+    end
+    local pos_array = ptype:find("%[%d*%]")
+    if pos_array then
+        local base_type = ptype:sub(1, pos_array - 1) 
+        local array_size = ptype:sub(pos_array) 
+        return base_type .. " " .. pname .. array_size
+    end
+    return ptype.." "..pname
+end
+
+
 return c_manager

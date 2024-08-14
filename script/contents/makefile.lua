@@ -1,6 +1,8 @@
-local makefile = {}
+local f = {}
 
-function makefile.content(subcontents)
+f.kpath = "_MAKEFILE_PATH"
+
+function f.content(subcontents)
     return S._SAMPLE_MSG_2..[[ 
 
 # Directories
@@ -57,12 +59,12 @@ clean:
 ]]
 end
 
-function makefile.compile_flag(compile_flag)
+function f.compile_flag(compile_flag)
     return compile_flag
 end
 
-function makefile.include_flag(include_flag)
+function f.include_flag(include_flag)
     return "-I"..include_flag
 end
 
-return makefile
+return {f=f}
