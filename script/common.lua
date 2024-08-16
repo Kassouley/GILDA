@@ -132,5 +132,17 @@ function common.deepcopy(o, seen)
     end
     return no
 end
+
+-- Function to require a Lua module from a specific file path
+function common.require_from_path(filePath)
+    local dirPath = filePath:match("(.*/)")
+    local moduleName = filePath:match("([^/]+)%.lua$")
+    if not dirPath or not moduleName then
+        error("Invalid file path. Ensure it is a full path to a .lua file.")
+    end
+    package.path = package.path .. ";" .. dirPath .. "?.lua"
+    return require(moduleName)
+end
+
   
 return common

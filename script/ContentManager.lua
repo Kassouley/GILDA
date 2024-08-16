@@ -1,11 +1,11 @@
 local common = require("common")
 
--- FileManager.lua
-local FileManager = {}
-FileManager.__index = FileManager
+-- ContentManager.lua
+local ContentManager = {}
+ContentManager.__index = ContentManager
 
-function FileManager:new(getter_name, default_gen)
-    local getters = require(getter_name)
+function ContentManager:new(getter_path, default_gen)
+    local getters = common.require_from_path(getter_path)
     local instances = {}
     for key, getter in pairs(getters) do
         local instance = {
@@ -13,36 +13,36 @@ function FileManager:new(getter_name, default_gen)
             subcontents = {},
             do_generate = default_gen
         }
-        setmetatable(instance, FileManager)
+        setmetatable(instance, ContentManager)
         instances[key] = instance
     end
     return instances
 end
 
-function FileManager:reset_subcontent()
+function ContentManager:reset_subcontent()
     for subcontent_name in pairs(self.subcontents) do
         self.subcontents[subcontent_name] = nil
     end
 end
 
-function FileManager:get_path()
+function ContentManager:get_path()
     if type(S[self.getter.kpath]) == "function" then
         return S[self.getter.kpath](S)
     end
     return S[self.getter.kpath]
 end
 
-function FileManager:set_do_generate(do_gen)
+function ContentManager:set_do_generate(do_gen)
     self.do_generate = do_gen
 end
 
-function FileManager:add_single_subcontent(subcontent_name, content)
+function ContentManager:add_single_subcontent(subcontent_name, content)
     if self.do_generate then
         self.subcontents[subcontent_name] = content
     end
 end
 
-function FileManager:add_subcontent(subcontent_name, sep, ...)
+function ContentManager:add_subcontent(subcontent_name, sep, ...)
     if self.do_generate then
         local content = self.getter[subcontent_name](...)
         if not self.subcontents[subcontent_name] then
@@ -54,7 +54,7 @@ function FileManager:add_subcontent(subcontent_name, sep, ...)
     end
 end
 
-function FileManager:generate_file()
+function ContentManager:generate_file()
     if self.do_generate then
         local content = self.getter.content(self.subcontents)
         if content ~= "" then
@@ -64,4 +64,4 @@ function FileManager:generate_file()
     end
 end
 
-return FileManager
+return ContentManager

@@ -13,7 +13,6 @@ for _, path in ipairs(paths) do
 end
 
 local common = require("common")
-local StringGenerator = require("StringGenerator")
 
 -- Function to parse command-line arguments
 local function parse_options(args)
@@ -82,12 +81,11 @@ function main()
             end
         end
         local config_data = common.load_json(config_file)
-        S = StringGenerator.new(config_data)
         local gilda_gen = require("gilda_gen")
 
         if #sub_target == 0 then
             for key, value in pairs(config_data) do
-                if type(value) == 'table' then
+                if type(value) == 'table' and key ~= "details" then
                     table.insert(sub_target, key)
                 end
             end

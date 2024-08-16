@@ -84,24 +84,12 @@ local function prcss_args_blk_aux(fname, cparam, content, depth, parent_vname)
             local format = pname .. " = "
             local args = {}
 
-            local vname_w_ptr = vname
             if nb_ptr > 0 then
-                format = format .. ("%p" .. (" -> %p"):rep(nb_ptr - 1))
-
-                for i = 1, nb_ptr do
-                    table.insert(args, vname_w_ptr)
-                    vname_w_ptr = "*" .. vname_w_ptr
-                end
-
-                if ctype ~= "void" then
-                    format = format .. " -> " .. c_manager.c_types[ctype]
-                    table.insert(args, vname_w_ptr)
-                end
-                
+                format = format .. "%p"
             else
                 format = format .. c_manager.c_types[ctype]
-                table.insert(args, vname)
             end
+            table.insert(args, vname)
             table.insert(content, string.format(
                 "\tprintf(\"%s%s %s\\n\", %s); \\",
                 indent, ptype, format, table.concat(args, ", ")))
