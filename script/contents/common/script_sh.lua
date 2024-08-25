@@ -1,8 +1,13 @@
-local f = {}
+local ContentManager = require("ContentManager")
+local Content = require("Content")
 
-f.kpath = "_SCRIPT_PATH"
+local finalize_subcontent = function(arg) 
+    return arg:getContent()
+end
 
-function f.content(subcontents)
+local f = ContentManager:new({path = S._SCRIPT_PATH, do_gen = false, finalize_callback = finalize_subcontent})
+
+function f:generate_content()
     return S._SAMPLE_MSG_2..[[ 
 
 #!/bin/bash
@@ -38,13 +43,13 @@ function display_help() {
     echo "Options:"
     echo "  -h, --help                       Display this help message"
     echo "  -f, --filter FILE                Specify the input file with functions to intercept"
-]]..subcontents.help_block..[[
+]]..self.subcontents.help_block..[[ 
     exit 0
 }
 
 # Variables to store script options
 filter_file=""
-]]..subcontents.init_opt_block..[[
+]]..self.subcontents.init_opt_block..[[ 
 app_args=()
 preload_lib="./lib/lib]]..S._TOOLS_NAME..[[.so"
 
@@ -58,7 +63,7 @@ while [[ $# -gt 0 ]].."]]"..[[; do
             shift
             filter_file=$1
             ;;
-]]..subcontents.case_opt..[[
+]]..self.subcontents.case_opt..[[ 
         --)
             shift
             app_args=("$@")
@@ -93,7 +98,7 @@ if [ -n "$filter_file" ]; then
 fi
 
 # Handle library interception
-]]..subcontents.enabled_block..[[
+]]..self.subcontents.enabled_block..[[
 
 # Preload the library and launch the application
 LD_PRELOAD=$preload_lib "${app_args[@]}"
@@ -101,41 +106,27 @@ LD_PRELOAD=$preload_lib "${app_args[@]}"
 ]]
 end
 
-function f.case_opt()
-    return string.format([[
-        --%s-%s)
-            %s_%s_enabled=1
-            ;;]], 
-        S._DOMAIN, S._TOOLS_NAME_ABR,
-        S._DOMAIN, S._TOOLS_NAME_ABR
-    )
-end
 
-function f.init_opt_block()
-    return string.format([[
-%s_%s_enabled=0
-]],     
-        S._DOMAIN, S._TOOLS_NAME_ABR
-    )
-end
+f:init_subcontent("case_opt", Content:new(2))
+f:init_subcontent("init_opt_block", Content:new())
+f:init_subcontent("enabled_block", Content:new())
+f:init_subcontent("help_block", Content:new(1))
 
-function f.enabled_block()
-    return string.format([[
-if [ $%s_%s_enabled -eq 1 ]; then
-    export %s=1
-fi
-]],     
-        S._DOMAIN, S._TOOLS_NAME_ABR,
-        S._DOMAIN_ID
-    )
-end
+function f:generate_subcontents()
+    self.subcontents.case_opt:addfLine("--%s-%s)", S._DOMAIN, S._TOOLS_NAME_ABR)
+    self.subcontents.case_opt:addfLine("\t%s_%s_enabled=1", S._DOMAIN, S._TOOLS_NAME_ABR)
+    self.subcontents.case_opt:addLine("\t;;")
 
-function f.help_block()
-    return string.format([[    echo "  --%s-%s                       Enable %s of %s library functions"]],     
-        S._DOMAIN, S._TOOLS_NAME_ABR,
-        S._TOOLS_NAME_VERB, S._DOMAIN_UPPER
-    )
-end
+    self.subcontents.init_opt_block:addfLine("%s_%s_enabled=0", S._DOMAIN, S._TOOLS_NAME_ABR)
+    
+    self.subcontents.enabled_block:addfLine("if [ $%s_%s_enabled -eq 1 ]; then", S._DOMAIN, S._TOOLS_NAME_ABR)
+    self.subcontents.enabled_block:addfLine("\texport %s=1", S._DOMAIN_ID)
+    self.subcontents.enabled_block:addLine("fi")
 
+    self.subcontents.help_block:addfLine("echo \"  --%s-%s                       Enable %s of %s library functions\"", 
+                                            S._DOMAIN, S._TOOLS_NAME_ABR, S._TOOLS_NAME_VERB, S._DOMAIN_UPPER)
+
+
+end
 
 return {f=f}

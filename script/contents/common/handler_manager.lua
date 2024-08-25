@@ -1,13 +1,17 @@
-local src = {}
-local hdr = {}
+local ContentManager = require("ContentManager")
+local Content = require("Content")
 
-src.kpath = "_HANDLER_MGR_SRC_PATH"
-hdr.kpath = "_HANDLER_MGR_HDR_PATH"
+local finalize_subcontent = function(arg) 
+    return arg:getContent()
+end
+
+local src = ContentManager:new({path = S._HANDLER_MGR_SRC_PATH, do_gen = true, finalize_callback = finalize_subcontent})
+local hdr = ContentManager:new({path = S._HANDLER_MGR_HDR_PATH, do_gen = true, finalize_callback = finalize_subcontent})
 
 -----------------------------
 -- SOURCE CONTENT
 -----------------------------
-function src.content(subcontents)
+function src:generate_content()
     return S._WARNING_MSG..[[ 
 
 #include <stdio.h>
@@ -35,7 +39,7 @@ end
 -----------------------------
 -- HEADER CONTENT
 -----------------------------
-function hdr.content(subcontents)
+function hdr:generate_content()
     return S._WARNING_MSG..[[ 
 
 #ifndef HANDLER_MANAGER_H

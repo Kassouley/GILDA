@@ -1,8 +1,13 @@
-local f = {}
+local ContentManager = require("ContentManager")
+local Content = require("Content")
 
-f.kpath = "_MAKEFILE_PATH"
+local finalize_subcontent = function(arg) 
+    return arg:getContent()
+end
 
-function f.content(subcontents)
+local f = ContentManager:new({path = S._MAKEFILE_PATH, do_gen = false, finalize_callback = finalize_subcontent})
+
+function f:generate_content()
     return S._SAMPLE_MSG_2..[[ 
 
 # Directories
@@ -19,10 +24,12 @@ LIB]]..S._TOOLS_NAME_UPPER..[[ = lib]]..S._TOOLS_NAME..[[.so
 # Compiler and flags
 CC 			= hipcc
 CXX			= hipcc
-CFLAGS 		= -fPIC -Wall $(INC_FLAGS) -Wno-uninitialized -Wno-deprecated-declarations ]]..subcontents.compile_flag..[[ 
+CFLAGS 		= -fPIC -Wall $(INC_FLAGS) -Wno-uninitialized -Wno-deprecated-declarations 
+]]..self.subcontents.compile_flag..[[ 
 LDFLAGS		= -shared
 INC_DIRS   := $(shell find $(CORE_DIR) -type d)
-INC_FLAGS  := $(addprefix -I,$(INC_DIRS)) -I$(CORE_DIR) ]]..subcontents.include_flag..[[
+INC_FLAGS  := $(addprefix -I,$(INC_DIRS)) -I$(CORE_DIR) 
+]]..self.subcontents.include_flag..[[ 
 
 
 # Source files
@@ -49,7 +56,12 @@ $(BUILD_DIR)/%.o: $(CORE_DIR)/%.cpp
 # Rule to create lib]]..S._TOOLS_NAME..[[.so
 $(LIB]]..S._TOOLS_NAME_UPPER..[[): $(OBJECTS)
 	@mkdir -p $(LIB_DIR)
-	$(CC) $(LDFLAGS) -o $(LIB_DIR)/$@ $^
+	$(CC) $(LDFLAGS) -o $(LIB_DIR)/$@ $^ 
+
+# Debug target
+debug: CFLAGS += $(DEBUG_FLAGS)
+debug: CFLAGS += -g 
+debug: clean $(LIB]]..S._TOOLS_NAME_UPPER..[[)
 
 # Clean up build artifacts
 clean:
@@ -59,12 +71,16 @@ clean:
 ]]
 end
 
-function f.compile_flag(compile_flag)
-    return compile_flag
+
+f:init_subcontent("compile_flag", Content:new())
+f:init_subcontent("include_flag", Content:new())
+
+function f:generate_subcontents(data)
+	if data.compile_flag ~= "" then
+    	self.subcontents["compile_flag"]:addfLine("CFLAGS     += %s", data.compile_flag)
+	end
+    self.subcontents["include_flag"]:addfLine("INC_FLAGS  += -I%s", data.include_path)
 end
 
-function f.include_flag(include_flag)
-    return "-I"..include_flag
-end
 
 return {f=f}

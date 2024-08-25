@@ -1,13 +1,17 @@
-local src = {}
-local hdr = {}
+local ContentManager = require("ContentManager")
+local Content = require("Content")
 
-src.kpath = "_ENV_SRC_PATH"
-hdr.kpath = "_ENV_HDR_PATH"
+local finalize_subcontent = function(arg) 
+    return arg:getContent()
+end
+
+local src = ContentManager:new({path = S._ENV_SRC_PATH, do_gen = true, finalize_callback = finalize_subcontent})
+local hdr = ContentManager:new({path = S._ENV_HDR_PATH, do_gen = true, finalize_callback = finalize_subcontent})
 
 -----------------------------
 -- SOURCE CONTENT
 -----------------------------
-function src.content(subcontents)
+function src:generate_content()
     return S._WARNING_MSG..[[ 
 
 #include <stdio.h>
@@ -18,7 +22,7 @@ function src.content(subcontents)
 #include "]]..S._INTERCEPTOR_HDR..[["
 #include "]]..S._ENV_HDR..[["
 
-]]..subcontents.set_enabled_block..[[ 
+]]..self.subcontents.set_enabled_block..[[ 
 
 ]]..S._ENV_GET_FILTER_FUNC_DECL..[[ 
 {
@@ -51,27 +55,35 @@ function src.content(subcontents)
 
 ]]..S._ENV_GET_DOMAIN_FUNC_DECL..[[ 
 {
+    bool* is_]]..S._TOOLS_NAME_ADJ..[[ = (bool*)malloc(]]..S._TOOLS_NAME_UPPER..[[_NB_DOMAIN * sizeof(bool));
     for (]]..S._I_DOMAIN_T..[[ domain = 0; domain < ]]..S._TOOLS_NAME_UPPER..[[_NB_DOMAIN; domain++) {
         const char *domain_name = ]]..S._I_GET_DOMAIN_FUNC..[[(domain);
         is_]]..S._TOOLS_NAME_ADJ..[[[domain] = ]]..S._ENV_IS_DOMAIN_FUNC..[[(domain_name);
     }
-    return 0;
+    return is_]]..S._TOOLS_NAME_ADJ..[[;
 }
 ]]
 end
 
-function src.set_enabled_block()
-    return S._ENV_SET_ENABLED_FUNC_DECL..[[
+-----------------------------
+-- SOURCE SUBCONTENT
+-----------------------------
+
+src:init_subcontent("set_enabled_block", Content:new())
+
+function src:generate_subcontents()
+    self.subcontents["set_enabled_block"]:addfLine([[
+%s
 {
-    const char *env_var = ]]..S._ENV_GET_FILTER_FUNC..[[("]]..S._DOMAIN_ID..[[_FUNCTIONS");
+    const char *env_var = %s("%s_FUNCTIONS");
     if (env_var != NULL) {
 
         char* functions = strdup(env_var);
         char* token = strtok(functions, ",");
 
         while (token) {
-            ]]..S._IF_API_ID_T..[[ id = ]]..S._IF_GET_FUNID_FUNC..[[(token);
-            if (id >= 0 && id < ]]..S._IF_API_ID_PREFIX..[[NB_FUNCTION) {
+            %s id = %s(token);
+            if (id >= 0 && id < %sNB_FUNCTION) {
                 enabled_functions[id] = true;
             }
             token = strtok(NULL, ",");
@@ -81,22 +93,24 @@ function src.set_enabled_block()
     } else {
         *is_full_enabled = true;
     }
-}
-]]
+}]],    S._ENV_SET_ENABLED_FUNC_DECL, 
+        S._ENV_GET_FILTER_FUNC, S._DOMAIN_ID,
+        S._IF_API_ID_T, S._IF_GET_FUNID_FUNC,
+        S._IF_API_ID_PREFIX)
 end
 
 
 -----------------------------
 -- HEADER CONTENT
 -----------------------------
-function hdr.content(subcontents)
+function hdr:generate_content()
     return S._WARNING_MSG..[[ 
 
 #ifndef ENV_H
 #define ENV_H
 #include <stdbool.h>
 
-]]..subcontents.set_enabled_block..[[ 
+]]..self.subcontents.set_enabled_block..[[ 
 
 ]]..S._ENV_GET_FILTER_FUNC_DECL..[[;
 ]]..S._ENV_IS_DOMAIN_FUNC_DECL..[[;
@@ -106,9 +120,14 @@ function hdr.content(subcontents)
 ]]
 end
 
-function hdr.set_enabled_block()
-    return S._ENV_SET_ENABLED_FUNC_DECL..";"
-end
+-----------------------------
+-- HEADER SUBCONTENT
+-----------------------------
 
+hdr:init_subcontent("set_enabled_block", Content:new())
+
+function hdr:generate_subcontents()
+    hdr.subcontents.set_enabled_block:addfLine("%s;", S._ENV_SET_ENABLED_FUNC_DECL)
+end
 
 return {src=src, hdr=hdr}

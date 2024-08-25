@@ -37,8 +37,12 @@ local function parse_options(args)
             options.gen_options["mkf"] = true
         elseif arg == '--plugin-gen' then
             options.gen_options["plugin"] = true
+        elseif arg == '--plugin-gen' then
+            options.gen_options["plugin"] = true
         elseif arg == '--config-gen' then
             options.gen_options["config"] = true
+        elseif arg == '--no-mangen' then
+            options.gen_options["no_mangen"] = true
         elseif arg == '-o' or arg == '--output-dir' then
             i = i + 1
             options.output_dir = args[i] or "csv/"

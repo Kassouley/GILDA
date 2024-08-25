@@ -43,7 +43,7 @@ function string_content.new()
     self._PLUG = "plugin"
 
     -- Tools names
-    self._TOOLS_NAME = "profiler"
+    self._TOOLS_NAME = "ratelprof"
     self._TOOLS_NAME_VERB = "profile"
     self._TOOLS_NAME_ADJ = "profiled"
     self._TOOLS_NAME_ABR = "prof"
@@ -181,7 +181,7 @@ function string_content.new()
             elseif k == "_ENV_IS_DOMAIN_FUNC" then        return "is_"..t._TOOLS_NAME_ADJ.."_domain"
             elseif k == "_ENV_IS_DOMAIN_FUNC_DECL" then   return "bool "..t._ENV_IS_DOMAIN_FUNC.."(const char *domain)"
             elseif k == "_ENV_GET_DOMAIN_FUNC" then       return "get_"..t._TOOLS_NAME_ADJ.."_domain"
-            elseif k == "_ENV_GET_DOMAIN_FUNC_DECL" then  return "int "..t._ENV_GET_DOMAIN_FUNC.."(bool* is_"..t._TOOLS_NAME_ADJ..")"
+            elseif k == "_ENV_GET_DOMAIN_FUNC_DECL" then  return "bool* "..t._ENV_GET_DOMAIN_FUNC.."()"
             elseif k == "_ENV_SET_ENABLED_FUNC" then      return "set_"..t._DOMAIN.."_"..t._TOOLS_NAME_NOUN.."_enabled"
             elseif k == "_ENV_SET_ENABLED_FUNC_DECL" then return "void "..t._ENV_SET_ENABLED_FUNC.."(bool* enabled_functions, bool* is_full_enabled)"
             -- Intercepted functions functions string

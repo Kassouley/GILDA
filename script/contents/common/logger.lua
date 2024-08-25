@@ -1,13 +1,13 @@
-local src = {}
-local hdr = {}
+local ContentManager = require("ContentManager")
+local Content = require("Content")
 
-src.kpath = "_LOGGER_SRC_PATH"
-hdr.kpath = "_LOGGER_HDR_PATH"
+local src = ContentManager:new({path = S._LOGGER_SRC_PATH, do_gen = true})
+local hdr = ContentManager:new({path = S._LOGGER_HDR_PATH, do_gen = true})
 
 -----------------------------
 -- SOURCE CONTENT
 -----------------------------
-function src.content(subcontents)
+function src:generate_content()
     return S._WARNING_MSG..[[ 
 
 #include "]]..S._LOGGER_HDR..[["
@@ -32,7 +32,7 @@ end
 -----------------------------
 -- HEADER CONTENT
 -----------------------------
-function hdr.content(subcontents)
+function hdr:generate_content()
     return S._WARNING_MSG..[[ 
 
 #ifndef LOGGER_H

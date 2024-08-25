@@ -4,62 +4,50 @@ local common = require("common")
 local ContentManager = {}
 ContentManager.__index = ContentManager
 
-function ContentManager:new(getter_path, default_gen)
-    local getters = common.require_from_path(getter_path)
-    local instances = {}
-    for key, getter in pairs(getters) do
-        local instance = {
-            getter = getter,
-            subcontents = {},
-            do_generate = default_gen
-        }
-        setmetatable(instance, ContentManager)
-        instances[key] = instance
+function ContentManager:new(attribute)
+    if type(attribute) ~= "table" then 
+        error("ContentManager Construction need a table as argument")
     end
-    return instances
+    local instance = {}
+    instance.path = attribute.path
+    instance.do_gen = attribute.do_gen
+    instance.finalize_callback = attribute.finalize_callback
+    instance.subcontents = {}
+    
+    return setmetatable(instance, ContentManager)
 end
 
-function ContentManager:reset_subcontent()
-    for subcontent_name in pairs(self.subcontents) do
-        self.subcontents[subcontent_name] = nil
-    end
+function ContentManager:init_subcontent(key, value)
+    self.subcontents[key] = value
 end
 
 function ContentManager:get_path()
-    if type(S[self.getter.kpath]) == "function" then
-        return S[self.getter.kpath](S)
-    end
-    return S[self.getter.kpath]
+    return self.path
 end
 
-function ContentManager:set_do_generate(do_gen)
-    self.do_generate = do_gen
+function ContentManager:set_do_gen(do_gen)
+    self.do_gen = do_gen
 end
 
-function ContentManager:add_single_subcontent(subcontent_name, content)
-    if self.do_generate then
-        self.subcontents[subcontent_name] = content
-    end
+function ContentManager:generate_content()
+    print("Warning : No content generator has been set for the file '"..self.path.."' : Pass")
 end
 
-function ContentManager:add_subcontent(subcontent_name, sep, ...)
-    if self.do_generate then
-        local content = self.getter[subcontent_name](...)
-        if not self.subcontents[subcontent_name] then
-            self.subcontents[subcontent_name] = content
-        else
-            sep = sep or ""
-            self.subcontents[subcontent_name] = self.subcontents[subcontent_name] .. sep .. content
+function ContentManager:generate_subcontent()
+    print("Warning : No subcontent generator has been set for the file '"..self.path.."' : Pass")
+end
+
+function ContentManager:generate_file(data)
+    if self.do_gen then
+        if self.finalize_callback ~= nil then
+            for key, subcontent in pairs(self.subcontents) do
+                self.subcontents[key] = self.finalize_callback(subcontent)
+            end
         end
-    end
-end
-
-function ContentManager:generate_file()
-    if self.do_generate then
-        local content = self.getter.content(self.subcontents)
+        local content = self:generate_content(data)
         if content ~= "" then
-            common.write_n_close(self:get_path(), content)
-            print("Content generated in '" .. self:get_path() .. "'")
+            common.write_n_close(self.path, content)
+            print("Content generated in '" .. self.path .. "'")
         end
     end
 end
