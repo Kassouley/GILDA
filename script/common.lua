@@ -2,6 +2,12 @@ local json = require("json")
 
 local common = {}
 
+function common.sub_env_var(str)
+    return str:gsub("%$([%w_]+)", function(env_var)
+        return os.getenv(env_var) or ""
+    end)
+end
+
 function common.mkdir(dirname)
     os.execute("mkdir -p "..dirname)
 end
@@ -135,7 +141,7 @@ end
 
 -- Function to require a Lua module from a specific file path
 function common.require_from_path(file_path)
-    return assert(loadfile(file_path))()
+    return assert(loadfile(common.sub_env_var(file_path)))()
 end
 
   

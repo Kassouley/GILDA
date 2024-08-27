@@ -38,7 +38,7 @@ function src:generate_content(data)
 
 ]]..S._ATM_LOAD_TABLE_FUNC_DECL..[[ 
 {
-    void *handle = load_handle("]]..data.handle..[[");
+    void *handle = load_handle(]]..data.handle..[[);
 ]]..self.subcontents.load_table_block..[[ 
 };
 ]]
