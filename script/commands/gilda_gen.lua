@@ -33,7 +33,7 @@ local function set_domain_contents(content_domain, gilda_data, data_csv, options
     else
         content_domain.f.man:set_do_gen(false)
     end
-    if options.gen_options.plugin then
+    if content_domain.dplg ~= nil and ptions.gen_options.plugin then
         content_domain.dplg.src:set_do_gen(true)
         content_domain.dplg.hdr:set_do_gen(true)
         common.mkdir(S._PLUGDIR_PATH)
@@ -63,11 +63,11 @@ local function set_domain_contents(content_domain, gilda_data, data_csv, options
 end
 
 local function set_common_contents(content_common, config_data, options)
-    if options.gen_options.tools then
+    if content_common.tools ~= nil and options.gen_options.tools then
         content_common.tools.src:set_do_gen(true)
         common.mkdir(S._TOOLSDIR_PATH)
     end
-    if options.gen_options.plugin then
+    if content_common.plg ~= nil and options.gen_options.plugin then
         content_common.plg.src:set_do_gen(true)
         content_common.plg.hdr:set_do_gen(true)
         common.mkdir(S._PLUGDIR_PATH)
@@ -147,7 +147,11 @@ function gilda_gen.command(config_data, domain_list, options)
             common.mkdir(S._AUTOGEN_DOMAIN_DIR)
             local content_domain = init_content(config_data.details.domain_content)
             set_domain_contents(content_domain, gilda_data, data_csv, options)
-            generate_files(content_domain, {include = get_include_str(gilda_data.includes), handle = gilda_data.lib})
+	    local data = {
+	    	include = get_include_str(gilda_data.includes),
+		handle = gilda_data.lib == "" and "RTLD_NEXT" or "\""..gilda_data.lib.."\""
+	    }
+            generate_files(content_domain, data)
         end                  
     end
 

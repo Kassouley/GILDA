@@ -43,7 +43,7 @@ function string_content.new()
     self._PLUG = "plugin"
 
     -- Tools names
-    self._TOOLS_NAME = "ratelprof"
+    self._TOOLS_NAME = "profiler"
     self._TOOLS_NAME_VERB = "profile"
     self._TOOLS_NAME_ADJ = "profiled"
     self._TOOLS_NAME_ABR = "prof"

@@ -1,0 +1,26 @@
+{
+    "details" : 
+    {
+	"string_content": "",
+	"common": {
+
+	},
+	"domain": {
+    		"atm": "$HOME/GILDA/Sample-Content/default_contents/domain/",
+    		"atm": "$HOME/GILDA/Sample-Content/default_contents/domain/",
+    		"atm": "$HOME/GILDA/Sample-Content/default_contents/domain/",
+    		"atm": "$HOME/GILDA/Sample-Content/default_contents/domain/",
+    		"atm": "$HOME/GILDA/Sample-Content/default_contents/domain/",
+    		"atm": "$HOME/GILDA/Sample-Content/default_contents/domain/"
+	},
+    	"other": {
+	}
+    },
+    "dyn_mem_mgr": {
+        "input_csv": "$HOME/GILDA/Sample-Content/default_csv",
+        "includes": ["stdlib.h"],
+        "include_path": "/usr/include/",
+        "compile_flag": "",
+        "lib": ""
+    }
+}
