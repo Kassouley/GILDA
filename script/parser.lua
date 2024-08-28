@@ -4,8 +4,9 @@ local parser = {}
 
 function parser.parse_function_csv(filename)
     local fcnts = {}
+    local filename = common.sub_env_var(filename)
     -- Read the CSV file
-    for line in io.lines(common.sub_env_var(filename)) do
+    for line in io.lines(filename) do
         local parts = common.split(line, ";")
         -- Construct function table
         if parts[1] ~= "NOGEN" then
@@ -29,7 +30,8 @@ end
 
 function parser.parse_typedef_csv(filename)
     local typedef = {}
-    for line in io.lines(common.sub_env_var(filename)) do
+    local filename = common.sub_env_var(filename)
+    for line in io.lines(filename) do
         local parts = common.split(line, ";")
         if #parts == 2 then
             local key = common.trim(parts[1])
@@ -42,8 +44,8 @@ end
 
 function parser.parse_struct_csv(filename)
     local struct = {}
-
-    for line in io.lines(common.sub_env_var(filename)) do
+    local filename = common.sub_env_var(filename)
+    for line in io.lines(filename) do
         local parts = common.split(line, ";")
         local key = parts[1]
         local values = {}

@@ -1,10 +1,10 @@
+-- Set up the script directory and package paths
 local script_dir = debug.getinfo(1, "S").source:match("@(.*[\\/]?.*)") or ""
 script_dir = script_dir:gsub('\\', '/'):match("(.*[\\/])") or ""
 local paths = {
     '',
     'script/',
     'script/commands/',
-    'script/contents/',
     'script/json/'
 }
 
@@ -14,7 +14,10 @@ end
 
 local common = require("common")
 
--- Function to parse command-line arguments
+--- Parses command-line arguments and returns options.
+-- This function processes the arguments passed to the script and sets up the appropriate options.
+-- @param args A table of command-line arguments.
+-- @return A table containing parsed options including flags, generation options, and sub-targets.
 local function parse_options(args)
     local options = { force = false, all = false, sub_target = {}, gen_options = {}, output_dir = "csv/" }
     local i = 1
@@ -35,8 +38,6 @@ local function parse_options(args)
             options.gen_options["script"] = true
         elseif arg == '--make-gen' then
             options.gen_options["mkf"] = true
-        elseif arg == '--plugin-gen' then
-            options.gen_options["plugin"] = true
         elseif arg == '--plugin-gen' then
             options.gen_options["plugin"] = true
         elseif arg == '--config-gen' then
@@ -61,12 +62,14 @@ local function parse_options(args)
     return options
 end
 
--- Main function
+--- Main function for executing commands based on parsed options.
+-- This function determines which command to execute based on the parsed options,
+-- and calls the appropriate module functions for generation, or parsing.
 function main()
     local options = parse_options(arg)
 
     if not options.command then
-        print("Usage: lua "..arg[0].." [gen <config file> | clean <directory> | parse <domain> <header_file1> [<header_file2> ...]] [options]")
+        print("Usage: lua "..arg[0].." [gen <config file> parse <domain> <header_file1> [<header_file2> ...]] [options]")
         return
     end
 
@@ -95,12 +98,6 @@ function main()
             end
         end
         gilda_gen.command(config_data, sub_target, options)
-
-    elseif command == "clean" then
-        local gilda_clean = require("gilda_clean")
-        -- For 'clean' command, the target is expected to be a directory
-        local directory = target
-        gilda_clean.command(directory, sub_target, options)
 
     elseif command == "parse" then
         local gilda_parse = require("gilda_parse")

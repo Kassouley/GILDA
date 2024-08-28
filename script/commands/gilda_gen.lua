@@ -2,8 +2,16 @@ local common = require("common")
 local parser = require("parser")
 local c_manager = require("c_manager")
 
+--- `gilda_gen` module for generating content and managing files based on configuration data.
+-- This module provides functionality for processing configuration data, generating content,
+-- and handling file operations in a specified format.
+-- @module gilda_gen
+
 local gilda_gen = {}
 
+-- Initializes content from a set of file paths.
+-- @param details A table where keys are content identifiers and values are file paths.
+-- @return A table of content loaded from the specified file paths.
 local function init_content(details)
     local contents = {}
     for key, file in pairs(details) do
@@ -12,6 +20,9 @@ local function init_content(details)
     return contents
 end
 
+-- Checks if any file in the array has a generation type of "MANGEN".
+-- @param array A table of file objects to check.
+-- @return A boolean indicating whether "MANGEN" type files are present.
 local function has_mangen(array)
     for _, f in ipairs(array) do
         if f.gen == "MANGEN" then
@@ -21,10 +32,17 @@ local function has_mangen(array)
     return false
 end
 
+-- Creates a string for include directives from a table of include paths.
+-- @param includes_table A table of include paths.
+-- @return A string of include directives formatted for C.
 local function get_include_str(includes_table)
     return "\n#include \"" .. table.concat(includes_table, "\"\n#include \"") .. "\"\n"
 end
 
+-- Processes files based on function data and generates subcontent.
+-- @param contents A table of content objects.
+-- @param domain_data The data for the current domain.
+-- @param data_csv A table of parsed CSV data.
 local function process_files(contents, domain_data, data_csv)
     for _, f in ipairs(data_csv.function_csv) do
         local param = {}
@@ -47,6 +65,11 @@ local function process_files(contents, domain_data, data_csv)
     end
 end
 
+-- Sets up domain-specific contents and manages generation based on options.
+-- @param content_domain A table of domain-specific content objects.
+-- @param gilda_data Data specific to the current domain.
+-- @param data_csv A table of parsed CSV data.
+-- @param options Options controlling the generation process.
 local function set_domain_contents(content_domain, gilda_data, data_csv, options)
     if not options.gen_options.no_mangen and has_mangen(data_csv.function_csv) then
         common.mkdir(S._MANGEN_DOMAIN_DIR)
@@ -64,6 +87,10 @@ local function set_domain_contents(content_domain, gilda_data, data_csv, options
     process_files(content_domain, gilda_data, data_csv)
 end
 
+-- Sets up common contents and processes them based on options.
+-- @param content_common A table of common content objects.
+-- @param config_data Configuration data.
+-- @param options Options controlling the generation process.
 local function set_common_contents(content_common, config_data, options)
     if content_common.tools ~= nil and options.gen_options.tools then
         content_common.tools.src:set_do_gen(true)
@@ -90,6 +117,10 @@ local function set_common_contents(content_common, config_data, options)
     end
 end
 
+-- Sets up other contents and processes them based on options.
+-- @param content_other A table of other content objects.
+-- @param config_data Configuration data.
+-- @param options Options controlling the generation process.
 local function set_other_contents(content_other, config_data, options)
     if options.gen_options.mkf then
         content_other.mk.f:set_do_gen(true)
@@ -112,6 +143,9 @@ local function set_other_contents(content_other, config_data, options)
     end
 end
 
+-- Generates files based on provided data.
+-- @param files A table of content objects to generate files for.
+-- @param data Data to be used in file generation.
 local function generate_files(files, data)
     for _, file in pairs(files) do
         for _, f in pairs(file) do
@@ -120,6 +154,20 @@ local function generate_files(files, data)
     end
 end
 
+-- Parses CSV data using the provided parser function.
+-- @param data The raw CSV data.
+-- @param parser_function The function to parse the CSV data.
+-- @return The parsed data, or "N/A" if the input data is empty.
+local function parse_csv(data, parser_function)
+    return data == "" and "N/A" or parser_function(data)
+end
+
+--- Main command function for generating content and managing files.
+-- This function processes configuration data, sets up content and files,
+-- and generates content based on provided options.
+-- @param config_data Configuration data for the content generation.
+-- @param domain_list A list of domains to process.
+-- @param options Options controlling the generation process.
 function gilda_gen.command(config_data, domain_list, options)
     S = common.require_from_path(config_data.details.string).new()
 
@@ -128,24 +176,44 @@ function gilda_gen.command(config_data, domain_list, options)
 
     for _, domain in ipairs(domain_list) do
         local gilda_data = config_data[domain]
+
+        local includes = gilda_data.includes
+        local include_header_list = {}
+        local include_path_list = {}
+
+        local function process_include(inc)
+            local dir, file = common.split_path(inc)
+            table.insert(include_header_list, file)
+            table.insert(include_path_list, dir)
+        end
+        if type(includes) == "table" then
+            for _, inc in ipairs(includes) do
+                process_include(inc)
+            end
+        elseif type(includes) == "string" then
+            process_include(includes)
+        else
+            error("Error: Include path not correct")
+        end
+
         if not gilda_data then
             print("Warning: Skipping " .. domain .. ", doesn't exist in config file")
-        elseif gilda_data.input_csv == "" or gilda_data.lib == "" then
+        elseif gilda_data.function_csv == "" then
             print("Warning: Skipping " .. domain .. ", config file not complete")
         else
             local data_csv = {
-                function_csv = parser.parse_function_csv(gilda_data.function_csv),
-                typedef_csv = parser.parse_typedef_csv(gilda_data.typedef_csv),
-                struct_csv = parser.parse_struct_csv(gilda_data.struct_csv),
+                function_csv = parse_csv(gilda_data.function_csv, parser.parse_function_csv),
+                typedef_csv = parse_csv(gilda_data.typedef_csv, parser.parse_typedef_csv),
+                struct_csv = parse_csv(gilda_data.struct_csv, parser.parse_struct_csv),
             }
             S._CURRENT_DOMAIN = domain
             common.mkdir(S._AUTOGEN_DOMAIN_DIR)
             local content_domain = init_content(config_data.details.domain_content)
             set_domain_contents(content_domain, gilda_data, data_csv, options)
-	    local data = {
-	    	include = get_include_str(gilda_data.includes),
-		handle = gilda_data.lib == "" and "RTLD_NEXT" or "\""..gilda_data.lib.."\""
-	    }
+            local data = {
+                include = get_include_str(include_header_list),
+                handle = gilda_data.lib == "" and "RTLD_NEXT" or "\""..gilda_data.lib.."\""
+            }
             generate_files(content_domain, data)
         end                  
     end

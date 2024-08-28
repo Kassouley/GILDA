@@ -1,7 +1,15 @@
+--- c_manager module for managing C types and their Lua representations.
+-- This module provides utilities for handling C types, cleaning type keywords,
+-- counting pointers, and resolving real C types from typedefs and structs.
+-- @module c_manager
+
 local common = require("common")
 
 local c_manager = {}
 
+--- A table mapping C types to their respective Lua format strings.
+-- This table is used to translate C types into C format strings.
+-- @field c_types
 c_manager.c_types = {
     ["N/A"] = "",
     ["void"] = "",
@@ -36,6 +44,12 @@ c_manager.c_types = {
     ["enum"] = "%d",
 }
 
+--- Cleans a C type keyword by removing certain qualifiers and detecting type information.
+-- Removes keywords such as `const`, `volatile`, etc., and identifies if the type is a
+-- struct, union, enum, or callback.
+-- @param ptype The C type to clean.
+-- @return A table indicating the type information (e.g., if it's a struct, union, etc.),
+-- and the cleaned type as a string.
 local function _clean_keyword(ptype)
     local keywords = {
         "const", "volatile", "static", "extern", "inline", "register", "restrict",
@@ -67,11 +81,16 @@ local function _clean_keyword(ptype)
     return is, cleaned_ptype
 end
 
-
+--- Checks if a given type is a recognized C type.
+-- @param t The type to check.
+-- @return `true` if the type is recognized, `false` otherwise.
 local function _is_c_type(t)
     return c_manager.c_types[t:gsub("%s*%*$", "")] ~= nil
 end
 
+--- Counts the number of pointers in a C type and returns the cleaned type.
+-- @param _type The type to analyze.
+-- @return The number of pointers and the cleaned type.
 local function _count_pointers(_type)
     local ptr_count = 0
     local cleaned_type = _type
@@ -86,7 +105,12 @@ local function _count_pointers(_type)
     return ptr_count, common.trim(cleaned_type)
 end
 
-
+--- Resolves the real C type, handling typedefs, structs, and unions.
+-- Determines the true type of a given C type, including any pointer levels.
+-- @param data The data context containing typedefs and structs.
+-- @param ptype The C type to resolve.
+-- @param ptr_count The initial pointer count (optional).
+-- @return The real C type, pointer count, and the kind of type (e.g., 'ctype', 'struct').
 local function _get_real_type(data, ptype, ptr_count)
     local is, cleaned_ptype = _clean_keyword(ptype)
     local cnt_tmp, cleaned_ptype = _count_pointers(cleaned_ptype)
@@ -103,6 +127,14 @@ local function _get_real_type(data, ptype, ptr_count)
     end
 end
 
+
+--- Resolves a C parameter's true type and its details.
+-- Determines the actual C type, including handling nested structures and pointers.
+-- @param ptype The parameter type.
+-- @param pname The parameter name.
+-- @param data The data context containing typedefs and structs.
+-- @return A table containing the parameter name, original type, resolved C type,
+-- pointer count, and kind of type.
 function c_manager.get_real_cparam(ptype, pname, data)
     local result
     local ctype, nb_ptr, kind = _get_real_type(data, ptype)
@@ -120,7 +152,11 @@ function c_manager.get_real_cparam(ptype, pname, data)
     return result
 end
 
-
+--- Concatenates a C type and parameter name into a single declaration.
+-- Handles special cases like function pointers and arrays.
+-- @param ptype The parameter type.
+-- @param pname The parameter name.
+-- @return A string representing the complete C declaration.
 function c_manager.concat_param(ptype, pname)
     local pos = ptype:find("%(%*%)")
     if pos then
