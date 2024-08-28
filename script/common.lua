@@ -61,7 +61,7 @@ function common.load_json(__input_path__)
     end
     local data = infile:read("*a")
     infile:close()
-    return json.decode(data)
+    return JSON:decode(data)
 end
 
 --- Writes content to a file and closes it.
