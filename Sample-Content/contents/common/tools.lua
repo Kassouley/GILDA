@@ -16,7 +16,7 @@ function src:generate_content()
 #include "]]..S._INTERCEPTOR_HDR..[["
 #include "]]..S._PLG_HDR..[["
 
-__attribute__((constructor)) void init(void) {
+__attribute__((constructor(101))) void init(void) {
     ]]..S._I_INIT_FUNC..[[();
 
     bool* is_]]..S._TOOLS_NAME_ADJ..[[ = ]]..S._ENV_GET_DOMAIN_FUNC..[[();

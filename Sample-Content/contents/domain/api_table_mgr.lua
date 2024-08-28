@@ -38,7 +38,7 @@ function src:generate_content(data)
 
 ]]..S._ATM_LOAD_TABLE_FUNC_DECL..[[ 
 {
-    void *handle = load_handle(]]..data.handle..[[);
+]]..(data.handle == "" and "" or [[    void *handle = load_handle("]]..data.handle..[[");]])..[[
 ]]..self.subcontents.load_table_block..[[ 
 };
 ]]
@@ -53,7 +53,7 @@ src:init_subcontent("enable_domain_block", Content:new(1))
 src:init_subcontent("disable_domain_block", Content:new(1))
 
 function src:generate_subcontents(f, _, _)
-    self.subcontents["load_table_block"]:addfLine("%s(%s, %s, handle);", S._HM_HANDLE_MACRO, S._ATM_INTERCEPT_TABLE_VAR, f.fname)
+    self.subcontents["load_table_block"]:addfLine("%s(%s, %s, %s);", S._HM_HANDLE_MACRO, S._ATM_INTERCEPT_TABLE_VAR, f.fname, S._HANDLE)
     self.subcontents["enable_domain_block"]:addfLine("%s(%s, %s, %s);", S._HM_ENABLE_MACRO, S._ATM_INTERCEPT_TABLE_VAR, f.fname, S._DOMAIN_UPPER)
     self.subcontents["disable_domain_block"]:addfLine("%s(%s, %s);", S._HM_DISABLE_MACRO, S._ATM_INTERCEPT_TABLE_VAR, f.fname)
 end

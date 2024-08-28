@@ -24,7 +24,7 @@ function string_content.new()
     self._WORKDIR = os.getenv("PWD")
 
     -- Directories
-    self._GENDIR_NAME = "./gen"
+    self._GENDIR_NAME = "$HOME/git/GILDA/gen"
     self._COREDIR = "core"
     self._LIBDIR = "lib"
     self._BUILDDIR = "build"

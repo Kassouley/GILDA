@@ -20,21 +20,24 @@ end
 --- Creates a directory, including any necessary parent directories.
 -- @param dirname The name of the directory to create.
 function common.mkdir(dirname)
+    local dirname = common.sub_env_var(dirname)
     os.execute("mkdir -p " .. dirname)
 end
 
 --- Checks if a file exists.
 -- @param name The name of the file to check.
 -- @return `true` if the file exists, `false` otherwise.
-function common.file_exists(name)
-    if type(name) ~= "string" then return false end
-    return os.rename(name, name) and true or false
+function common.file_exists(file)
+    local file = common.sub_env_var(file)
+    if type(file) ~= "string" then return false end
+    return os.rename(file, file) and true or false
 end
 
 --- Scans a directory and returns a list of subdirectories.
 -- @param dir The directory to scan.
 -- @return A table containing the names of subdirectories within the given directory.
 function common.scandir(dir)
+    local dir = common.sub_env_var(dir)
     local subdirectories = {}
     local command = "find \"" .. dir .. "\" -maxdepth 1 -type d"
     for line in io.popen(command):lines() do
@@ -68,6 +71,7 @@ end
 -- @param filename The name of the file to write to.
 -- @param content The content to write to the file.
 function common.write_n_close(filename, content)
+    local filename = common.sub_env_var(filename)
     local file = io.open(filename, "w")
     if not file then
         error("Error: Unable to open file " .. filename)

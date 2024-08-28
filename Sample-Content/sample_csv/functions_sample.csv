@@ -1,0 +1,5 @@
+AUTOGEN; double; sin; double; x
+AUTOGEN; double; cos; double; x
+AUTOGEN; double; sqrt; double; x
+AUTOGEN; double; pow; double; x; double; y
+AUTOGEN; double; log; double; x

@@ -207,12 +207,13 @@ function gilda_gen.command(config_data, domain_list, options)
                 struct_csv = parse_csv(gilda_data.struct_csv, parser.parse_struct_csv),
             }
             S._CURRENT_DOMAIN = domain
+            S._HANDLE = gilda_data.lib == "" and "RTLD_NEXT" or "handle"
             common.mkdir(S._AUTOGEN_DOMAIN_DIR)
             local content_domain = init_content(config_data.details.domain_content)
             set_domain_contents(content_domain, gilda_data, data_csv, options)
             local data = {
                 include = get_include_str(include_header_list),
-                handle = gilda_data.lib == "" and "RTLD_NEXT" or "\""..gilda_data.lib.."\""
+                handle = gilda_data.lib
             }
             generate_files(content_domain, data)
         end                  
