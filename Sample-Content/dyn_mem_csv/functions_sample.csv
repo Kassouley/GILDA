@@ -1,0 +1,4 @@
+AUTOGEN; void*; realloc; void*; ptr; size_t; size
+AUTOGEN; void*; malloc; size_t; size
+MANGEN; void; free; void*; ptr
+AUTOGEN; void*; calloc; size_t; num; size_t; size
