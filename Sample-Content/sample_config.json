@@ -22,12 +22,20 @@
             "script": "$HOME/git/GILDA/Sample-Content/contents/other/script_sh.lua"
         }
     }, 
-    "sample_domain" : {
-        "function_csv" : "$HOME/git/GILDA/Sample-Content/sample_csv/functions_sample.csv",
-        "struct_csv" : "",
-        "typedef_csv" : "$HOME/git/GILDA/Sample-Content/sample_csv/types_sample.csv",
-        "includes" : ["string.h"],
-        "compile_flag" : "-D _GNU_SOURCE",
-        "lib" : ""
+    "domain_list" : {
+        "sample_domain" : {
+            "function_csv" : "$HOME/git/GILDA/Sample-Content/sample_csv/functions_sample.csv",
+            "struct_csv" : "",
+            "typedef_csv" : "$HOME/git/GILDA/Sample-Content/sample_csv/types_sample.csv",
+            "includes" : ["string.h"],
+            "lib" : ""
+        }
+    },
+    "build" : {
+        "CFLAGS" : [
+            "-D _GNU_SOURCE"
+        ],
+        "LFLAGS" : ""
+
     }
 }

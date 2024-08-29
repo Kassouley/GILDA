@@ -1,13 +1,10 @@
 local ContentManager = require("ContentManager")
 local Content = require("Content")
 
-local finalize_subcontent = function(arg) 
-    return arg:getContent()
-end
+local f = ContentManager:new({path = S._MAKEFILE_PATH, do_gen = false})
 
-local f = ContentManager:new({path = S._MAKEFILE_PATH, do_gen = false, finalize_callback = finalize_subcontent})
-
-function f:generate_content()
+function f:generate_content(data)
+	local CFLAGS = "CFLAGS     += "..table.concat(data.build.CFLAGS, "\nCFLAGS     += ").."\n"
     return S._SAMPLE_MSG_2..[[ 
 
 # Directories
@@ -25,12 +22,10 @@ LIB]]..S._TOOLS_NAME_UPPER..[[ = lib]]..S._TOOLS_NAME..[[.so
 CC 			= hipcc
 CXX			= hipcc
 CFLAGS 		= -fPIC -Wall $(INC_FLAGS) -Wno-uninitialized -Wno-deprecated-declarations 
-]]..self.subcontents.compile_flag..[[ 
 LDFLAGS		= -shared
 INC_DIRS   := $(shell find $(CORE_DIR) -type d)
 INC_FLAGS  := $(addprefix -I,$(INC_DIRS)) -I$(CORE_DIR) 
-]]..self.subcontents.include_flag..[[ 
-
+]]..CFLAGS..[[ 
 
 # Source files
 C_SOURCES = $(shell find $(CORE_DIR) -name '*.c')
@@ -70,17 +65,5 @@ clean:
 .PHONY: all clean
 ]]
 end
-
-
-f:init_subcontent("compile_flag", Content:new())
-f:init_subcontent("include_flag", Content:new())
-
-function f:generate_subcontents(data)
-	if data.compile_flag ~= "" then
-    	self.subcontents["compile_flag"]:addfLine("CFLAGS     += %s", data.compile_flag)
-	end
-    self.subcontents["include_flag"]:addfLine("INC_FLAGS  += -I%s", data.include_path)
-end
-
 
 return {f=f}

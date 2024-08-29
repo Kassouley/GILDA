@@ -90,13 +90,6 @@ function main()
         local config_data = common.load_json(config_file)
         local gilda_gen = require("gilda_gen")
 
-        if #sub_target == 0 then
-            for key, value in pairs(config_data) do
-                if type(value) == 'table' and key ~= "details" then
-                    table.insert(sub_target, key)
-                end
-            end
-        end
         gilda_gen.command(config_data, sub_target, options)
 
     elseif command == "parse" then

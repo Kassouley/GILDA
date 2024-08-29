@@ -129,14 +129,12 @@ local function set_other_contents(content_other, config_data, options)
         content_other.script.f:set_do_gen(true)
     end
 
-    for key, domain in pairs(config_data) do
-        if key ~= "details" then
-            S._CURRENT_DOMAIN = key
-            for _, content in pairs(content_other) do
-                for _, file in pairs(content) do
-                    if file.generate_subcontents then
-                        file:generate_subcontents(domain)
-                    end
+    for key, domain in pairs(config_data.domain_list) do
+        S._CURRENT_DOMAIN = key
+        for _, content in pairs(content_other) do
+            for _, file in pairs(content) do
+                if file.generate_subcontents then
+                    file:generate_subcontents(domain)
                 end
             end
         end
@@ -166,54 +164,46 @@ end
 -- This function processes configuration data, sets up content and files,
 -- and generates content based on provided options.
 -- @param config_data Configuration data for the content generation.
--- @param domain_list A list of domains to process.
+-- @param domains A list of domains to process.
 -- @param options Options controlling the generation process.
-function gilda_gen.command(config_data, domain_list, options)
+function gilda_gen.command(config_data, domains, options)
+    local domain_list = {}
+    if #domains == 0 then
+        domain_list = config_data.domain_list
+    else
+        for _, d in pairs(domains) do
+            table.insert(domain_list, d)
+        end
+    end
+
     S = common.require_from_path(config_data.details.string).new()
 
     common.mkdir(S._COREDIR_PATH)
     common.mkdir(S._UTILSDIR_PATH)
 
-    for _, domain in ipairs(domain_list) do
-        local gilda_data = config_data[domain]
+    for domain_name, domain in pairs(domain_list) do
+        local domain = domain
 
-        local includes = gilda_data.includes
-        local include_header_list = {}
-        local include_path_list = {}
+        local include_header_list = domain.includes
 
-        local function process_include(inc)
-            local dir, file = common.split_path(inc)
-            table.insert(include_header_list, file)
-            table.insert(include_path_list, dir)
-        end
-        if type(includes) == "table" then
-            for _, inc in ipairs(includes) do
-                process_include(inc)
-            end
-        elseif type(includes) == "string" then
-            process_include(includes)
-        else
-            error("Error: Include path not correct")
-        end
-
-        if not gilda_data then
-            print("Warning: Skipping " .. domain .. ", doesn't exist in config file")
-        elseif gilda_data.function_csv == "" then
-            print("Warning: Skipping " .. domain .. ", config file not complete")
+        if not domain then
+            print("Warning: Skipping " .. domain_name .. ", doesn't exist in config file")
+        elseif domain.function_csv == "" then
+            print("Warning: Skipping " .. domain_name .. ", config file not complete")
         else
             local data_csv = {
-                function_csv = parse_csv(gilda_data.function_csv, parser.parse_function_csv),
-                typedef_csv = parse_csv(gilda_data.typedef_csv, parser.parse_typedef_csv),
-                struct_csv = parse_csv(gilda_data.struct_csv, parser.parse_struct_csv),
+                function_csv = parse_csv(domain.function_csv, parser.parse_function_csv),
+                typedef_csv = parse_csv(domain.typedef_csv, parser.parse_typedef_csv),
+                struct_csv = parse_csv(domain.struct_csv, parser.parse_struct_csv),
             }
-            S._CURRENT_DOMAIN = domain
-            S._HANDLE = gilda_data.lib == "" and "RTLD_NEXT" or "handle"
+            S._CURRENT_DOMAIN = domain_name
+            S._HANDLE = domain.lib == "" and "RTLD_NEXT" or "handle"
             common.mkdir(S._AUTOGEN_DOMAIN_DIR)
             local content_domain = init_content(config_data.details.domain_content)
-            set_domain_contents(content_domain, gilda_data, data_csv, options)
+            set_domain_contents(content_domain, domain, data_csv, options)
             local data = {
                 include = get_include_str(include_header_list),
-                handle = gilda_data.lib
+                handle = domain.lib
             }
             generate_files(content_domain, data)
         end                  
@@ -225,7 +215,7 @@ function gilda_gen.command(config_data, domain_list, options)
 
     local content_other = init_content(config_data.details.other)
     set_other_contents(content_other, config_data, options)
-    generate_files(content_other)
+    generate_files(content_other, config_data)
     
     if options.gen_options.script then
         os.execute("chmod u+x " .. S._SCRIPT_PATH)
