@@ -12,14 +12,14 @@ local hdr = ContentManager:new({path = S._ATM_HDR_PATH, do_gen = true, finalize_
 -- SOURCE CONTENT
 -----------------------------
 
-function src:generate_content(data)
+function src:generate_content()
     return S._WARNING_MSG..[[ 
 
 #include "]]..S._ATM_HDR..[["
 #include "]]..S._IF_HDR..[["
 #include "]]..S._HANDLER_MGR_HDR..[["
 #include "]]..S._ENV_HDR..[["
-]]..data.include..[[ 
+]]..S._INCLUDE_STR..[[ 
 
 ]]..S._ATM_INTERCEPT_TABLE_T..[[ ]]..S._ATM_INTERCEPT_TABLE_VAR..[[;
 
@@ -38,7 +38,7 @@ function src:generate_content(data)
 
 ]]..S._ATM_LOAD_TABLE_FUNC_DECL..[[ 
 {
-]]..(data.handle == "" and "" or [[    void *handle = load_handle("]]..data.handle..[[");]])..[[
+]]..(S._HANDLE == "RTLD_NEXT" and "" or [[    void *handle = load_handle("]]..S._HANDLE_PATH..[[");]])..[[
 ]]..self.subcontents.load_table_block..[[ 
 };
 ]]

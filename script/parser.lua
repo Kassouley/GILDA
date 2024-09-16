@@ -1,8 +1,10 @@
 local common = require("common")
+local CVar = require("CVar")
 
 local parser = {}
 
-function parser.parse_function_csv(filename)
+local function parse_function_csv(filename, data)
+    CVar:set_data(data)
     local fcnts = {}
     local filename = common.sub_env_var(filename)
     -- Read the CSV file
@@ -12,15 +14,34 @@ function parser.parse_function_csv(filename)
         if parts[1] ~= "NOGEN" then
             local f = {
                 gen = common.trim(parts[1]),
-                ftype = common.trim(parts[2]),
-                fname = common.trim(parts[3]),
-                ptype = {},
-                pname = {}
+                ftype = common.trim(parts[3]),
+                fname = common.trim(parts[4]),
+                fparam = {},
+                fdecl = "",
+                fargs = "",
+                get_arg_before = false,
+                get_arg_after = true
             }
+            if parts[2] == "ARG_BEFORE" then
+                f.get_arg_before = true
+                f.get_arg_after = false
+            end
             -- Extract arguments
-            for i = 4, #parts,2 do
-                table.insert(f.ptype, common.trim(parts[i])) 
-                table.insert(f.pname, common.trim(parts[i+1])) 
+            for i = 5, #parts,2 do
+                local ptype = common.trim(parts[i])
+                local pname = common.trim(parts[i+1])
+                local fparam = CVar:new(ptype, pname)
+                table.insert(f.fparam, fparam)
+                if f.fdecl == "" then
+                    f.fdecl = fparam.pdecl
+                else
+                    f.fdecl = f.fdecl..", "..fparam.pdecl
+                end
+                if f.fargs == "" then
+                    f.fargs = fparam.pname
+                else
+                    f.fargs = f.fargs..", "..fparam.pname
+                end
             end
             table.insert(fcnts, f)
         end
@@ -28,7 +49,7 @@ function parser.parse_function_csv(filename)
     return fcnts
 end
 
-function parser.parse_typedef_csv(filename)
+local function parse_typedef_csv(filename)
     local typedef = {}
     local filename = common.sub_env_var(filename)
     for line in io.lines(filename) do
@@ -42,7 +63,7 @@ function parser.parse_typedef_csv(filename)
     return typedef
 end
 
-function parser.parse_struct_csv(filename)
+local function parse_struct_csv(filename)
     local struct = {}
     local filename = common.sub_env_var(filename)
     for line in io.lines(filename) do
@@ -58,5 +79,24 @@ function parser.parse_struct_csv(filename)
     end
     return struct
 end
+
+-- Parses CSV data using the provided parser function.
+-- @param data The raw CSV data.
+-- @param parser_function The function to parse the CSV data.
+-- @return The parsed data, or "N/A" if the input data is empty.
+local function parse_csv(filename, parser_function)
+    return filename == "" and "N/A" or parser_function(filename)
+end
+
+
+function parser.parse_interception_csv(filenames)
+    local data_csv = {
+        typedef_csv = parse_csv(filenames.typedef_csv, parse_typedef_csv),
+        struct_csv = parse_csv(filenames.struct_csv, parse_struct_csv),
+    }
+    data_csv.function_csv = parse_function_csv(filenames.function_csv, data_csv)
+    return data_csv
+end
+
 
 return parser

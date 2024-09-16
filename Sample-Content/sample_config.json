@@ -36,6 +36,5 @@
             "-D _GNU_SOURCE"
         ],
         "LFLAGS" : ""
-
     }
 }

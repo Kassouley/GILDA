@@ -101,8 +101,9 @@ function gilda_parse.command(domain, header_files, output_dir, options)
         return
     end
     common.mkdir(output_dir.."/"..domain)
+    common.mkdir(output_dir.."/tmp")
 
-    os.execute("python3 script/header_parser.py "..domain.." "..output_dir.."/"..domain.." "..output_dir.."/tmp/header.c")
+    os.execute("python3 script/header_parser.py "..domain.." "..output_dir.."/"..domain.." "..output_dir.."tmp/header.c")
     -- local functions = {}
     -- for _, header_file in pairs(header_files) do
     --     if common.has_extension(header_file, ".h")
