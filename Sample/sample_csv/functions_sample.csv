@@ -1,0 +1,5 @@
+AUTOGEN; ARGS_AFTER; double; sin; double; x
+AUTOGEN; ARGS_AFTER; double; cos; double; x
+AUTOGEN; ARGS_AFTER; double; sqrt; double; x
+MANGEN; ARGS_AFTER; double; pow; double; x; double; y
+AUTOGEN; ARGS_AFTER; double; log; double; x
