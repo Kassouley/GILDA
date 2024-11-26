@@ -94,6 +94,28 @@ function Content:getContent()
     return table.concat(self.content, "\n")
 end
 
+--- Define the __tostring metamethod to use getContent() when the object is printed.
+-- @return The result of getContent().
+function Content:__tostring()
+    return self:getContent()
+end
+
+--- Define the __concat metamethod to concatenate the content with a string.
+-- @param a The first operand (can be a string or a Content object).
+-- @param b The second operand (can be a string or a Content object).
+-- @return The concatenated result as a string.
+function Content:__concat(other)
+    if type(other) == "string" then
+        return self:getContent() .. other
+    elseif type(self) == "string" and getmetatable(other) == Content then
+        return self .. other:getContent()
+    elseif getmetatable(other) == Content then
+        return self:getContent() .. other:getContent()
+    else
+        error("Attempt to concatenate Content with unsupported type")
+    end
+end
+
 --- Saves the content to a file.
 -- Writes the content to a specified file.
 -- @param filename The name of the file to save the content to.
