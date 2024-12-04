@@ -63,7 +63,9 @@ static void close_plugin_manager(plugin_manager_t* pm) {
 
 void onLoad()
 {
+    printf("Profiler initialization . . . ");
     ]]..S:STRING("I_INIT_FUNC")..[[();
+    printf("Done\n");
 
     open_plugin_manager(&plugin_manager);
     ]]..S:STRING("PLG_STRUCT")..[[* plugin = NULL;
@@ -79,10 +81,28 @@ void onLoad()
             ]]..S:STRING("I_ENABLE_DOMAIN_FUNC")..[[(domain);
         }
     }
+    printf("Profiler start\n");
+    ]]..S:STRING("I_START_FUNC")..[[();
 }
 
 void onExit()
 {
+    ]]..S:STRING("I_STOP_FUNC")..[[();
+
+    printf("Profiler stop\n");
+    ]]..S:STRING("LC_T")..[[* lc = ]]..S:STRING("LC_GET_LC_FUNC")..[[();
+    ]]..S:STRING("TIME_T")..[[ tool_init_start = ]]..S:STRING("TOOLS_NAME")..[[_get_timestamp_ns(lc->tool_init_start);
+    ]]..S:STRING("TIME_T")..[[ constructor_start = ]]..S:STRING("TOOLS_NAME")..[[_get_timestamp_ns(lc->constructor_start);
+    ]]..S:STRING("TIME_T")..[[ main_start = ]]..S:STRING("TOOLS_NAME")..[[_get_timestamp_ns(lc->main_start);
+    ]]..S:STRING("TIME_T")..[[ main_stop = ]]..S:STRING("TOOLS_NAME")..[[_get_timestamp_ns(lc->main_stop);
+    ]]..S:STRING("TIME_T")..[[ destructor_stop = ]]..S:STRING("TOOLS_NAME")..[[_get_timestamp_ns(lc->destructor_stop);
+    ]]..S:STRING("TIME_T")..[[ tool_fini_stop = ]]..S:STRING("TOOLS_NAME")..[[_get_timestamp_ns(lc->tool_fini_stop);
+    printf("Init tool duration : %lu\n", constructor_start-tool_init_start);
+    printf("Constructor duration : %lu\n", main_start-constructor_start);
+    printf("Main duration : %lu\n", main_stop-main_start);
+    printf("Destuctor duration : %lu\n", destructor_stop-main_stop);
+    printf("Fini tool duration : %lu\n", tool_fini_stop-destructor_stop);
+
     for (]]..S:STRING("I_DOMAIN_T")..[[ domain = 0; domain < ]]..S:STRING("TOOLS_NAME|upper")..[[_NB_DOMAIN; domain++)
     {
         if (is_set_domain(get_domain_name(domain))) {
@@ -92,7 +112,9 @@ void onExit()
     
     plugin_manager.plugin_finalize(&plugin);
     close_plugin_manager(&plugin_manager);
+    printf("Profiler fini . . . ");
     ]]..S:STRING("I_FINI_FUNC")..[[();
+    printf("Done\n");
 }
 
 __attribute__((constructor(101))) void init(void) 

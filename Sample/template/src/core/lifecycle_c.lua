@@ -31,15 +31,15 @@ static int (*main_fn)(int, char **, char **);
 
 ]]..S:STRING("LC_INIT_FUNC_DECL")..[[ 
 {
-    lifecycle.current_phase = ]]..S:STRING("TOOLS_NAME|upper")..[[_IN_CONSTRUCTOR_PHASE;
-	clock_gettime(CLOCK_MONOTONIC, &lifecycle.constructor_start);
+    lifecycle.current_phase = ]]..S:STRING("TOOLS_NAME|upper")..[[_IN_TOOL_INIT_PHASE;
+	clock_gettime(CLOCK_MONOTONIC, &lifecycle.tool_init_start);
     return ]]..S:STATUS("SUCCESS")..[[;
 }
 
 ]]..S:STRING("LC_FINI_FUNC_DECL")..[[ 
 {
     free(lifecycle.main_data.argv);
-	clock_gettime(CLOCK_MONOTONIC, &lifecycle.destructor_end);
+	clock_gettime(CLOCK_MONOTONIC, &lifecycle.tool_fini_stop);
     return ]]..S:STATUS("SUCCESS")..[[;
 }
 
@@ -51,7 +51,7 @@ static int (*main_fn)(int, char **, char **);
 
 ]]..S:STRING("LC_GET_LC_FUNC_DECL")..[[ 
 {
-    return lifecycle;
+    return &lifecycle;
 }
 
 int i_main(int argc, char **argv, char **envp)

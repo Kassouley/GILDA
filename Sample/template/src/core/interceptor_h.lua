@@ -42,9 +42,11 @@ typedef enum {
 } ]]..S:STRING("I_DOMAIN_T")..[[;
 
 typedef enum {
+	]]..S:STRING("TOOLS_NAME|upper")..[[_IN_TOOL_INIT_PHASE,
 	]]..S:STRING("TOOLS_NAME|upper")..[[_IN_CONSTRUCTOR_PHASE,
 	]]..S:STRING("TOOLS_NAME|upper")..[[_IN_MAIN_PHASE,
-	]]..S:STRING("TOOLS_NAME|upper")..[[_IN_DESTRUCTOR_PHASE
+	]]..S:STRING("TOOLS_NAME|upper")..[[_IN_DESTRUCTOR_PHASE,
+	]]..S:STRING("TOOLS_NAME|upper")..[[_IN_TOOL_FINI_PHASE
 } ]]..S:STRING("LC_PHASE_T")..[[;
 
 typedef struct ]]..S:STRING("I_API_DATA_S")..[[ {
@@ -77,6 +79,8 @@ typedef struct ]]..S:STRING("I_API_DATA_S")..[[ {
 ]]..S:STRING("I_SET_CALLBACK_FUNC_DECL")..[[;
 ]]..S:STRING("I_INIT_FUNC_DECL")..[[;
 ]]..S:STRING("I_FINI_FUNC_DECL")..[[;
+]]..S:STRING("I_START_FUNC_DECL")..[[;
+]]..S:STRING("I_STOP_FUNC_DECL")..[[;
 
 #endif // ]]..def_header
 end

@@ -64,7 +64,8 @@ end
 -- @param data Optional data to be passed to the content generator function.
 function ContentManager:generate_file(data)
     for key, subcontent in pairs(self.subcontents) do
-        if self.subcontents[key] == "" then self.do_not_gen = true end
+        if self.subcontents[key]:getContent() == "" then self.do_not_gen = true
+        else break end
     end
     if self.do_not_gen == false then
         local filename = self.output_path

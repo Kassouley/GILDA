@@ -41,12 +41,15 @@ function api_table_mgr_c:generate_content()
 
 ]]..S:STRING("ATM_POPU_FUNC_DECL")..[[ 
 {
-    api_table->handler = dlopen(lib_path, RTLD_LOCAL | RTLD_LAZY);
-    if (!api_table->handler) return ]]..S:STATUS("DLOPEN_FAILED")..[[;
+    void* handler = RTLD_NEXT;
+    if (lib_path) {
+        handler = dlopen(lib_path, RTLD_LOCAL | RTLD_LAZY);
+        if (!handler) return ]]..S:STATUS("DLOPEN_FAILED")..[[;
+    } 
     for (]]..S:STRING("I_API_ID_T")..[[ id = 0; id < api_table->size; id++)
     {
         const char* funame = ]]..S:STRING("I_GET_FUNAME_FUNC")..[[(api_table->domain, id);
-        void* fn = (void*)(dlsym(api_table->handler, funame));
+        void* fn = (void*)(dlsym(handler, funame));
         if (!fn) {
             LOG_MESSAGE("Failed to load \"%s\". (%s) Skipping.", funame, dlerror());
             fn = (void*)fallback;
@@ -54,6 +57,7 @@ function api_table_mgr_c:generate_content()
         api_table->api_fn[id] = fn;
         api_table->api_ptr[id] = fn;
     }
+    api_table->handler = handler;
     api_table->is_populate = true;
     return ]]..S:STATUS("SUCCESS")..[[;
 }
@@ -61,7 +65,7 @@ function api_table_mgr_c:generate_content()
 ]]..S:STRING("ATM_FINI_FUNC_DECL")..[[ 
 {
     if (api_table == NULL) return ]]..S:STATUS("API_TBL_NULL")..[[;
-    dlclose(api_table->handler);
+    if (api_table->handler != RTLD_NEXT) dlclose(api_table->handler);
     free(api_table->api_ptr);
     free(api_table->api_fn);
     return ]]..S:STATUS("SUCCESS")..[[;

@@ -18,8 +18,8 @@ local Script = require("Script")
 
 local function proccess_parse(arguments_values, options_values)
     local header_file = arguments_values[1]
-    local output_dir = options_values.output or "csv/"
-    local domain_name = options_values.domain or lfs.remove_extension(header_file)
+    local output_dir = options_values.output or "csv"
+    local domain_name = options_values.domain or lfs.remove_extension(lfs.basename(header_file))
 
     lfs.mkdir(lfs.concat_path(output_dir, domain_name))
 

@@ -27,12 +27,17 @@ local function get_include_str(includes_table)
     return "\n#include \"" .. table.concat(includes_table, "\"\n#include \"") .. "\"\n"
 end
 
-local function generate_domain_contents(script_table, data_csv, template_path, output_path, options)
+local function generate_domain_contents(script_table, domain, template_path, output_path, options)
+    local data_csv = parser.parse_interception_csv({
+        function_csv = domain.function_csv,
+        typedef_csv = domain.typedef_csv,
+        struct_csv = domain.struct_csv
+    })
     for _, script_class in pairs(script_table) do
         local script = script_class:new(options.gen_options, template_path, output_path)
         if script then
             for _, f in ipairs(data_csv.function_csv) do
-                script:generate_subcontents(f)
+                script:generate_subcontents(f, domain.is_dlsym_lib)
             end
             script:generate_file()
         end
@@ -46,9 +51,9 @@ local function generate_common_contents(script_table, domain_list, template_path
             for domain_name, domain in pairs(domain_list) do
                 S:set_current_domain(domain_name)
                 S:set_handle(domain.lib == "" and "RTLD_NEXT" or "handle")
-                S:set_handle_path(domain.lib)
+                S:set_handle_path(domain.lib == "" and "NULL" or "\""..domain.lib.."\"")
                 S:set_include_str(get_include_str(domain.includes))
-                script:generate_subcontents()
+                script:generate_subcontents(domain.is_dlsym_lib)
             end
             script:generate_file()
         end
@@ -56,7 +61,7 @@ local function generate_common_contents(script_table, domain_list, template_path
 end
 
 
-local function get_script_content(config_data)
+local function get_script_content(config_data, force_copy)
     local script = {
         common = {},
         domain = {}
@@ -79,7 +84,7 @@ local function get_script_content(config_data)
                 local tmp = string.gsub(file, template_path, "")
                 local output_path = lfs.concat_path(output_dir, tmp)
                 local new_dir, basename = lfs.split_path(output_path)
-                if lfs.file_exists(output_path) then
+                if lfs.file_exists(output_path) and not force_copy then
                     print("Warning: No copy for '"..output_path.."', file already exists.")
                 else
                     lfs.mkdir(new_dir)
@@ -115,7 +120,7 @@ local function proccess_gen(arguments_values, options_values)
     local output_dir = lfs.get_cleaned_path(config_data.details.output_dir)
     S = StringManager.new(config_data.details.string)
     
-    local script = get_script_content(config_data)
+    local script_table = get_script_content(config_data, options_values.force_copy)
 
     for domain_name, domain in pairs(domain_list) do
         if not domain then
@@ -123,24 +128,19 @@ local function proccess_gen(arguments_values, options_values)
         elseif domain.function_csv == "" then
             print("Warning: Skipping " .. domain_name .. ", config file not complete")
         else
-            local data_csv = parser.parse_interception_csv({
-                function_csv = domain.function_csv,
-                typedef_csv = domain.typedef_csv,
-                struct_csv = domain.struct_csv
-            })
-            
             S:set_current_domain(domain_name)
             S:set_handle(domain.lib == "" and "RTLD_NEXT" or "handle")
-            S:set_handle_path(domain.lib)
+            S:set_handle_path(domain.lib == "" and "NULL" or "\""..domain.lib.."\"")
             S:set_include_str(get_include_str(domain.includes))
-            generate_domain_contents(script.domain, data_csv, template_path, output_dir, options_values)
+            generate_domain_contents(script_table.domain, domain, template_path, output_dir, options_values)
         end
     end
-    generate_common_contents(script.common, domain_list, template_path, output_dir, options_values)
+    generate_common_contents(script_table.common, domain_list, template_path, output_dir, options_values)
     
 end
 
 
+local function force_cpy_cb(script, _) script.options_values.force_copy = true end
 local function mangen_gen_cb(script, _) script.options_values.gen_options.force_mangen = true end
 local function script_gen_cb(script, _) script.options_values.gen_options.force_script_gen = true end
 local function tool_gen_cb(script, _) script.options_values.gen_options.force_tool_gen = true end
@@ -180,6 +180,11 @@ script:set_desc([[Generate source code, build scripts, and run scripts for an LD
 script:set_execute_function(proccess_gen)
 
 script:add_argument("config_file", true, false, "Specify the config file that contains data about the generation.")
+
+script:add_option("force-copy", "c", nil, 
+[[                  
+                        Force the copy of non-lua content script even if they already exist]], 
+                        false, force_cpy_cb)
 
 script:add_option("force-tool-gen", "t", nil, 
 [[                  

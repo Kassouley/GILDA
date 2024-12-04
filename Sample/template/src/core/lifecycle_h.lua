@@ -20,7 +20,6 @@ function lifecycle_h:generate_content()
 #ifndef ]]..def_header..[[ 
 #define ]]..def_header..[[ 
 
-#include <time.h>
 #include <stdlib.h>
 #include "]]..S:STRING("INTERCEPTOR_HDR")..[["
 
@@ -34,10 +33,12 @@ typedef struct {
 
 typedef struct {
     ]]..S:STRING("LC_PHASE_T")..[[ current_phase;
+    ]]..S:STRING("TIMESPECT_T")..[[ tool_init_start;
     ]]..S:STRING("TIMESPECT_T")..[[ constructor_start;
     ]]..S:STRING("TIMESPECT_T")..[[ main_start;
     ]]..S:STRING("TIMESPECT_T")..[[ main_stop;
-    ]]..S:STRING("TIMESPECT_T")..[[ destructor_end;
+    ]]..S:STRING("TIMESPECT_T")..[[ destructor_stop;
+    ]]..S:STRING("TIMESPECT_T")..[[ tool_fini_stop;
     ]]..S:STRING("TOOLS_NAME")..[[_main_data_t main_data;
 } ]]..S:STRING("LC_T")..[[;
 

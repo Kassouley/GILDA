@@ -32,7 +32,7 @@ list(REMOVE_DUPLICATES HEADER_DIRS)
 # Add the shared library (create the target first)
 add_library(${LIBRARY_NAME} SHARED ${SOURCES} ${HEADERS})
 
-# Add include directories for ROCm and project headers
+# Add include directories for project headers
 target_include_directories(${LIBRARY_NAME}
     PUBLIC
         ${ROCM_PATH}/include
