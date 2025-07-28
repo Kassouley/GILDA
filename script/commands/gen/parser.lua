@@ -1,6 +1,7 @@
 require("string_ext")
 local lfs = require("lfs")
-local CVar = require("CVar")
+local CFunc = require("CFunc")
+local CVar  = require("CVar")
 
 local parser = {}
 
@@ -10,40 +11,10 @@ local function parse_function_csv(filename, data)
     local filename = lfs.get_cleaned_path(filename)
     -- Read the CSV file
     for line in io.lines(filename) do
-        local parts = line:split(";")
+        local cells = line:split(";")
         -- Construct function table
-        if parts[1] ~= "NOGEN" then
-            local f = {
-                gen = parts[1]:trim(),
-                ftype = CVar:new(parts[3]:trim(), "retval"),
-                fname = parts[4]:trim(),
-                fparam = {},
-                fdecl = "",
-                fargs = "",
-                get_arg_before = false,
-                get_arg_after = true
-            }
-            if parts[2] == "ARG_BEFORE" then
-                f.get_arg_before = true
-                f.get_arg_after = false
-            end
-            -- Extract arguments
-            for i = 5, #parts,2 do
-                local ptype = parts[i]:trim()
-                local pname = parts[i+1]:trim()
-                local fparam = CVar:new(ptype, pname)
-                table.insert(f.fparam, fparam)
-                if f.fdecl == "" then
-                    f.fdecl = fparam.pdecl
-                else
-                    f.fdecl = f.fdecl..", "..fparam.pdecl
-                end
-                if f.fargs == "" then
-                    f.fargs = fparam.name
-                else
-                    f.fargs = f.fargs..", "..fparam.name
-                end
-            end
+        if cells[1] ~= "NOGEN" then
+            local f = CFunc:new(cells)
             table.insert(fcnts, f)
         end
     end

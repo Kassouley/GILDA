@@ -13,88 +13,77 @@ for _, path in ipairs(paths) do
     package.path = package.path .. ';' .. script_dir .. path .. '?.lua'
 end
 
-local common = require("common")
 local lfs = require("lfs")
-local parser = require("parser")
 local StringManager = require("StringManager")
 local Script = require("Script")
 
+Content = require("Content")
+common = require("common")
+CurrentFile = "Unknown"
 
--- Creates a string for include directives from a table of include paths.
--- @param includes_table A table of include paths.
--- @return A string of include directives formatted for C.
-local function get_include_str(includes_table)
-    return "\n#include \"" .. table.concat(includes_table, "\"\n#include \"") .. "\"\n"
-end
-
-local function generate_domain_contents(script_table, domain, template_path, output_path, options)
-    local data_csv = parser.parse_interception_csv({
-        function_csv = domain.function_csv,
-        typedef_csv = domain.typedef_csv,
-        struct_csv = domain.struct_csv
-    })
-    for _, script_class in pairs(script_table) do
-        local script = script_class:new(options.gen_options, template_path, output_path)
-        if script then
-            for _, f in ipairs(data_csv.function_csv) do
-                script:generate_subcontents(f, domain.is_dlsym_lib)
+local function replace_string_holder(str)
+    local content = str:gsub("%$%$([%s%S]-)%$%$", function(match)
+        -- Check if match contains '@'
+        local func, args = match:match("([^@]+)@([%s%S]+)")
+        if func then
+            -- If function exists in S, call S[func](args)
+            if S[func] then 
+                return S[func](S, args)
+            else
+                error("Function '" .. func .. "' not found in StringManager or string ini file.")
             end
-            script:generate_file()
+        else
+            -- Otherwise, call S:STRING(match)
+            return S:STRING(match)
         end
-    end
-end
-
-local function generate_common_contents(script_table, domain_list, template_path, output_path, options)
-    for _, script_class in pairs(script_table) do
-        local script = script_class:new(options.gen_options, template_path, output_path)
-        if script then
-            for domain_name, domain in pairs(domain_list) do
-                S:set_current_domain(domain_name)
-                S:set_handle(domain.lib == "" and "RTLD_NEXT" or "handle")
-                S:set_handle_path(domain.lib == "" and "NULL" or "\""..domain.lib.."\"")
-                S:set_include_str(get_include_str(domain.includes))
-                script:generate_subcontents(domain.is_dlsym_lib)
-            end
-            script:generate_file()
-        end
-    end
+    end)
+    return content
 end
 
 
-local function get_script_content(config_data, force_copy)
-    local script = {
-        common = {},
-        domain = {}
-    }
+local function is_domain_file(filename)
+    return filename:match("%$%$DOMAIN@.-%$%$") ~= nil
+end
+
+local function get_domain_filename(dir, filename)
+    return lfs.concat_path(dir, replace_string_holder(filename))
+end
+
+local function write_content(input, output)
+    local new_dir, _ = lfs.split_path(output)
+    lfs.mkdir(new_dir)
+    local file = lfs.open_file(input, "r")
+    local content = file:read("*all")
+    file:close()
+    file = lfs.open_file(output, "w")
+    file:write(replace_string_holder(content))
+    file:close()
+    print("Success: '"..output.."' has been generated.")
+end
+
+
+local function generate(config_data)
     local template_path = lfs.get_cleaned_path(config_data.details.template_path)
     local output_dir = lfs.get_cleaned_path(config_data.details.output_dir)
     local files_list = lfs.scanfile(template_path, "f")
-    for _, file in pairs(files_list) do
-        if lfs.is_file(file) then
-            if lfs.has_extension(file, ".lua") then
-                local script_class, script_type = lfs.require_from_path(file)
-                if script_type == "COMMON" then
-                    table.insert(script.common, script_class)
-                elseif script_type == "DOMAIN" then
-                    table.insert(script.domain, script_class)
-                else
-                    error("Script type invalid for "..file)
+
+    for _, filename in pairs(files_list) do
+        if lfs.is_file(filename) then
+            CurrentFile = filename
+            local relative_path = string.gsub(filename, template_path, "")
+            if is_domain_file(relative_path) then
+                for domain_name, domain in pairs(config_data.domain_list) do
+                    S:set_domain(domain, domain_name)
+
+                    local absolute_path = get_domain_filename(output_dir, relative_path)
+                    write_content(filename, absolute_path)
                 end
             else
-                local tmp = string.gsub(file, template_path, "")
-                local output_path = lfs.concat_path(output_dir, tmp)
-                local new_dir, basename = lfs.split_path(output_path)
-                if lfs.file_exists(output_path) and not force_copy then
-                    print("Warning: No copy for '"..output_path.."', file already exists.")
-                else
-                    lfs.mkdir(new_dir)
-                    lfs.copy_file(file, output_path)
-                    print("Success: '"..output_path.."' has been copied.")
-                end
+                local absolute_path = get_domain_filename(output_dir, relative_path)
+                write_content(filename, absolute_path)
             end
         end
     end
-    return script
 end
 
 
@@ -115,28 +104,8 @@ local function proccess_gen(arguments_values, options_values)
         end
     end
     local config_data = common.load_json(config_file)
-    local domain_list = config_data.domain_list
-    local template_path = lfs.get_cleaned_path(config_data.details.template_path)
-    local output_dir = lfs.get_cleaned_path(config_data.details.output_dir)
-    S = StringManager.new(config_data.details.string)
-    
-    local script_table = get_script_content(config_data, options_values.force_copy)
-
-    for domain_name, domain in pairs(domain_list) do
-        if not domain then
-            print("Warning: Skipping " .. domain_name .. ", doesn't exist in config file")
-        elseif domain.function_csv == "" then
-            print("Warning: Skipping " .. domain_name .. ", config file not complete")
-        else
-            S:set_current_domain(domain_name)
-            S:set_handle(domain.lib == "" and "RTLD_NEXT" or "handle")
-            S:set_handle_path(domain.lib == "" and "NULL" or "\""..domain.lib.."\"")
-            S:set_include_str(get_include_str(domain.includes))
-            generate_domain_contents(script_table.domain, domain, template_path, output_dir, options_values)
-        end
-    end
-    generate_common_contents(script_table.common, domain_list, template_path, output_dir, options_values)
-    
+    S = StringManager.new(config_data)
+    generate(config_data)
 end
 
 

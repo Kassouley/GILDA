@@ -15,14 +15,14 @@ function common.load_json(__input_path__)
 end
 
 function common.get_function_signature(f)
-    local signature = {}
+    local t = {}
     for i, v in ipairs(f.fparam) do
-        signature[i] = v
+        t[i] = v
     end
     if f.ftype.ctype ~= "void" or f.ftype:is_generic_ptr() then
-        table.insert(signature, f.ftype)
+        table.insert(t, f.ftype)
     end
-    return signature
+    return t
 end
 
 return common

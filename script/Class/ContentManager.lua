@@ -8,6 +8,13 @@ local lfs = require("lfs")
 local ContentManager = {}
 ContentManager.__index = ContentManager
 
+local function replace_string_holder(str)
+    local tmp = str:gsub("##(.-)##", function(match)
+        return S:STRING(match)
+    end)
+    return tmp
+end
+
 --- Constructor for the ContentManager class.
 -- Initializes a new ContentManager instance with a set of attributes.
 -- @param attribute A table containing attributes such as `file_name`, `do_not_gen`, `is_sample` and `subcontents`.
@@ -17,7 +24,7 @@ function ContentManager:new(attribute, template_path, output_path)
         error("ContentManager Constructor need a table as argument")
     end
 
-    local script_path = lfs.get_script_path(2)
+    local script_path = replace_string_holder(lfs.get_script_path(2))
     local script_dir, script_name = lfs.split_path(script_path)
     local tmp = string.gsub(script_dir, template_path, "")
     local output_file = attribute.file_name

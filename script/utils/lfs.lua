@@ -26,7 +26,7 @@ end
 -- @param p The file path as a string.
 -- @return The processed and normalized file path.
 local function get_path(p)
-    p = sub_env_var(p)
+    -- p = sub_env_var(p)
     p = normalize_path_separator(p)
     return p
 end

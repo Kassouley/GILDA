@@ -7,296 +7,338 @@ local CVar = {}
 CVar.__index = CVar
 CVar.__data = {}
 
+
+CVar.__data.c_types_fmt = {
+    ["N/A"]                     = nil,
+    ["void"]                    = nil,
+    ["opaque"]                  = "%p",
+    ["function"]                = "%p",
+    ["string"]                  = "%s",
+    ["enum"]                    = "%d",
+    ["char"]                    = "%c",
+    ["signed char"]             = "%hhd",
+    ["unsigned char"]           = "%hhu",
+    ["short"]                   = "%hd",
+    ["signed short"]            = "%hd",
+    ["unsigned short"]          = "%hu",
+    ["short int"]               = "%hd",
+    ["signed short int"]        = "%hd",
+    ["unsigned short int"]      = "%hu",
+    ["int"]                     = "%d",
+    ["signed int"]              = "%d",
+    ["unsigned int"]            = "%u",
+    ["long"]                    = "%ld",
+    ["signed long"]             = "%ld",
+    ["unsigned long"]           = "%lu",
+    ["long int"]                = "%ld",
+    ["signed long int"]         = "%ld",
+    ["unsigned long int"]       = "%lu",
+    ["long long"]               = "%lld",
+    ["signed long long"]        = "%lld",
+    ["unsigned long long"]      = "%llu",
+    ["long long int"]           = "%lld",
+    ["signed long long int"]    = "%lld",
+    ["unsigned long long int"]  = "%llu",
+    ["float"]                   = "%f",
+    ["double"]                  = "%lf",
+    ["long double"]             = "%Lf",
+}
+
+CVar.__data.type_qualifers  = { ["const"] = true, ["volatile"] = true, ["restrict"] = true }
+
 --- Sets the CVar shared data for typedefs, structs, and keywords.
 -- @param data A table containing typedef and struct CSV mappings.
 function CVar:set_data(data)
     CVar.__data.typedef_map = data.typedef_csv
     CVar.__data.struct_map = data.struct_csv
-    CVar.__data.keywords_list = {
-        "const", "volatile", "static", "extern", 
-        "inline", "register", "restrict",
-        "struct", "union", "enum"
-    }
-    CVar.__data.c_types = {
-        ["N/A"] = "",
-        ["enum"] = "%d",
-        ["struct"] = "",
-        ["union"] = "",
-        ["opaque"] = "%p",
-        ["function"] = "%p",
-        ["void"] = "",
-        ["char"] = "%c",
-        ["signed char"] = "%hhd",
-        ["unsigned char"] = "%hhu",
-        ["short"] = "%hd",
-        ["signed short"] = "%hd",
-        ["unsigned short"] = "%hu",
-        ["short int"] = "%hd",
-        ["signed short int"] = "%hd",
-        ["unsigned short int"] = "%hu",
-        ["int"] = "%d",
-        ["signed int"] = "%d",
-        ["unsigned int"] = "%u",
-        ["long"] = "%ld",
-        ["signed long"] = "%ld",
-        ["unsigned long"] = "%lu",
-        ["long int"] = "%ld",
-        ["signed long int"] = "%ld",
-        ["unsigned long int"] = "%lu",
-        ["long long"] = "%lld",
-        ["signed long long"] = "%lld",
-        ["unsigned long long"] = "%llu",
-        ["long long int"] = "%lld",
-        ["signed long long int"] = "%lld",
-        ["unsigned long long int"] = "%llu",
-        ["float"] = "%f",
-        ["double"] = "%lf",
-        ["long double"] = "%Lf",
-        ["string"] = "%s"
-    }
+end
+
+function CVar:is_function(ctype)
+    ctype = ctype or self.ctype
+    return ctype:find("%(%*[^)]*%)%(") ~= nil
 end
 
 
---- Resolves pointers or dynamic references from the type.
--- Updates the type or increments the dynamic reference count.
--- @param self The CVar instance.
-local function resolve_pointer_ref(self)
-    if self.ctype:find("%(%*%)")  then
-        self.ctype = "function"
-    else
-        self.ctype = self.ctype:gsub("%s*%*%s*", function()
-            self.dyn_ref_cnt = self.dyn_ref_cnt + 1
-            return ""
-        end)
-        self.ctype = self.ctype:gsub("%s*%[%]%s*", function()
-            self.dyn_ref_cnt = self.dyn_ref_cnt + 1
-            return ""
-        end)
-    end
+function CVar:is_struct(ctype)
+    ctype = ctype or self.ctype
+    return ctype:find("struct%s*") ~= nil
 end
 
---- Resolves array dimensions in the C type declaration.
--- Extracts and stores array sizes, cleaning the type string.
--- @param self The CVar instance.
-local function resolve_array_dimension(self)
-    for dim in self.ctype:gmatch("%s*%[(%d+)%]%s*") do
-        table.insert(self.dimensions, tonumber(dim))
-    end
-    self.ctype = self.ctype:gsub("%[%d+%]", "")
+
+function CVar:is_enum(ctype)
+    ctype = ctype or self.ctype
+    return ctype:find("enum%s*") ~= nil
 end
 
---- Resolves and removes C keywords from the type string.
--- Extracts and marks detected keywords in the type.
--- @param self The CVar instance.
-local function resolve_keywords(self)
-    for _, keyword in ipairs(CVar.__data.keywords_list) do
-        local pattern = "%f[%w_]" .. keyword .. "%f[^%w_]%s*"
-        if self.ctype:find(pattern) then
-            self.ctype = self.ctype:gsub(pattern, "")
-            self.keyword[keyword] = true
-        end
-    end
+
+function CVar:is_union(ctype)
+    ctype = ctype or self.ctype
+    return ctype:find("union%s*") ~= nil
 end
 
---- Resolves if the type is a C string based on type and references.
--- @param self The CVar instance.
-local function resolve_string(self)
-    if self.ctype == "char" and 
-            (self.dyn_ref_cnt > 0 or #self.dimensions > 0) then
-        self.ctype = "string"
-    end
+function CVar:is_ptr(ctype)
+    ctype = ctype or self.ctype
+    local cnt, _ = self:get_ptr_count(ctype)
+    return cnt > 0
 end
 
---- Resolves if the type is an enum and adjusts its type.
--- @param self The CVar instance.
-local function resolve_enum(self)
-    if self:is_enum() then
-        self.ctype = "enum"
-    end
+function CVar:is_string(ctype)
+    ctype = ctype or self.ctype
+    return ctype:match("char%s*%*%s*$") ~= nil
+        or ctype:match("char%s*%[") ~= nil
 end
 
---- Resolves struct or union types, including their fields.
--- Maps struct or union fields into the CVar instance.
--- @param self The CVar instance.
-local function resolve_struct(self)
+function CVar:is_generic_ptr(ctype)
+    ctype = ctype or self.ctype
+    local cnt, _ = self:get_ptr_count(ctype)
+    return self:ctype_is_void() and cnt == 1
+end
+
+
+function CVar:is_opaque()
     if self:is_struct() or self:is_union() then
-        local tmp = self:is_struct() and "struct "..self.ctype or "union "..self.ctype
-        local struct_map = CVar.__data.struct_map[self.ctype] or CVar.__data.struct_map[tmp]
-        if struct_map then
-            for i = 1, #struct_map do
-                local pair = struct_map[i]
-                local field = CVar:new(pair.type, pair.name)
-                table.insert(self.struct_fields, field)
-            end
-            
-            self.ctype = self:is_struct() and "struct" or "union"
-        else
-            self.ctype = "N/A"
-        end
+        return #self.struct_fields == 0
     end
+    return false
 end
 
---- Checks if the current type is a known C type.
--- @param self The CVar instance.
--- @return True if the type is known, otherwise false.
-local function is_c_type(self)
-    return CVar.__data.c_types[self.ctype] ~= nil
+
+function CVar:is_static_array(ctype)
+    ctype = ctype or self.ctype
+    return ctype:find("%[%d-%]") ~= nil
 end
 
---- Resolves typedefs and applies all type resolutions to determine the actual type.
--- @param self The CVar instance.
-local function resolve_typedef(self)
-    resolve_keywords(self)
-    resolve_array_dimension(self)
-    resolve_pointer_ref(self)
-    resolve_string(self)
-    resolve_enum(self)
-    resolve_struct(self)
 
-    if not is_c_type(self) then
-        local typedef_type = CVar.__data.typedef_map[self.ctype]
-        if typedef_type then
-            self.ctype = typedef_type
-            resolve_typedef(self)
-        else
-            self.ctype = "N/A"
-        end
-    end
+function CVar:is_dynamic_array(ctype)
+    ctype = ctype or self.ctype
+    return ctype:find("%[%%s*%]") ~= nil
 end
 
---- Constructor for the CVar class.
--- @param vtype The type declaration string.
--- @param name The variable name (optional).
--- @return A new CVar instance.
-function CVar:new(vtype, name)
-    if type(vtype) ~= "string" then error("CVar Constructor : argument 1 need to be a string") end
-    local self = setmetatable({}, CVar)
-    self.vtype = vtype
-    self.name = name
-    self.pdecl = self:concat_param()
-    self.ctype = self.vtype
-    self.keyword = {}
-    self.dimensions = {}
-    self.dyn_ref_cnt = 0
-    self.struct_fields = {}
-    resolve_typedef(self)
-    return self
+
+function CVar:is_array(ctype)
+    ctype = ctype or self.ctype
+    return self:is_dynamic_array(ctype) or self:is_static_array(ctype)
 end
 
---- Returns the format string for the current type.
--- @return A format string or nil if the type is unknown.
-function CVar:get_format()
-    return CVar.__data.c_types[self.ctype]
+
+
+function CVar:ctype_is_void()
+    return self:get_base_type() == "void"
 end
 
---- Cleans the variable type by removing pointers and array brackets.
--- @return The cleaned-up type string.
-function CVar:get_cleaned_vtype()
-    local cleaned_ptype = self.vtype
-    if self.ctype ~= "function" then
-        cleaned_ptype = cleaned_ptype:gsub("%s*%*", "")
-        cleaned_ptype = cleaned_ptype:gsub("%s*%[%]", "")
+
+
+function CVar:get_base_type()
+    if self:is_string() then
+        return "string"
+    elseif self:is_function() then
+        return "function"
+    elseif self:is_enum() then
+        return "enum"
+    elseif self:is_opaque() then
+        return "opaque"
+    elseif self:is_struct() then
+        return "struct"
+    elseif self:is_union() then
+        return "union"
     else
-        cleaned_ptype = cleaned_ptype:gsub("const%s+", "")
+        local ctype = self.ctype
+
+        -- Remove qualifiers
+        ctype = self:remove_type_qualifers()
+
+        -- Remove pointers and arrays
+        ctype = ctype:gsub("%*+", "")             -- remove pointer stars
+        ctype = ctype:gsub("%[[^%]]*%]", "")      -- remove array brackets
+
+
+        return ctype
     end
-    return cleaned_ptype
 end
 
---- Determines if the type is a generic pointer (`void *`).
--- @return True if the type is a generic pointer, otherwise false.
-function CVar:is_generic_ptr()
-    return self.ctype == "void" and self.dyn_ref_cnt == 1
+
+function CVar:get_cfmt()
+    local base_type = self:get_base_type()
+
+    if base_type == "union" or base_type == "struct" then
+        error("Do not use CVar:get_cfmt() method for structure or union variable.\n"..
+              "Please check before if variable is structure or union using var:is_struct() or var:is_union() methods.")
+    end
+
+    return CVar.__data.c_types_fmt[base_type] or "%p"  -- default fallback
 end
 
---- Determines if the type represents a string.
--- @return True if the type is a string, otherwise false.
-function CVar:is_string()
-    return self.ctype == "string"
+function CVar:get_decl(type_str, var_name)
+    type_str = type_str or self.vtype
+    var_name = var_name or self.name
+
+    if self:is_function(type_str) or type_str:find("%(%*%)") ~= nil then
+      local start_pos, end_pos = type_str:find("%(%*[^)]*%)")
+      return type_str:sub(1, end_pos - 1) .. " " .. var_name .. type_str:sub(end_pos)
+    end
+    if self:is_array(type_str) then
+        local pos_array = type_str:find("%[.-%]")
+        local base_type = type_str:sub(1, pos_array - 1)
+        local array_size = type_str:sub(pos_array)
+        return base_type .. " " .. var_name .. array_size
+    end
+    return type_str .. " " .. var_name
 end
 
---- Determines if the type represents a function pointer.
--- @return True if the type is a function, otherwise false.
-function CVar:is_function()
-    return self.ctype == "function"
-end
 
---- Determines if the type represents `void`.
--- @return True if the type is `void`, otherwise false.
-function CVar:is_void()
-    return self.ctype == "void"
-end
-
---- Determines if the type is unknown or unsupported.
--- @return True if the type is unknown (`N/A`), otherwise false.
-function CVar:is_unknown()
-    return self.ctype == "N/A"
-end
-
---- Determines if the type represents a `struct`.
--- @return True if the type is a `struct`, otherwise false.
-function CVar:is_struct()
-    return self.keyword["struct"]
-end
-
---- Determines if the type represents a `union`.
--- @return True if the type is a `union`, otherwise false.
-function CVar:is_union()
-    return self.keyword["union"]
-end
-
---- Determines if the type represents an `enum`.
--- @return True if the type is an `enum`, otherwise false.
-function CVar:is_enum()
-    return self.keyword["enum"]
-end
-
---- Determines if the type is an array.
--- @return True if the type is an array, otherwise false.
-function CVar:is_array()
-    return #self.dimensions > 0
-end
-
---- Determines if the type is a pointer (dynamic reference).
--- @return True if the type has at least one pointer, otherwise false.
-function CVar:is_pointer()
-    return self.dyn_ref_cnt > 0
-end
-
---- Determines if the type is dynamic (e.g., has pointers or dynamic fields).
--- For structs or unions, checks if any fields are dynamic.
--- @return True if the type is dynamic, otherwise false.
-function CVar:is_dynamic()
-    if self.struct_fields then
-        for _, field in ipairs(self.struct_fields) do
-            if field:is_dynamic() then return true end
+function CVar:__resolve_struct()
+    local base_type = self:get_base_type()
+    local struct_map = CVar.__data.struct_map[base_type]
+    if struct_map then
+        for i = 1, #struct_map do
+            local pair = struct_map[i]
+            local field = CVar:new(pair.type, pair.name)
+            table.insert(self.struct_fields, field)
         end
-        return false
     end
-    return self.dyn_ref_cnt > 0
 end
 
---- Determines if the type is static (not dynamic).
--- @return True if the type is static, otherwise false.
-function CVar:is_static()
-    return not self:is_dynamic()
+
+function CVar:new(vtype, name)
+    local att = setmetatable({}, CVar)
+    att.pdecl = att:get_decl()
+    att.vtype = vtype
+    att.name  = name
+
+    att.ctype = att:__resolve_typedef(vtype)
+
+    att.struct_fields = {}
+    if self:is_struct() or self:is_union() then
+        self:__resolve_struct()
+    end
+    
+    return att
 end
 
---- Concatenates the type and name into a declaration string.
--- Handles special cases for function pointers and arrays.
--- @return A string representing the type declaration with the variable name.
-function CVar:concat_param()
-    if not self.name then return self.vtype end
-    local pos = self.vtype:find("%(%*%)")
-    if pos then
-        return self.vtype:sub(1, pos+1) .. self.name .. self.vtype:sub(pos + 2)
+
+function CVar:__resolve_typedef(type_str, depth)
+    depth = depth or 0
+    if depth > 10 then
+        return type_str -- prevent infinite recursion
     end
-    local pos_array = self.vtype:find("%[%d*%]")
-    if pos_array then
-        local base_type = self.vtype:sub(1, pos_array - 1)
-        local array_size = self.vtype:sub(pos_array)
-        return base_type .. " " .. self.name .. array_size
+
+    type_str = type_str:trim()
+
+    -- If the whole type_str is a typedef, resolve it directly
+    if CVar.__data.typedef_map[type_str] then
+        return self:__resolve_typedef(CVar.__data.typedef_map[type_str], depth + 1)
     end
-    return self.vtype .. " " .. self.name
+
+    -- Otherwise, try to replace typedefs inside the string
+    -- We replace words that match typedef names with their resolved type
+
+    -- Pattern to find words (identifiers)
+    local function replace_typedefs(word)
+        if CVar.__data.typedef_map[word] then
+            return self:__resolve_typedef(CVar.__data.typedef_map[word], depth + 1)
+        else
+            return word
+        end
+    end
+
+    -- Replace all typedef words recursively
+    local resolved = type_str:gsub("(%w+)", replace_typedefs)
+
+    return resolved
+end
+
+
+function CVar:__get_type_qualifers(ctype)
+    local qualifiers = {}
+    local words = {}
+
+    -- Split the input into words
+    for word in ctype:gmatch("%S+") do
+        if CVar.__data.type_qualifers[word] then
+            table.insert(qualifiers, word)
+        else
+            table.insert(words, word)
+        end
+    end
+
+    ctype = table.concat(words, " ")
+    return qualifiers, ctype
+end
+
+
+function CVar:get_type_qualifers(ctype)
+    ctype = ctype or self.ctype
+
+    -- If the input is function type
+    local ret_type, ptr_part, args = ctype:match("(.-)%(%s*%*%s*([^%(%)]*)%s*%)%s*(%b())")
+    if ret_type and ptr_part and args then
+        local qualifiers, ctype = self:__get_type_qualifers(ptr_part)
+        ctype = string.format("%s(*%s)%s", ret_type, ctype, args)
+        return qualifiers, ctype
+    else
+        return self:__get_type_qualifers(ctype)
+    end
+end
+
+function CVar:get_type_for_struct(ctype)
+    ctype = ctype or self.ctype
+    ctype = CVar:remove_type_qualifers(ctype)
+
+    if self:is_dynamic_array(ctype) then
+        ctype = ctype:gsub("%[%]", "(*)")
+    end
+
+    return ctype
+end
+
+
+
+function CVar:remove_type_qualifers(decl)
+    decl = decl or self.ctype
+    _, decl = self:get_type_qualifers(decl)
+    return decl
+end
+
+
+function CVar:get_array_dim(ctype)
+    ctype = ctype or self.ctype
+
+    local dims = {}
+    if self:is_array(ctype) then
+
+        -- Match [N] or [] — insert 0 for empty brackets
+        for size in ctype:gmatch("%[(.-)%]") do
+            local dim = tonumber(size)
+            table.insert(dims, dim or 0)
+        end
+
+        -- Remove array parts to get the base ctype
+        ctype = ctype:gsub("%[.-%]", ""):gsub("%s+", " "):gsub("^%s*(.-)%s*$", "%1")
+
+    end
+    return dims, ctype
+end
+
+
+
+
+-- Return the type full derefenced : int** -> int, int(*)[3] -> int[3],  int[][3] -> int[3]
+function CVar:get_ptr_count(ctype)
+    ctype = ctype or self.ctype
+
+    if self:is_function(ctype) then
+        return 0, ctype
+    end
+    local ref_cnt = 0
+    ctype = ctype:gsub("%s*%*%s*", function()
+        ref_cnt = ref_cnt + 1
+        return ""
+    end)
+    ctype = ctype:gsub("%s*%[%s*%]%s*", function()
+        ref_cnt = ref_cnt + 1
+        return ""
+    end)
+    return ref_cnt, ctype
 end
 
 return CVar
