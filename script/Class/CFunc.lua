@@ -12,9 +12,7 @@ function CFunc:new(attribute)
     self.fname  = attribute[4]
     
     self.fparam = {}
-    if attribute[5] == "void" or attribute[5] == nil then
-        self.has_no_param = true
-    else
+    if attribute[5] ~= "void" and attribute[5] ~= nil then
         -- Extract params
         for i = 5, #attribute do
             local fparam = CVar:new(attribute[i])
@@ -24,6 +22,9 @@ function CFunc:new(attribute)
     return self
 end
 
+function CFunc:has_param()
+    return #self.fparam > 0
+end
 
 function CFunc:return_is_ptr()
     return self.ftype:is_ptr()
@@ -69,34 +70,40 @@ function CFunc:get_fname(prefix, suffix)
 end
 
 
-function CFunc:get_function_decl(prefix, suffix)
-    return self.ftype.vtype .. " " .. self:get_fname(prefix, suffix) .. "(" .. self:get_fparams_string() .. ")"
+function CFunc:get_function_decl(prefix, suffix, more_params)
+    return self.ftype.vtype .. " " .. self:get_fname(prefix, suffix) .. "(" .. self:get_fparams_string(more_params) .. ")"
 end
 
 
 function CFunc:capture_point_is_post_call()
-    return self.capture_point == "ARGS_AFTER"
+    return self:has_param() and self.capture_point == "ARGS_AFTER"
 end
 
 
 function CFunc:capture_point_is_pre_call()
-    return self.capture_point == "ARGS_BEFORE"
+    return self:has_param() and self.capture_point == "ARGS_BEFORE"
 end
 
 
-function CFunc:get_fargs_string()
+function CFunc:get_fargs_string(more_args)
     local strings = {}
     for _, param in ipairs(self.fparam) do
         table.insert(strings, param.name)
+    end
+    for _, arg in ipairs(more_args) do
+        table.insert(strings, arg)
     end
     return table.concat(strings, ", ")
 end
 
 
-function CFunc:get_fparams_string()
+function CFunc:get_fparams_string(more_params)
     local strings = {}
     for _, param in ipairs(self.fparam) do
         table.insert(strings, param.pdecl)
+    end
+    for _, param in ipairs(more_params) do
+        table.insert(strings, param)
     end
     return table.concat(strings, ", ")
 end

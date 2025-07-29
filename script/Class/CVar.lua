@@ -55,25 +55,44 @@ end
 
 function CVar:is_function(ctype)
     ctype = ctype or self.ctype
+    ctype = self:remove_type_qualifers()
     return ctype:find("%(%*[^)]*%)%(") ~= nil
 end
 
 
-function CVar:is_struct(ctype)
+function CVar:is_struct(ctype, check_pointed_value)
     ctype = ctype or self.ctype
-    return ctype:find("struct%s*") ~= nil
+    ctype = self:remove_type_qualifers()
+
+    if not check_pointed_value and self:is_ptr(ctype) then
+        return false
+    end
+
+    return ctype:find("struct%s+") ~= nil
 end
 
 
-function CVar:is_enum(ctype)
+function CVar:is_enum(ctype, check_pointed_value)
     ctype = ctype or self.ctype
-    return ctype:find("enum%s*") ~= nil
+    ctype = self:remove_type_qualifers()
+    
+    if not check_pointed_value and self:is_ptr(ctype) then
+        return false
+    end
+
+    return ctype:find("enum%s+") ~= nil
 end
 
 
-function CVar:is_union(ctype)
+function CVar:is_union(ctype, check_pointed_value)
     ctype = ctype or self.ctype
-    return ctype:find("union%s*") ~= nil
+    ctype = self:remove_type_qualifers()
+    
+    if not check_pointed_value and self:is_ptr(ctype) then
+        return false
+    end
+
+    return ctype:find("union%s+") ~= nil
 end
 
 function CVar:is_ptr(ctype)
@@ -82,35 +101,41 @@ function CVar:is_ptr(ctype)
     return cnt > 0
 end
 
-function CVar:is_string(ctype)
+function CVar:is_string(ctype, check_pointed_value)
     ctype = ctype or self.ctype
-    return ctype:match("char%s*%*%s*$") ~= nil
-        or ctype:match("char%s*%[") ~= nil
+    ctype = self:remove_type_qualifers()
+    local cnt, pointed_type = self:get_ptr_count(ctype)
+    
+    if not check_pointed_value and cnt > 1 then
+        return pointed_type:match("char") ~= nil
+    end
+
+    return pointed_type:match("char") ~= nil and cnt == 1
 end
 
 function CVar:is_generic_ptr(ctype)
     ctype = ctype or self.ctype
-    local cnt, _ = self:get_ptr_count(ctype)
-    return self:ctype_is_void() and cnt == 1
+    ctype = self:remove_type_qualifers()
+    local cnt, pointed_type = self:get_ptr_count(ctype)
+    return pointed_type:match("void") ~= nil and cnt == 1
 end
 
 
-function CVar:is_opaque()
-    if self:is_struct() or self:is_union() then
-        return #self.struct_fields == 0
-    end
-    return false
-end
-
-
-function CVar:is_static_array(ctype)
+function CVar:is_static_array(ctype, check_pointed_value)
     ctype = ctype or self.ctype
-    return ctype:find("%[%d-%]") ~= nil
+    ctype = self:remove_type_qualifers()
+    
+    if not check_pointed_value and self:is_ptr(ctype) then
+        return false
+    end
+
+    return not self:is_ptr(ctype) and ctype:find("%[%d-%]") ~= nil
 end
 
 
 function CVar:is_dynamic_array(ctype)
     ctype = ctype or self.ctype
+    ctype = self:remove_type_qualifers()
     return ctype:find("%[%%s*%]") ~= nil
 end
 
@@ -121,39 +146,61 @@ function CVar:is_array(ctype)
 end
 
 
+function CVar:is_opaque(ctype, check_pointed_value)
+    ctype = self.ctype or ctype
+    
+    if not check_pointed_value and self:is_ptr(ctype) then
+        return false
+    end
 
-function CVar:ctype_is_void()
-    return self:get_base_type() == "void"
+    if self:is_struct(ctype) or self:is_union(ctype) then
+        return #self.struct_fields == 0
+    end
+    return false
+end
+
+function CVar:is_void(ctype, check_pointed_value)
+    ctype = ctype or self.ctype
+    ctype = self:remove_type_qualifers()
+
+    if not check_pointed_value and self:is_ptr(ctype) then
+        return false
+    end
+
+    return ctype:find("void") ~= nil
+end
+
+function CVar:is_unknown()
+    local base_type = self:get_base_type()
+    return CVar.__data.c_types_fmt[base_type] == nil
 end
 
 
-
 function CVar:get_base_type()
-    if self:is_string() then
+    local ctype = self.ctype
+
+    if self:is_string(ctype, true) then
         return "string"
-    elseif self:is_function() then
+    elseif self:is_function(ctype) then
         return "function"
-    elseif self:is_enum() then
+    elseif self:is_enum(ctype, true) then
         return "enum"
-    elseif self:is_opaque() then
+    elseif self:is_opaque(ctype, true) then
         return "opaque"
-    elseif self:is_struct() then
+    elseif self:is_struct(ctype, true) then
         return "struct"
-    elseif self:is_union() then
+    elseif self:is_union(ctype, true) then
         return "union"
-    else
-        local ctype = self.ctype
-
-        -- Remove qualifiers
-        ctype = self:remove_type_qualifers()
-
-        -- Remove pointers and arrays
-        ctype = ctype:gsub("%*+", "")             -- remove pointer stars
-        ctype = ctype:gsub("%[[^%]]*%]", "")      -- remove array brackets
-
-
-        return ctype
     end
+
+    -- Remove qualifiers
+    ctype = self:remove_type_qualifers()
+
+    -- Remove pointers and arrays
+    ctype = ctype:gsub("%*+", "")             -- remove pointer stars
+    ctype = ctype:gsub("%[[^%]]*%]", "")      -- remove array brackets
+
+    return ctype
 end
 
 
@@ -320,7 +367,10 @@ function CVar:get_array_dim(ctype)
 end
 
 
-
+function CVar:get_pointed_type(ctype)
+    local _, pointed_type = self:get_ptr_count(ctype)
+    return pointed_type
+end
 
 -- Return the type full derefenced : int** -> int, int(*)[3] -> int[3],  int[][3] -> int[3]
 function CVar:get_ptr_count(ctype)
